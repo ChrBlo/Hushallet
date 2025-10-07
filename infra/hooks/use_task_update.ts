@@ -17,28 +17,12 @@ const useTaskUpdate = () => {
 
       const taskId = updatedTask.id;
 
-      const cachedTask = queryClient.getQueryData<Task | undefined>(
-        taskKeys.detail(taskId)
-      );
-
       queryClient.invalidateQueries({
         queryKey: taskKeys.detail(taskId),
       });
 
-      const householdIds = new Set<string>();
-
-      if (cachedTask?.household_id) {
-        householdIds.add(cachedTask.household_id);
-      }
-
-      if (updatedTask.household_id) {
-        householdIds.add(updatedTask.household_id);
-      }
-
-      householdIds.forEach(householdId => {
-        queryClient.invalidateQueries({
-          queryKey: householdWithTasksKeys.detail(householdId),
-        });
+      queryClient.invalidateQueries({
+        queryKey: householdWithTasksKeys.detail(updatedTask.household_id),
       });
     },
   });
