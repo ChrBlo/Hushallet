@@ -1,6 +1,9 @@
 import { initializeApp } from 'firebase/app';
 import { getApps } from 'firebase/app';
 import { initializeFirestore, getFirestore } from 'firebase/firestore';
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+// @ts-expect-error Firebase Auth types are not compatible with React Native; see https://github.com/firebase/firebase-js-sdk/issues/6087
+import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
@@ -12,7 +15,8 @@ const firebaseConfig = {
   measurementId: process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+const existingApp = getApps()[0];
+const app = existingApp ?? initializeApp(firebaseConfig);
 
 initializeFirestore(app, {
   experimentalForceLongPolling: true,
@@ -20,4 +24,8 @@ initializeFirestore(app, {
 
 const db = getFirestore(app);
 
-export { app, db };
+const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+});
+
+export { app, db, auth };
