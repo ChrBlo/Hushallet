@@ -1,21 +1,24 @@
 import { StatusBar } from 'expo-status-bar';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from './firebase_client';
+import { signInWithEmail } from './infra/auth_functions';
 
 export default function App() {
   useEffect(() => {
-    const checkFirestore = async () => {
+    const signInDevAccount = async () => {
+      if (!__DEV__) {
+        return;
+      }
+
       try {
-        const snapshot = await getDocs(collection(db, '__firebase_ping'));
-        console.log('Firestore reachable, docs:', snapshot.size);
+        await signInWithEmail('test@test.com', 'testing');
+        console.log('logged into dev account');
       } catch (err) {
-        console.error('Firestore ping failed', err);
+        console.error('Automatic dev sign-in failed', err);
       }
     };
 
-    checkFirestore();
+    signInDevAccount();
   }, []);
 
   return (
