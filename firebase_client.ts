@@ -2,7 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getApps } from 'firebase/app';
 import { initializeFirestore, getFirestore } from 'firebase/firestore';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
-//@ts-ignore
+// @ts-expect-error Firebase Auth types are not compatible with React Native; see https://github.com/firebase/firebase-js-sdk/issues/6087
 import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
 
 const firebaseConfig = {
