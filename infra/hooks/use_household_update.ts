@@ -2,22 +2,20 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { householdUpdate } from '../household_functions';
 import { householdKeys } from './use_household';
 import { householdWithTasksKeys } from './use_household_with_tasks';
-import type { HouseholdUpdate } from '../../types/household';
+import type { Household } from '../../types/household';
 
 const useHouseholdUpdate = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      householdId,
-      updates,
-    }: {
-      householdId: string;
-      updates: HouseholdUpdate;
-    }) => householdUpdate(householdId, updates),
+    mutationFn: (household: Household) => householdUpdate(household),
 
-    onSuccess: (_data, variables) => {
-      const { householdId } = variables;
+    onSuccess: (_data, household) => {
+      if (!household.id) {
+        return;
+      }
+
+      const householdId = household.id;
 
       queryClient.invalidateQueries({
         queryKey: householdKeys.detail(householdId),

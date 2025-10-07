@@ -12,6 +12,10 @@ const useHouseholdCreate = () => {
       householdCreate(payload),
 
     onSuccess: createdHousehold => {
+      if (!createdHousehold.id) {
+        return;
+      }
+
       queryClient.invalidateQueries({
         queryKey: householdKeys.detail(createdHousehold.id),
       });

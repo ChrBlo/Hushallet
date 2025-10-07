@@ -12,9 +12,11 @@ const useTaskCreate = () => {
       taskCreate(payload),
 
     onSuccess: createdTask => {
-      queryClient.invalidateQueries({
-        queryKey: taskKeys.detail(createdTask.id),
-      });
+      if (createdTask.id) {
+        queryClient.invalidateQueries({
+          queryKey: taskKeys.detail(createdTask.id),
+        });
+      }
 
       queryClient.invalidateQueries({
         queryKey: householdWithTasksKeys.detail(createdTask.household_id),

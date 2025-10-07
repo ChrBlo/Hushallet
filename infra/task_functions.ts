@@ -8,13 +8,13 @@ import {
 } from 'firebase/firestore';
 import { db } from '../firebase_client';
 import { requireCurrentUser } from './auth_functions';
-import { Task, TaskUpdate } from '../types/task';
+import type { Task } from '../types/task';
 
 const collectionName = 'tasks';
 
 const taskCreate = async (
   task: Omit<Task, 'id' | 'created_by'>
-): Promise<Task & { id: string }> => {
+): Promise<Task> => {
   const user = requireCurrentUser();
 
   if (!task.household_id) {
@@ -40,7 +40,7 @@ const taskCreate = async (
   };
 };
 
-const taskGet = async (taskId: string): Promise<Task & { id: string }> => {
+const taskGet = async (taskId: string): Promise<Task> => {
   requireCurrentUser();
   const task = await getDoc(doc(db, collectionName, taskId));
 
@@ -64,17 +64,24 @@ const taskGet = async (taskId: string): Promise<Task & { id: string }> => {
   };
 };
 
-const taskUpdate = async (
-  taskId: string,
-  updates: TaskUpdate
-): Promise<void> => {
+const taskUpdate = async (task: Task): Promise<void> => {
   requireCurrentUser();
+
+  if (!task.id) {
+    throw new Error('taskUpdate requires an id');
+  }
+
+  const { id, created_by: _createdBy, ...fieldsToPersist } = task;
+
+  const updates = Object.fromEntries(
+    Object.entries(fieldsToPersist).filter(([, value]) => value !== undefined)
+  ) as Partial<Omit<Task, 'id' | 'created_by'>>;
 
   if (!Object.keys(updates).length) {
     return;
   }
 
-  await updateDoc(doc(db, collectionName, taskId), updates);
+  await updateDoc(doc(db, collectionName, id), updates);
 };
 
 const taskDelete = async (taskId: string): Promise<void> => {

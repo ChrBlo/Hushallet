@@ -11,14 +11,14 @@ import {
 } from 'firebase/firestore';
 import { db } from '../firebase_client';
 import { requireCurrentUser } from './auth_functions';
-import { Household, HouseholdUpdate } from '../types/household';
-import { Task } from '../types/task';
+import type { Household } from '../types/household';
+import type { Task } from '../types/task';
 
 const collectionName = 'households';
 
 const householdCreate = async (
   household: Omit<Household, 'id' | 'created_by'>
-): Promise<Household & { id: string }> => {
+): Promise<Household> => {
   const user = requireCurrentUser();
 
   const docRef = await addDoc(collection(db, collectionName), {
@@ -35,9 +35,7 @@ const householdCreate = async (
   };
 };
 
-const householdGet = async (
-  householdId: string
-): Promise<Household & { id: string }> => {
+const householdGet = async (householdId: string): Promise<Household> => {
   requireCurrentUser();
   const snap = await getDoc(doc(db, collectionName, householdId));
 
@@ -56,17 +54,44 @@ const householdGet = async (
   };
 };
 
-const householdUpdate = async (
-  householdId: string,
-  updates: HouseholdUpdate
-): Promise<void> => {
+const householdsForUserGet = async (): Promise<Household[]> => {
+  const user = requireCurrentUser();
+
+  const householdSnapshot = await getDocs(
+    query(collection(db, collectionName), where('created_by', '==', user.uid))
+  );
+
+  return householdSnapshot.docs.map(householdDoc => {
+    const data = householdDoc.data();
+
+    return {
+      id: householdDoc.id,
+      created_by: data.created_by ?? user.uid,
+      name: data.name,
+      invitation_code: data.invitation_code,
+      users: (data.users ?? []) as Household['users'],
+    };
+  });
+};
+
+const householdUpdate = async (household: Household): Promise<void> => {
   requireCurrentUser();
+
+  if (!household.id) {
+    throw new Error('householdUpdate requires an id');
+  }
+
+  const { id, created_by: _createdBy, ...fieldsToPersist } = household;
+
+  const updates = Object.fromEntries(
+    Object.entries(fieldsToPersist).filter(([, value]) => value !== undefined)
+  ) as Partial<Omit<Household, 'id' | 'created_by'>>;
 
   if (!Object.keys(updates).length) {
     return;
   }
 
-  await updateDoc(doc(db, collectionName, householdId), updates);
+  await updateDoc(doc(db, collectionName, id), updates);
 };
 
 const householdDelete = async (householdId: string): Promise<void> => {
@@ -77,8 +102,8 @@ const householdDelete = async (householdId: string): Promise<void> => {
 const householdWithTasksGet = async (
   householdId: string
 ): Promise<{
-  household: Household & { id: string };
-  tasks: Array<Task & { id: string }>;
+  household: Household;
+  tasks: Task[];
 }> => {
   requireCurrentUser();
   const household = await householdGet(householdId);
@@ -110,6 +135,7 @@ const householdWithTasksGet = async (
 export {
   householdCreate,
   householdGet,
+  householdsForUserGet,
   householdWithTasksGet,
   householdUpdate,
   householdDelete,

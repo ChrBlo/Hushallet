@@ -8,8 +8,4 @@ type Household = {
   users: HouseholdUser[];
 };
 
-type HouseholdUpdate = Partial<
-  Pick<Household, 'name' | 'invitation_code' | 'users'>
->;
-
-export { type Household, type HouseholdUpdate };
+export { type Household };
