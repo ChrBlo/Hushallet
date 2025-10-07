@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { householdUpdate } from '../household_functions';
 import { householdKeys } from './use_household';
 import { householdWithTasksKeys } from './use_household_with_tasks';
+import { householdsForUserKeys } from './use_households_for_user';
 import type { Household } from '../../types/household';
 
 const useHouseholdUpdate = () => {
@@ -16,6 +17,10 @@ const useHouseholdUpdate = () => {
       }
 
       const householdId = household.id;
+
+      queryClient.invalidateQueries({
+        queryKey: householdsForUserKeys.list(),
+      });
 
       queryClient.invalidateQueries({
         queryKey: householdKeys.detail(householdId),
