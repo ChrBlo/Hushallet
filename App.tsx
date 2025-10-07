@@ -5,6 +5,9 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from './firebase_client';
 
 export default function App() {
+
+  const id: number = "ABC";
+
   useEffect(() => {
     const checkFirestore = async () => {
       try {
