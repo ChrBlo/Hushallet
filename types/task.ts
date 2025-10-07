@@ -15,6 +15,4 @@ type Task = {
 
 type TaskStatus = 'active' | 'archived' | 'removed';
 
-type TaskUpdate = Partial<Omit<Task, 'id'>>;
-
-export { type Task, type TaskUpdate, type TaskStatus as Status };
+export { type Task, type TaskStatus as Status };
