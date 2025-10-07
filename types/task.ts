@@ -3,7 +3,7 @@ import { TaskUser } from './task_user';
 type Task = {
   id?: string;
   created_by: string;
-  house_hold_id: string;
+  household_id: string;
   title: string;
   description: string;
   created_date: Date;

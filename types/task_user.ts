@@ -1,7 +1,7 @@
-import { HouseHoldUser } from './house_hold_user';
+import { HouseholdUser } from './household_user';
 
 export type TaskUser = {
-  user: HouseHoldUser;
+  user: HouseholdUser;
   points: number;
   isDone: boolean;
 };

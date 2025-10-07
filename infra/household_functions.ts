@@ -10,14 +10,14 @@ import {
 } from 'firebase/firestore';
 import { db } from '../firebase_client';
 import { requireCurrentUser } from './auth_functions';
-import { HouseHold, HouseHoldUpdate } from '../types/house_hold';
+import { Household, HouseholdUpdate } from '../types/household';
 import { Task } from '../types/task';
 
 const collectionName = 'households';
 
-const createHouseHold = async (
-  household: Omit<HouseHold, 'id' | 'created_by'>
-): Promise<HouseHold & { id: string }> => {
+const createHousehold = async (
+  household: Omit<Household, 'id' | 'created_by'>
+): Promise<Household & { id: string }> => {
   const user = requireCurrentUser();
 
   const docRef = await addDoc(collection(db, collectionName), {
@@ -34,48 +34,48 @@ const createHouseHold = async (
   };
 };
 
-const getHouseHold = async (
-  houseHoldId: string
-): Promise<HouseHold & { id: string }> => {
+const getHousehold = async (
+  householdId: string
+): Promise<Household & { id: string }> => {
   requireCurrentUser();
-  const snap = await getDoc(doc(db, collectionName, houseHoldId));
+  const snap = await getDoc(doc(db, collectionName, householdId));
   if (!snap.exists()) {
-    throw new Error(`Household ${houseHoldId} not found`);
+    throw new Error(`Household ${householdId} not found`);
   }
 
   const data = snap.data();
   return {
-    id: houseHoldId,
+    id: householdId,
     created_by: data.created_by ?? '',
     name: data.name,
     invitation_code: data.invitation_code,
-    users: (data.users ?? []) as HouseHold['users'],
+    users: (data.users ?? []) as Household['users'],
   };
 };
 
-const updateHouseHold = async (
-  houseHoldId: string,
-  updates: HouseHoldUpdate
+const updateHousehold = async (
+  householdId: string,
+  updates: HouseholdUpdate
 ): Promise<void> => {
   requireCurrentUser();
   if (!Object.keys(updates).length) {
     return;
   }
 
-  await updateDoc(doc(db, collectionName, houseHoldId), updates);
+  await updateDoc(doc(db, collectionName, householdId), updates);
 };
 
-const getHouseHoldWithTasks = async (
-  houseHoldId: string
+const getHouseholdWithTasks = async (
+  householdId: string
 ): Promise<{
-  household: HouseHold & { id: string };
+  household: Household & { id: string };
   tasks: Array<Task & { id: string }>;
 }> => {
   requireCurrentUser();
-  const household = await getHouseHold(houseHoldId);
+  const household = await getHousehold(householdId);
 
   const taskSnapshot = await getDocs(
-    query(collection(db, 'tasks'), where('house_hold_id', '==', houseHoldId))
+    query(collection(db, 'tasks'), where('household_id', '==', householdId))
   );
 
   const tasks = taskSnapshot.docs.map(taskDoc => {
@@ -89,7 +89,7 @@ const getHouseHoldWithTasks = async (
       frequency: data.frequency,
       status: data.status,
       created_by: data.created_by ?? '',
-      house_hold_id: data.house_hold_id ?? houseHoldId,
+      household_id: data.household_id ?? householdId,
       users: (data.users ?? []) as Task['users'],
     };
   });
@@ -98,8 +98,8 @@ const getHouseHoldWithTasks = async (
 };
 
 export {
-  createHouseHold,
-  getHouseHold,
-  getHouseHoldWithTasks,
-  updateHouseHold,
+  createHousehold,
+  getHousehold,
+  getHouseholdWithTasks,
+  updateHousehold,
 };

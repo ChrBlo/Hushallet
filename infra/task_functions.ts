@@ -9,7 +9,7 @@ const createTask = async (
   task: Omit<Task, 'id' | 'created_by'>
 ): Promise<Task & { id: string }> => {
   const user = requireCurrentUser();
-  if (!task.house_hold_id) {
+  if (!task.household_id) {
     throw new Error('createTask requires a household id');
   }
 
@@ -21,7 +21,7 @@ const createTask = async (
     frequency: task.frequency,
     status: task.status,
     created_by: user.uid,
-    house_hold_id: task.house_hold_id,
+    household_id: task.household_id,
     users: task.users ?? [],
   });
 
@@ -49,7 +49,7 @@ const getTask = async (taskId: string): Promise<Task & { id: string }> => {
     frequency: data.frequency,
     status: data.status,
     created_by: data.created_by ?? '',
-    house_hold_id: data.house_hold_id ?? '',
+    household_id: data.household_id ?? '',
     users: (data.users ?? []) as Task['users'],
   };
 };

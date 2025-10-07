@@ -1,4 +1,4 @@
-type HouseHoldUser = {
+type HouseholdUser = {
   id: string;
   nickname: string;
   role: Role;
@@ -18,4 +18,4 @@ type Icon =
   | 'dolphin'
   | 'owl';
 
-export { HouseHoldUser, Role, UserStatus as Status, Icon };
+export { HouseholdUser, Role, UserStatus as Status, Icon };
