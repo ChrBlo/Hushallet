@@ -1,6 +1,7 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -15,7 +16,7 @@ import { Task } from '../types/task';
 
 const collectionName = 'households';
 
-const createHousehold = async (
+const householdCreate = async (
   household: Omit<Household, 'id' | 'created_by'>
 ): Promise<Household & { id: string }> => {
   const user = requireCurrentUser();
@@ -34,16 +35,18 @@ const createHousehold = async (
   };
 };
 
-const getHousehold = async (
+const householdGet = async (
   householdId: string
 ): Promise<Household & { id: string }> => {
   requireCurrentUser();
   const snap = await getDoc(doc(db, collectionName, householdId));
+
   if (!snap.exists()) {
     throw new Error(`Household ${householdId} not found`);
   }
 
   const data = snap.data();
+
   return {
     id: householdId,
     created_by: data.created_by ?? '',
@@ -53,11 +56,12 @@ const getHousehold = async (
   };
 };
 
-const updateHousehold = async (
+const householdUpdate = async (
   householdId: string,
   updates: HouseholdUpdate
 ): Promise<void> => {
   requireCurrentUser();
+
   if (!Object.keys(updates).length) {
     return;
   }
@@ -65,14 +69,19 @@ const updateHousehold = async (
   await updateDoc(doc(db, collectionName, householdId), updates);
 };
 
-const getHouseholdWithTasks = async (
+const householdDelete = async (householdId: string): Promise<void> => {
+  requireCurrentUser();
+  await deleteDoc(doc(db, collectionName, householdId));
+};
+
+const householdWithTasksGet = async (
   householdId: string
 ): Promise<{
   household: Household & { id: string };
   tasks: Array<Task & { id: string }>;
 }> => {
   requireCurrentUser();
-  const household = await getHousehold(householdId);
+  const household = await householdGet(householdId);
 
   const taskSnapshot = await getDocs(
     query(collection(db, 'tasks'), where('household_id', '==', householdId))
@@ -80,6 +89,7 @@ const getHouseholdWithTasks = async (
 
   const tasks = taskSnapshot.docs.map(taskDoc => {
     const data = taskDoc.data();
+
     return {
       id: taskDoc.id,
       title: data.title,
@@ -98,8 +108,9 @@ const getHouseholdWithTasks = async (
 };
 
 export {
-  createHousehold,
-  getHousehold,
-  getHouseholdWithTasks,
-  updateHousehold,
+  householdCreate,
+  householdGet,
+  householdWithTasksGet,
+  householdUpdate,
+  householdDelete,
 };

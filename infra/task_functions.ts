@@ -1,16 +1,24 @@
-import { addDoc, collection, doc, getDoc, updateDoc } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  updateDoc,
+} from 'firebase/firestore';
 import { db } from '../firebase_client';
 import { requireCurrentUser } from './auth_functions';
 import { Task, TaskUpdate } from '../types/task';
 
 const collectionName = 'tasks';
 
-const createTask = async (
+const taskCreate = async (
   task: Omit<Task, 'id' | 'created_by'>
 ): Promise<Task & { id: string }> => {
   const user = requireCurrentUser();
+
   if (!task.household_id) {
-    throw new Error('createTask requires a household id');
+    throw new Error('taskCreate requires a household id');
   }
 
   const docRef = await addDoc(collection(db, collectionName), {
@@ -32,14 +40,16 @@ const createTask = async (
   };
 };
 
-const getTask = async (taskId: string): Promise<Task & { id: string }> => {
+const taskGet = async (taskId: string): Promise<Task & { id: string }> => {
   requireCurrentUser();
   const task = await getDoc(doc(db, collectionName, taskId));
+
   if (!task.exists()) {
     throw new Error(`Task ${taskId} not found`);
   }
 
   const data = task.data();
+
   return {
     id: taskId,
     title: data.title,
@@ -54,11 +64,12 @@ const getTask = async (taskId: string): Promise<Task & { id: string }> => {
   };
 };
 
-const updateTask = async (
+const taskUpdate = async (
   taskId: string,
   updates: TaskUpdate
 ): Promise<void> => {
   requireCurrentUser();
+
   if (!Object.keys(updates).length) {
     return;
   }
@@ -66,4 +77,9 @@ const updateTask = async (
   await updateDoc(doc(db, collectionName, taskId), updates);
 };
 
-export { createTask, getTask, updateTask };
+const taskDelete = async (taskId: string): Promise<void> => {
+  requireCurrentUser();
+  await deleteDoc(doc(db, collectionName, taskId));
+};
+
+export { taskCreate, taskGet, taskUpdate, taskDelete };

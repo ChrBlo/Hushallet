@@ -1,15 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
-import { getHousehold } from '../household_functions';
+import { householdGet } from '../household_functions';
 
 const householdKeys = {
   detail: (householdId: string) => ['household', householdId] as const,
 };
 
-const useHousehold = (householdId: string) =>
+const useHouseholdGet = (householdId: string) =>
   useQuery({
     queryKey: householdKeys.detail(householdId),
-    queryFn: () => getHousehold(householdId),
+    queryFn: () => householdGet(householdId),
     enabled: Boolean(householdId),
   });
 
-export { useHousehold, householdKeys };
+export { useHouseholdGet, householdKeys };
