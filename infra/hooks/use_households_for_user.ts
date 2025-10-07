@@ -6,16 +6,10 @@ const householdsForUserKeys = {
   list: () => ['households', 'for-current-user'] as const,
 };
 
-type UseHouseholdsForUserOptions = {
-  enabled?: boolean;
-};
-
-const useHouseholdsForUserGet = (options?: UseHouseholdsForUserOptions) =>
+const useHouseholdsForUserGet = () =>
   useQuery<Household[]>({
     queryKey: householdsForUserKeys.list(),
     queryFn: () => householdsForUserGet(),
-    initialData: [],
-    enabled: options?.enabled ?? true,
   });
 
 export { useHouseholdsForUserGet, householdsForUserKeys };
