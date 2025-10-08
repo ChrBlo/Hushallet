@@ -30,6 +30,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "eslint": "^9.0.0",
     "@tanstack/eslint-plugin-query": "^5.91.0",
     "@types/react": "~19.1.0",
     "prettier": "^3.6.2",
