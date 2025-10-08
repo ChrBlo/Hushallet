@@ -15,7 +15,7 @@ export default function TaskModal() {
       entering={FadeIn.duration(200)}
       style={s.backdrop}
     >
-      <BlurView intensity={20} style={StyleSheet.absoluteFill} tint={theme.dark ? "dark" : "light"} />
+      <BlurView intensity={15} style={StyleSheet.absoluteFill} tint={theme.dark ? "dark" : "light"} />
       
       <Animated.View 
         entering={FadeInDown.duration(300).springify()}
@@ -32,21 +32,29 @@ export default function TaskModal() {
               mode="outlined"
             />
           </ScrollView>
+
           <View style={s.buttonContainer}>
+
             <Button 
               mode="text" 
               onPress={() => router.back()}
               style={s.button}
+              labelStyle={s.buttonLabel}
               contentStyle={s.buttonContent}
             >Avbryt
             </Button>
+
+            <View style={s.separator} />
+
             <Button 
               mode="text" 
               onPress={() => router.back()}
               style={s.button}
+              labelStyle={s.buttonLabel}
               contentStyle={s.buttonContent}
             >Spara
             </Button>
+
           </View>
         </Surface>
       </Animated.View>
@@ -66,7 +74,9 @@ const createStyles = (theme: MD3Theme) =>
       marginBottom: 16,
     },
     card: {
-      minHeight:'84%',
+      minHeight: '84%',
+      borderWidth: 1,
+      borderColor: theme.dark ? '#4c4d53' : '#c7c7c7',
       borderRadius: 15,
       backgroundColor: theme.colors.surface,
       overflow: 'hidden',
@@ -83,7 +93,7 @@ const createStyles = (theme: MD3Theme) =>
       flexDirection: 'row',
       gap: 12,
       padding: 16,
-      paddingBottom: 30,
+      paddingBottom: 20,
       borderTopWidth: 1,
       borderTopColor: theme.colors.outlineVariant,
     },
@@ -91,7 +101,17 @@ const createStyles = (theme: MD3Theme) =>
       flex: 1,
     },
     buttonContent: {
+      justifyContent: 'center',
+      alignItems: 'center',
       fontSize: 20,
       paddingVertical: 6,
+    },
+    separator: {
+      borderLeftWidth: 1,
+      borderLeftColor: theme.dark ? '#4c4d53' : '#c7c7c7',
+      height: '100%',
+    },
+    buttonLabel: {
+      fontSize: 20,
     },
   });
