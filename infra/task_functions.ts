@@ -1,16 +1,24 @@
-import { addDoc, collection, doc, getDoc, updateDoc } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  updateDoc,
+} from 'firebase/firestore';
 import { db } from '../firebase_client';
 import { requireCurrentUser } from './auth_functions';
-import { Task, TaskUpdate } from '../types/task';
+import type { Task } from '../types/task';
 
 const collectionName = 'tasks';
 
-const createTask = async (
+const taskCreate = async (
   task: Omit<Task, 'id' | 'created_by'>
-): Promise<Task & { id: string }> => {
+): Promise<Task> => {
   const user = requireCurrentUser();
+
   if (!task.household_id) {
-    throw new Error('createTask requires a household id');
+    throw new Error('taskCreate requires a household id');
   }
 
   const docRef = await addDoc(collection(db, collectionName), {
@@ -32,14 +40,16 @@ const createTask = async (
   };
 };
 
-const getTask = async (taskId: string): Promise<Task & { id: string }> => {
+const taskGet = async (taskId: string): Promise<Task> => {
   requireCurrentUser();
   const task = await getDoc(doc(db, collectionName, taskId));
+
   if (!task.exists()) {
     throw new Error(`Task ${taskId} not found`);
   }
 
   const data = task.data();
+
   return {
     id: taskId,
     title: data.title,
@@ -54,16 +64,29 @@ const getTask = async (taskId: string): Promise<Task & { id: string }> => {
   };
 };
 
-const updateTask = async (
-  taskId: string,
-  updates: TaskUpdate
-): Promise<void> => {
+const taskUpdate = async (task: Task): Promise<void> => {
   requireCurrentUser();
+
+  if (!task.id) {
+    throw new Error('taskUpdate requires an id');
+  }
+
+  const { id, created_by: _createdBy, ...fieldsToPersist } = task;
+
+  const updates = Object.fromEntries(
+    Object.entries(fieldsToPersist).filter(([, value]) => value !== undefined)
+  ) as Partial<Omit<Task, 'id' | 'created_by'>>;
+
   if (!Object.keys(updates).length) {
     return;
   }
 
-  await updateDoc(doc(db, collectionName, taskId), updates);
+  await updateDoc(doc(db, collectionName, id), updates);
 };
 
-export { createTask, getTask, updateTask };
+const taskDelete = async (taskId: string): Promise<void> => {
+  requireCurrentUser();
+  await deleteDoc(doc(db, collectionName, taskId));
+};
+
+export { taskCreate, taskGet, taskUpdate, taskDelete };
