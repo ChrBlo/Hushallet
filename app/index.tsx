@@ -1,9 +1,10 @@
-import { ScrollView, StyleSheet } from 'react-native';
+import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { ScrollView, StyleSheet } from 'react-native';
 import { MD3Theme, useTheme } from 'react-native-paper';
+import StyledButton from '../components/styled-button';
 import TaskButton, { Avatar } from '../components/task-button';
 import TimePeriodSelector from '../components/time-period-selector';
-import StyledButton from '../components/styled-button';
 
 interface Task {
   id: string;
@@ -33,6 +34,12 @@ const tasks: Task[] = [
   },
 ];
 
+const handleCreateNewTask = () => {
+  router.push({
+    pathname: '/task-modal',
+  });
+};
+
 export const HomeScreen = () => {
   const theme = useTheme();
   const s = createStyles(theme);
@@ -59,7 +66,7 @@ export const HomeScreen = () => {
       </ScrollView>
       <StyledButton
         title={'Lägg till'}
-        onPress={() => {}}
+        onPress={handleCreateNewTask}
         style={[s.button, s.bottomLeft]}
       />
       <StyledButton
