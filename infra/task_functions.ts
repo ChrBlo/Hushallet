@@ -57,6 +57,7 @@ const taskGet = async (taskId: string): Promise<Task> => {
     created_date: data.created_date,
     execution_date: data.execution_date,
     frequency: data.frequency,
+    points: data.points,
     status: data.status,
     created_by: data.created_by ?? '',
     household_id: data.household_id ?? '',
@@ -64,16 +65,16 @@ const taskGet = async (taskId: string): Promise<Task> => {
   };
 };
 
-const taskUpdate = async (task: Task): Promise<void> => {
-  requireCurrentUser();
+const taskUpdate = async (taskId: string, updates: Partial<Task>): Promise<void> => {
+  // requireCurrentUser();
 
-  if (!task.id) {
+  if (!updates.id) {
     throw new Error('taskUpdate requires an id');
   }
 
-  const { id, created_by: _createdBy, ...fieldsToPersist } = task;
+  const { id, created_by: _createdBy, ...fieldsToPersist } = updates;
 
-  const updates = Object.fromEntries(
+  const filteredUpdates = Object.fromEntries(
     Object.entries(fieldsToPersist).filter(([, value]) => value !== undefined)
   ) as Partial<Omit<Task, 'id' | 'created_by'>>;
 
@@ -81,7 +82,7 @@ const taskUpdate = async (task: Task): Promise<void> => {
     return;
   }
 
-  await updateDoc(doc(db, collectionName, id), updates);
+  await updateDoc(doc(db, collectionName, taskId), filteredUpdates);
 };
 
 const taskDelete = async (taskId: string): Promise<void> => {
