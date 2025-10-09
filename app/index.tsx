@@ -2,7 +2,7 @@ import { ScrollView, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { MD3Theme, useTheme } from 'react-native-paper';
 import TaskButton, { Avatar } from '../components/task-button';
-import TimePeriodSelector from '../components/time-period-selector';
+import SmallArrowSelectorBar from '../components/small-arrow-selector-bar';
 import StyledButton from '../components/styled-button';
 
 interface Task {
@@ -40,10 +40,10 @@ export const HomeScreen = () => {
   return (
     <>
       <StatusBar style="auto" />
-      <TimePeriodSelector
+      <SmallArrowSelectorBar
         title={'Idag'}
-        onPrevDate={() => {}}
-        onNextDate={() => {}}
+        onPrev={() => {}}
+        onNext={() => {}}
       />
       <ScrollView contentContainerStyle={s.container}>
         {tasks.map(t => (
