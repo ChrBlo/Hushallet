@@ -4,11 +4,11 @@ import { Text } from 'react-native-paper';
 
 interface Props {
   title: string;
-  onNextDate: () => void;
-  onPrevDate: () => void;
+  onNext: () => void;
+  onPrev: () => void;
 }
 
-export const TimePeriodSelector = (props: Props) => {
+export const SmallArrowSelectorBar = (props: Props) => {
   const s = createStyles(useTheme());
   const left = '<';
   const right = '>';
@@ -16,11 +16,11 @@ export const TimePeriodSelector = (props: Props) => {
   return (
     <View style={s.container}>
       <View style={s.row}>
-        <TouchableOpacity style={s.t} onPress={props.onPrevDate}>
+        <TouchableOpacity style={s.t} onPress={props.onPrev}>
           <Text style={s.brackets}>{left}</Text>
         </TouchableOpacity>
         <Text style={s.dateText}>{props.title}</Text>
-        <TouchableOpacity style={s.t} onPress={props.onNextDate}>
+        <TouchableOpacity style={s.t} onPress={props.onNext}>
           <Text style={s.brackets}>{right}</Text>
         </TouchableOpacity>
       </View>
@@ -60,4 +60,4 @@ const createStyles = (theme: MD3Theme) =>
     },
   });
 
-export default TimePeriodSelector;
+export default SmallArrowSelectorBar;
