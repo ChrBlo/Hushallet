@@ -104,7 +104,7 @@ export default function TaskModal() {
               {isEditing ? 'Ändra syssla' : 'Lägg till syssla'}
             </Text>
 
-            <TextInput style={s.input}
+            <TextInput style={s.inputTitle}
               label="Titel"
               value={title}
               defaultValue={title}
@@ -117,14 +117,15 @@ export default function TaskModal() {
               theme={{ colors: {onSurfaceVariant: theme.colors.onSurface,} }} // LAbel color
             />
 
-            <TextInput 
+            <TextInput
               label="Beskrivning"
               value={description}
               onChangeText={setDescription}
               mode="outlined"
               multiline
               numberOfLines={4}
-              maxLength={250}style={[s.input, { minHeight: 120 }]}
+              maxLength={250}
+              style={[s.inputDescription, { minHeight: 120 }]}
               textAlignVertical="top"
               outlineColor={theme.colors.outlineVariant}
               activeOutlineColor={theme.colors.outline}
@@ -236,7 +237,12 @@ const createStyles = (theme: MD3Theme) =>
       color: theme.colors.onSurface,
       fontSize: 20,
     },
-    input: {
+    inputTitle: {
+      color: theme.colors.onSurfaceVariant,
+      backgroundColor: theme.colors.surfaceVariant,
+      marginBottom: 12,
+    },
+    inputDescription: {
       color: theme.colors.onSurfaceVariant,
       backgroundColor: theme.colors.surfaceVariant,
       marginBottom: 16,
