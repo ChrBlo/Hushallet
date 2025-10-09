@@ -1,9 +1,10 @@
 import { ScrollView, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { MD3Theme, useTheme } from 'react-native-paper';
+import { Button, MD3Theme, useTheme } from 'react-native-paper';
 import TaskButton, { Avatar } from '../components/task-button';
 import TimePeriodSelector from '../components/time-period-selector';
 import StyledButton from '../components/styled-button';
+import { Link } from 'expo-router';
 
 interface Task {
   id: string;
@@ -56,6 +57,7 @@ export const HomeScreen = () => {
             onClickEdit={() => {}}
           />
         ))}
+        <Link href={'/statistics'} style={{padding: 12}}>Link to statistics</Link>
       </ScrollView>
       <StyledButton
         title={'Lägg till'}
