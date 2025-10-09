@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { taskCreate } from '../task_functions';
 import { taskKeys } from './use_task';
-import { householdWithTasksKeys } from './use_household_with_tasks';
+import { householdKeys } from './use_household';
 import type { Task } from '../../types/task';
 
 const useTaskCreate = () => {
@@ -19,7 +19,7 @@ const useTaskCreate = () => {
       }
 
       queryClient.invalidateQueries({
-        queryKey: householdWithTasksKeys.detail(createdTask.household_id),
+        queryKey: householdKeys.list(),
       });
     },
   });
