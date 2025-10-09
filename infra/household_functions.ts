@@ -122,6 +122,7 @@ const householdWithTasksGet = async (
       created_date: data.created_date,
       execution_date: data.execution_date,
       frequency: data.frequency,
+      points: data.points,
       status: data.status,
       created_by: data.created_by ?? '',
       household_id: data.household_id ?? householdId,
