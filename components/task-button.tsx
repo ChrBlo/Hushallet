@@ -1,49 +1,35 @@
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { MD3Theme, Text, Surface, useTheme } from 'react-native-paper';
+import { StyleSheet, TouchableOpacity } from 'react-native';
+import { MD3Theme, Surface, useTheme } from 'react-native-paper';
 
-interface Props {
+//Lämnar pga osäker på två onclick?
+
+/* interface Props {
   id: string;
   title: string;
   edit: boolean;
   executedBy: Avatar[];
   onClickDefault: () => void;
   onClickEdit: () => void;
+} */
+
+interface Props {
+  onPress: () => void;
+  children: React.ReactNode;
 }
 
-export interface Avatar {
-  avatar: 'fox' | 'octopus' | 'owl';
-}
-
-export const TaskButton = (props: Props) => {
+export const TaskButton = ({ onPress, children }: Props) => {
   const s = createStyles(useTheme());
 
   return (
     <>
-      <TouchableOpacity style={s.outerContainer} onPress={props.onClickDefault}>
-        <Surface style={s.container}>
-          <Text style={s.text}>{props.title}</Text>
-          <View style={s.row}>
-            {props.executedBy?.map((p, index) => (
-              <Text style={s.text}>{getAvatar(p)}</Text>
-            ))}
-          </View>
-        </Surface>
+      <TouchableOpacity style={s.outerContainer} onPress={onPress}>
+        <Surface style={s.container}>{children}</Surface>
       </TouchableOpacity>
     </>
   );
 };
 
 export default TaskButton;
-
-const getAvatar = (avatar: Avatar) => {
-  if (avatar.avatar === 'fox') {
-    return '🦊';
-  } else if (avatar.avatar === 'octopus') {
-    return '🦑';
-  } else if (avatar.avatar === 'owl') {
-    return '🦉';
-  }
-};
 
 const createStyles = (theme: MD3Theme) =>
   StyleSheet.create({
@@ -63,12 +49,5 @@ const createStyles = (theme: MD3Theme) =>
       justifyContent: 'center',
       alignItems: 'center',
       flexDirection: 'row',
-    },
-    row: {
-      flexDirection: 'row',
-    },
-    text: {
-      fontSize: 18,
-      fontWeight: '600',
     },
   });
