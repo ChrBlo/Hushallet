@@ -63,6 +63,7 @@ const getColor = (avatar: string) => {
   }
 };
 
+// Takes all of the tasks in the data set and sums them, dividing them into avatar and points
 const getTotalChartData = (data: DataSet) => {
   const avatars = new Set<string>();
   const map = new Map<string, number>();
@@ -84,6 +85,7 @@ const getTotalChartData = (data: DataSet) => {
   return chartData;
 };
 
+// Takes all of the tasks for a certain datapoint (a certain task) and divides them avatar and points
 const getChartData = (task: TaskData) => {
   const data: { value: number; color: string }[] = [];
   for (const e of task.executor) {
