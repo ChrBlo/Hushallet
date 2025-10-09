@@ -1,11 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { MD3Theme, useTheme } from 'react-native-paper';
-import SmallArrowSelectorBar from '../components/small-arrow-selector-bar';
 import AvatarIcon, { Avatar } from '../components/getAvatar';
+import SmallArrowSelectorBar from '../components/small-arrow-selector-bar';
 import StyledButton from '../components/styled-button';
 import TaskButton from '../components/task-button';
-import TimePeriodSelector from '../components/time-period-selector';
 
 interface Task {
   id: string;

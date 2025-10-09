@@ -9,7 +9,6 @@ const useTaskGet = (taskId: string) =>
   useQuery({
     queryKey: taskKeys.detail(taskId),
     queryFn: () => taskGet(taskId),
-    enabled: Boolean(taskId),
   });
 
 export { useTaskGet, taskKeys };
