@@ -33,11 +33,13 @@ const GroupsScreen = () => {
           </TaskButton>
         ))}
       </ScrollView>
+      {/* För att gå med i ny grupp? */}
       <StyledButton
         title={'Lägg till'}
         onPress={() => {}}
         style={[s.button, s.bottomLeft]}
       />
+      {/* För att gå ur en grupp? */}
       <StyledButton
         title={'Ändra'}
         onPress={() => {}}
