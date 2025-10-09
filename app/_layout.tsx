@@ -1,9 +1,9 @@
-import { Stack } from 'expo-router';
-import { PaperProvider, ThemeProvider } from 'react-native-paper';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Stack } from 'expo-router';
 import { useEffect } from 'react';
-import { signInWithEmail } from '../infra/auth_functions';
 import { useColorScheme } from 'react-native';
+import { PaperProvider, ThemeProvider } from 'react-native-paper';
+import { signInWithEmail } from '../infra/auth_functions';
 import { AppDarkTheme, AppDefaultTheme } from '../theme';
 
 const queryClient = new QueryClient();
@@ -11,7 +11,7 @@ const queryClient = new QueryClient();
 export default function RootLayout() {
   const colorScheme = useColorScheme();
 
-  console.log(colorScheme === "dark" ? "Dark" : "Light");
+  console.log(colorScheme === 'dark' ? 'Dark' : 'Light');
 
   const theme = colorScheme === 'dark' ? AppDarkTheme : AppDefaultTheme;
   useEffect(() => {
@@ -36,7 +36,14 @@ export default function RootLayout() {
       <ThemeProvider theme={theme}>
         <QueryClientProvider client={queryClient}>
           <Stack>
-            <Stack.Screen name="index" options={{ headerShown: true, title: 'Home'}} />
+            <Stack.Screen
+              name="index"
+              options={{ headerShown: true, title: 'Home' }}
+            />
+            <Stack.Screen
+              name="groups/index"
+              options={{ headerShown: true, title: 'Grupper' }}
+            />
           </Stack>
         </QueryClientProvider>
       </ThemeProvider>
