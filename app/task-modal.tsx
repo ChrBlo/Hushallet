@@ -1,19 +1,32 @@
 import { BlurView } from 'expo-blur';
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
+import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Button, Divider, MD3Theme, Surface, Text, TextInput, useTheme } from "react-native-paper";
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
-import React, { useState } from 'react';
-import { CustomDropdown } from '../components/custom-drop-down'
+import { CustomDropdown } from '../components/custom-drop-down';
+import { requireCurrentUser } from '../infra/auth_functions';
+import { useTaskCreate } from '../infra/hooks/use_task_create';
+import { useTaskUpdate } from '../infra/hooks/use_task_update';
+import { householdGet } from '../infra/household_functions';
 
 export default function TaskModal() {
   const theme = useTheme();
   const s = createStyles(theme);
-  
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [frequency, setFrequency] = useState(7);
-  const [points, setPoints] = useState(6);
+    
+  const params = useLocalSearchParams();
+  const isEditing = !!params.taskId;
+
+  const [title, setTitle] = useState(params.title?.toString() || "");
+  const [description, setDescription] = useState(params.description?.toString() || "");
+  const [frequency, setFrequency] = useState(params.frequency ? parseInt(params.frequency.toString()) : 7);
+  const [points, setPoints] = useState(params.points ? parseInt(params.points.toString()) : 6);
+
+  const createMutation = useTaskCreate();
+  const updateMutation = useTaskUpdate();
+  const isSaving = createMutation.isPending || updateMutation.isPending;
+
+  // const currentUser = requireCurrentUser();
 
   const frequencyOptions = Array.from({ length: 31 }, (_, i) => {
     const days = i + 1;
@@ -33,6 +46,46 @@ export default function TaskModal() {
     value: i + 1
   }));
 
+  const handleSave = async () => { 
+
+    if (isEditing)
+    {
+      await updateMutation.mutateAsync({
+        taskId: params.taskId.toString(),
+        updates: {
+          title: title,
+          description: description,
+          frequency,
+          points,
+        }
+      });
+    }
+    else
+    { 
+      //TODO FIXA DEN HÄR SÅ VI GÅR PÅ VÅRT RIKTIGA CURRENT HOUSEHOLD
+      const FAKED_CURRENT_HOUSEHOLD = await householdGet("0");
+
+      if (!FAKED_CURRENT_HOUSEHOLD?.id) {
+        alert('Kunde inte hitta hushåll');
+        return;
+      }
+      
+      await createMutation.mutateAsync({
+        household_id: FAKED_CURRENT_HOUSEHOLD.id,
+        title: title,
+        description: description,
+        created_date: new Date(),
+        execution_date: null,
+        frequency: frequency,
+        points: points,
+        status: 'active',
+        users: [],
+      })
+    }
+
+    router.back();
+  }
+
   return (
     <Animated.View 
       entering={FadeIn.duration(200)}
@@ -47,11 +100,14 @@ export default function TaskModal() {
         <Surface style={s.card} elevation={5}>
           <ScrollView contentContainerStyle={s.scrollContent}>
 
-            <Text style={s.header}>Lägg till syssla</Text>
+            <Text style={s.header}>
+              {isEditing ? 'Ändra syssla' : 'Lägg till syssla'}
+            </Text>
 
             <TextInput style={s.input}
               label="Titel"
               value={title}
+              defaultValue={title}
               onChangeText={setTitle}
               mode="outlined"
               maxLength={42}
@@ -92,7 +148,6 @@ export default function TaskModal() {
 
           <View style={s.buttonContainer}>
 
-            {/* TODO Change to SegmentedButtons? */}
             <Button 
               mode="text" 
               onPress={() => router.back()}
@@ -100,6 +155,7 @@ export default function TaskModal() {
               labelStyle={s.buttonLabel}
               contentStyle={s.buttonContent}
               rippleColor="transparent"
+              disabled={isSaving}
             >Avbryt
             </Button>
 
@@ -107,11 +163,13 @@ export default function TaskModal() {
 
             <Button 
               mode="text" 
-              onPress={() => router.back()}
+              onPress={handleSave}
               style={s.button}
               labelStyle={s.buttonLabel}
               contentStyle={s.buttonContent}
               rippleColor="transparent"
+              disabled={isSaving}
+              loading={isSaving}
             >Spara
             </Button>
 
@@ -176,21 +234,9 @@ const createStyles = (theme: MD3Theme) =>
       color: theme.colors.onSurface,
       fontSize: 20,
     },
-    sectionLabel: {
-      marginBottom: 8,
-      marginTop: 8,
-    },
     input: {
       color: theme.colors.onSurfaceVariant,
-      // borderColor: theme.colors.outlineVariant,
       backgroundColor: theme.colors.surfaceVariant,
       marginBottom: 16,
-    },
-    dropdownButton: {
-      marginBottom: 16,
-      justifyContent: 'flex-start',
-    },
-    dropdownContent: {
-      justifyContent: 'space-between',
     },
   });
