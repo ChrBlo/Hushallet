@@ -1,8 +1,8 @@
 import { ScrollView, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { Button, MD3Theme, useTheme } from 'react-native-paper';
+import { MD3Theme, useTheme } from 'react-native-paper';
 import TaskButton, { Avatar } from '../components/task-button';
-import TimePeriodSelector from '../components/time-period-selector';
+import { SmallArrowSelectorBar } from '../components/small-arrow-selector-bar';
 import StyledButton from '../components/styled-button';
 import { Link } from 'expo-router';
 
@@ -41,10 +41,10 @@ export const HomeScreen = () => {
   return (
     <>
       <StatusBar style="auto" />
-      <TimePeriodSelector
+      <SmallArrowSelectorBar
         title={'Idag'}
-        onPrevDate={() => {}}
-        onNextDate={() => {}}
+        onPrev={() => {}}
+        onNext={() => {}}
       />
       <ScrollView contentContainerStyle={s.container}>
         {tasks.map(t => (
@@ -57,7 +57,9 @@ export const HomeScreen = () => {
             onClickEdit={() => {}}
           />
         ))}
-        <Link href={'/statistics'} style={{padding: 12}}>Link to statistics</Link>
+        <Link href={'/statistics'} style={{ padding: 12 }}>
+          Link to statistics
+        </Link>
       </ScrollView>
       <StyledButton
         title={'Lägg till'}
