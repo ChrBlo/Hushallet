@@ -35,9 +35,11 @@ const tasks: Task[] = [
 ];
 
 const handleCreateNewTask = () => {
-  router.push({
-    pathname: '/task-modal',
-  });
+  router.push('/task-modal');
+};
+
+const handleEditTask = () => {
+  router.push('/task-modal');
 };
 
 export const HomeScreen = () => {
@@ -71,7 +73,7 @@ export const HomeScreen = () => {
       />
       <StyledButton
         title={'Ändra'}
-        onPress={() => {}}
+        onPress={handleEditTask}
         style={[s.button, s.bottomRight]}
       />
     </>
