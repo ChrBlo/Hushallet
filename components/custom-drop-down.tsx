@@ -1,25 +1,36 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Modal, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { MD3Theme, Text, useTheme, } from "react-native-paper";
 
 
-export function CustomDropdown({ value, options, onSelect }: { 
+export function CustomDropdown({ value, selectedValue, options, onSelect }: { 
   value: string; 
+  selectedValue: number;
   options: { label: string; value: number }[]; 
   onSelect: (value: number) => void;
 }) {
   const [visible, setVisible] = useState(false);
   const theme = useTheme();
   const s = createStyles(theme);
+  const [dropdownLayout, setDropdownLayout] = useState({ x: 0, y: 0, width: 0, height: 0 });
+  const buttonRef = useRef<View>(null);
   
+  const handleOpen = () => {
+    buttonRef.current?.measure((fx, fy, width, height, px, py) => {
+      setDropdownLayout({ x: px, y: py, width, height });
+      setVisible(true);
+    });
+  };
+
   return (
     <>
       <TouchableOpacity
-        onPress={() => setVisible(true)}
+        ref={ buttonRef}
+        onPress={handleOpen}
         style={s.dropdown}
       >
         <Text variant="bodyLarge">{value}</Text>
-        <Text style={{ fontSize: 18 }}>▼</Text>
+        <Text style={{ fontSize: 14 }}>▼</Text>
       </TouchableOpacity>
 
       <Modal
@@ -35,14 +46,18 @@ export function CustomDropdown({ value, options, onSelect }: {
         >
           <View style={[s.dropdownList, { 
             backgroundColor: theme.colors.surface,
-            borderColor: theme.colors.outline
+            borderColor: theme.colors.outline,
+            position: 'absolute',
+            top: dropdownLayout.y + dropdownLayout.height + 4, // 4px gap below button
+            left: dropdownLayout.x,
+            width: dropdownLayout.width
           }]}>
-            <ScrollView style={{ maxHeight: 300 }}>
+            <ScrollView style={{ maxHeight: 200 }}>
               {options.map((option) => (
                 <TouchableOpacity
                   key={option.value}
                   style={[s.dropdownItem, {
-                    backgroundColor: option.value === parseInt(value) 
+                    backgroundColor: option.value === selectedValue
                       ? theme.colors.surfaceVariant 
                       : 'transparent'
                   }]}

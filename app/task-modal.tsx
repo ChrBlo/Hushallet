@@ -134,12 +134,14 @@ export default function TaskModal() {
 
             <CustomDropdown
               value={frequency === 1 ? "Varje dag" : `Var ${frequency}:e dag`}
+              selectedValue={frequency}
               options={frequencyOptions}
               onSelect={setFrequency}
             />
 
             <CustomDropdown
               value={`${points} trist-poäng`}
+              selectedValue={points}
               options={pointsOptions}
               onSelect={setPoints}
             />
