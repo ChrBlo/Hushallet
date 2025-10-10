@@ -9,6 +9,7 @@ type Task = {
   created_date: Date;
   execution_date: Date | null;
   frequency: number;
+  points: number;
   status: TaskStatus;
   users: TaskUser[];
 };
