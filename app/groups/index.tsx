@@ -1,0 +1,74 @@
+import { router } from 'expo-router';
+import { Button, ScrollView, StyleSheet, View } from 'react-native';
+import { MD3Theme, useTheme } from 'react-native-paper';
+import StyledButton from '../../components/styled-button';
+import TaskButton from '../../components/task-button';
+import { useHouseholdGet } from '../../infra/hooks/use_household';
+
+const GroupsScreen = () => {
+  const theme = useTheme();
+  const s = createStyles(theme);
+  const houseHolds = useHouseholdGet();
+
+  return (
+    <>
+      <ScrollView contentContainerStyle={s.container}>
+        {houseHolds.data?.map(h => (
+          <TaskButton
+            key={h.household.id}
+            title={h.household.name}
+            onPress={() => {}}
+          ></TaskButton>
+        ))}
+        <View>
+          <Button title="tasks" onPress={() => router.push('/groups/(tabs)')} />
+          <Button
+            title="statistics"
+            onPress={() => router.push('/groups/statistics')}
+          />
+        </View>
+      </ScrollView>
+      {/* För att gå med i ny grupp? */}
+      <StyledButton
+        title={'Lägg till'}
+        onPress={() => {}}
+        style={[s.button, s.bottomLeft]}
+      />
+      {/* För att gå ur en grupp? */}
+      <StyledButton
+        title={'Ändra'}
+        onPress={() => {}}
+        style={[s.button, s.bottomRight]}
+      />
+    </>
+  );
+};
+
+export default GroupsScreen;
+
+const createStyles = (theme: MD3Theme) =>
+  StyleSheet.create({
+    container: {
+      backgroundColor: theme.colors.background,
+      paddingTop: 10,
+      paddingBottom: 120,
+      gap: 10,
+    },
+    text: {
+      fontSize: 18,
+      fontWeight: '600',
+    },
+    bottomRight: {
+      position: 'absolute',
+      bottom: 30,
+      right: 0,
+    },
+    bottomLeft: {
+      position: 'absolute',
+      bottom: 30,
+      left: 0,
+    },
+    button: {
+      width: '42%',
+    },
+  });

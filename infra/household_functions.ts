@@ -3,7 +3,6 @@ import {
   collection,
   deleteDoc,
   doc,
-  getDoc,
   getDocs,
   query,
   updateDoc,
@@ -11,10 +10,69 @@ import {
 } from 'firebase/firestore';
 import { db } from '../firebase_client';
 import { requireCurrentUser } from './auth_functions';
-import type { Household } from '../types/household';
+import type { Household, HouseholdWithTasks } from '../types/household';
 import type { Task } from '../types/task';
 
 const collectionName = 'households';
+
+const householdGet = async (): Promise<HouseholdWithTasks[]> => {
+  const user = requireCurrentUser();
+
+  const householdSnapshot = await getDocs(collection(db, collectionName));
+
+  const memberHouseholds = householdSnapshot.docs
+    .map(householdDoc => {
+      const data = householdDoc.data();
+
+      return {
+        id: householdDoc.id,
+        created_by: data.created_by ?? '',
+        name: data.name,
+        invitation_code: data.invitation_code,
+        users: (data.users ?? []) as Household['users'],
+      };
+    })
+    .filter(household =>
+      household.users.some(householdUser => householdUser.id === user.uid)
+    );
+
+  const householdsWithTasks = await Promise.all(
+    memberHouseholds.map(async household => {
+      if (!household.id) {
+        return { household, tasks: [] };
+      }
+
+      const taskSnapshot = await getDocs(
+        query(
+          collection(db, 'tasks'),
+          where('household_id', '==', household.id)
+        )
+      );
+
+      const tasks = taskSnapshot.docs.map(taskDoc => {
+        const data = taskDoc.data();
+
+        return {
+          id: taskDoc.id,
+          title: data.title,
+          description: data.description,
+          created_date: data.created_date,
+          execution_date: data.execution_date,
+          frequency: data.frequency,
+          points: data.points,
+          status: data.status,
+          created_by: data.created_by ?? '',
+          household_id: data.household_id ?? household.id,
+          users: (data.users ?? []) as Task['users'],
+        };
+      });
+
+      return { household, tasks };
+    })
+  );
+
+  return householdsWithTasks;
+};
 
 const householdCreate = async (
   household: Omit<Household, 'id' | 'created_by'>
@@ -33,45 +91,6 @@ const householdCreate = async (
     created_by: user.uid,
     id: docRef.id,
   };
-};
-
-const householdGet = async (householdId: string): Promise<Household> => {
-  requireCurrentUser();
-  const snap = await getDoc(doc(db, collectionName, householdId));
-
-  if (!snap.exists()) {
-    throw new Error(`Household ${householdId} not found`);
-  }
-
-  const data = snap.data();
-
-  return {
-    id: householdId,
-    created_by: data.created_by ?? '',
-    name: data.name,
-    invitation_code: data.invitation_code,
-    users: (data.users ?? []) as Household['users'],
-  };
-};
-
-const householdsForUserGet = async (): Promise<Household[]> => {
-  const user = requireCurrentUser();
-
-  const householdSnapshot = await getDocs(
-    query(collection(db, collectionName), where('created_by', '==', user.uid))
-  );
-
-  return householdSnapshot.docs.map(householdDoc => {
-    const data = householdDoc.data();
-
-    return {
-      id: householdDoc.id,
-      created_by: data.created_by ?? user.uid,
-      name: data.name,
-      invitation_code: data.invitation_code,
-      users: (data.users ?? []) as Household['users'],
-    };
-  });
 };
 
 const householdUpdate = async (household: Household): Promise<void> => {
@@ -99,44 +118,4 @@ const householdDelete = async (householdId: string): Promise<void> => {
   await deleteDoc(doc(db, collectionName, householdId));
 };
 
-const householdWithTasksGet = async (
-  householdId: string
-): Promise<{
-  household: Household;
-  tasks: Task[];
-}> => {
-  requireCurrentUser();
-  const household = await householdGet(householdId);
-
-  const taskSnapshot = await getDocs(
-    query(collection(db, 'tasks'), where('household_id', '==', householdId))
-  );
-
-  const tasks = taskSnapshot.docs.map(taskDoc => {
-    const data = taskDoc.data();
-
-    return {
-      id: taskDoc.id,
-      title: data.title,
-      description: data.description,
-      created_date: data.created_date,
-      execution_date: data.execution_date,
-      frequency: data.frequency,
-      status: data.status,
-      created_by: data.created_by ?? '',
-      household_id: data.household_id ?? householdId,
-      users: (data.users ?? []) as Task['users'],
-    };
-  });
-
-  return { household, tasks };
-};
-
-export {
-  householdCreate,
-  householdGet,
-  householdsForUserGet,
-  householdWithTasksGet,
-  householdUpdate,
-  householdDelete,
-};
+export { householdGet, householdCreate, householdUpdate, householdDelete };

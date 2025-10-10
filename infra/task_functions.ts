@@ -7,8 +7,8 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { db } from '../firebase_client';
-import { requireCurrentUser } from './auth_functions';
 import type { Task } from '../types/task';
+import { requireCurrentUser } from './auth_functions';
 
 const collectionName = 'tasks';
 
@@ -27,6 +27,7 @@ const taskCreate = async (
     created_date: task.created_date,
     execution_date: task.execution_date,
     frequency: task.frequency,
+    points: task.points,
     status: task.status,
     created_by: user.uid,
     household_id: task.household_id,
@@ -57,6 +58,7 @@ const taskGet = async (taskId: string): Promise<Task> => {
     created_date: data.created_date,
     execution_date: data.execution_date,
     frequency: data.frequency,
+    points: data.points,
     status: data.status,
     created_by: data.created_by ?? '',
     household_id: data.household_id ?? '',
@@ -89,4 +91,5 @@ const taskDelete = async (taskId: string): Promise<void> => {
   await deleteDoc(doc(db, collectionName, taskId));
 };
 
-export { taskCreate, taskGet, taskUpdate, taskDelete };
+export { taskCreate, taskDelete, taskGet, taskUpdate };
+

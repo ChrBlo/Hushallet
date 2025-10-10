@@ -1,15 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
 import { householdGet } from '../household_functions';
+import type { HouseholdWithTasks } from '../../types/household';
 
 const householdKeys = {
-  detail: (householdId: string) => ['household', householdId] as const,
+  list: () => ['households', 'for-member'] as const,
 };
 
-const useHouseholdGet = (householdId: string) =>
-  useQuery({
-    queryKey: householdKeys.detail(householdId),
-    queryFn: () => householdGet(householdId),
-    enabled: Boolean(householdId),
+const useHouseholdGet = () =>
+  useQuery<HouseholdWithTasks[]>({
+    queryKey: householdKeys.list(),
+    queryFn: () => householdGet(),
   });
 
 export { useHouseholdGet, householdKeys };
