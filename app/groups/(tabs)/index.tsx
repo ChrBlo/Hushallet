@@ -2,10 +2,10 @@ import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { MD3Theme, useTheme } from 'react-native-paper';
-import AvatarIcon, { Avatar } from '../../components/getAvatar';
-import SmallArrowSelectorBar from '../../components/small-arrow-selector-bar';
-import TaskButton from '../../components/task-button';
-import StyledButton from '../../components/styled-button';
+import AvatarIcon, { Avatar } from '../../../components/get-avatar';
+import SmallArrowSelectorBar from '../../../components/small-arrow-selector-bar';
+import StyledButton from '../../../components/styled-button';
+import TaskButton from '../../../components/task-button';
 
 interface Task {
   id: string;
@@ -72,8 +72,8 @@ export const TaskScreen = () => {
       />
       <ScrollView contentContainerStyle={s.container}>
         {tasks.map(t => (
-          <TaskButton key={t.id} onPress={() => {}}>
-            <Text style={s.text}>{t.title}</Text>
+          <TaskButton key={t.id} title={t.title} onPress={() => {}}>
+            
             <View style={s.row}>
               {t.executedBy.map((avatar, index) => (
                 <AvatarIcon key={index} avatar={avatar.avatar} />
@@ -109,10 +109,6 @@ const createStyles = (theme: MD3Theme) =>
     logo: {
       width: 250,
       height: 250,
-    },
-    text: {
-      fontSize: 18,
-      fontWeight: '600',
     },
     bottomRight: {
       position: 'absolute',

@@ -1,4 +1,5 @@
-import { ScrollView, StyleSheet, Text } from 'react-native';
+import { router } from 'expo-router';
+import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { MD3Theme, useTheme } from 'react-native-paper';
 import StyledButton from '../../components/styled-button';
 import TaskButton from '../../components/task-button';
@@ -28,10 +29,12 @@ const GroupsScreen = () => {
     <>
       <ScrollView contentContainerStyle={s.container}>
         {houseHolds.map(h => (
-          <TaskButton key={h.id} onPress={() => {}}>
-            <Text style={s.text}>{h.name}</Text>
-          </TaskButton>
+          <TaskButton key={h.id} title={h.name} onPress={() => {}}></TaskButton>
         ))}
+        <View>
+          <Button title="tasks" onPress={() => router.push('/groups/(tabs)')} />
+          <Button title="statistics" onPress={() => router.push('/groups/statistics')} />
+        </View>
       </ScrollView>
       {/* För att gå med i ny grupp? */}
       <StyledButton
