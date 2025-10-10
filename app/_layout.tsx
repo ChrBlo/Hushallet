@@ -36,17 +36,26 @@ export default function RootLayout() {
       <ThemeProvider theme={theme}>
         <QueryClientProvider client={queryClient}>
           <Stack>
-            <Stack.Screen name="index" options={{ headerShown: true, title: 'Home' }} />
-            <Stack.Screen name="task-modal"
-              options={{
-                presentation: 'transparentModal',
-                animation: 'fade',
-                headerShown: false
-              }} />
+            <Stack.Screen
+              name="index"
+              options={{ headerShown: true, title: 'Login' }}
+            />
             <Stack.Screen
               name="groups/index"
               options={{ headerShown: true, title: 'Grupper' }}
             />
+            {/* <Stack.Screen */}
+            {/*   name="task/index" */}
+            {/*   options={{ headerShown: true, title: 'Task' }} */}
+            {/* /> */}
+            {/* <Stack.Screen */}
+            {/*   name="task-modal" */}
+            {/*   options={{ */}
+            {/*     presentation: 'transparentModal', */}
+            {/*     animation: 'fade', */}
+            {/*     headerShown: false, */}
+            {/*   }} */}
+            {/* /> */}
           </Stack>
         </QueryClientProvider>
       </ThemeProvider>
