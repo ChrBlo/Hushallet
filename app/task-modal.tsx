@@ -5,10 +5,11 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import { Button, Divider, MD3Theme, Surface, Text, TextInput, useTheme } from "react-native-paper";
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { CustomDropdown } from '../components/custom-drop-down';
-import { requireCurrentUser } from '../infra/auth_functions';
 import { useTaskCreate } from '../infra/hooks/use_task_create';
 import { useTaskUpdate } from '../infra/hooks/use_task_update';
 import { householdGet } from '../infra/household_functions';
+import type { Task, Status } from '../types/task';
+import type { TaskUser } from '../types/task_user';
 
 export default function TaskModal() {
   const theme = useTheme();
@@ -48,17 +49,22 @@ export default function TaskModal() {
 
   const handleSave = async () => { 
 
-    if (isEditing)
-    {
-      await updateMutation.mutateAsync({
-        taskId: params.taskId.toString(),
-        updates: {
-          title: title,
-          description: description,
-          frequency,
-          points,
-        }
-      });
+    if (isEditing) {
+      const taskToUpdate: Task = {
+        id: params.taskId.toString(),
+        household_id: params.household_id?.toString() || '',
+        created_by: params.created_by?.toString() || '',
+        created_date: params.created_date ? new Date(params.created_date.toString()) : new Date(),
+        execution_date: params.execution_date ? new Date(params.execution_date.toString()) : null,
+        status: (params.status?.toString() || 'active') as Status,
+        users: params.users ? (JSON.parse(params.users.toString()) as TaskUser[]) : [],
+        title: title.trim(),
+        description: description.trim(),
+        frequency,
+        points,
+      };
+
+      await updateMutation.mutateAsync(taskToUpdate);
     }
     else
     { 

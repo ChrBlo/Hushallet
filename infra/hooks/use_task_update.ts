@@ -8,19 +8,22 @@ const useTaskUpdate = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ taskId, updates }: { taskId: string; updates: Partial<Task> }) => 
-      taskUpdate(taskId, updates),
+    mutationFn: (task: Task) => taskUpdate(task),
 
-    onSuccess: (_data, { taskId, updates }) => {
+    onSuccess: (_data, updatedTask) => {
+      if (!updatedTask.id) {
+        return;
+      }
+
+      const taskId = updatedTask.id;
+
       queryClient.invalidateQueries({
         queryKey: taskKeys.detail(taskId),
       });
 
-      if (updates.household_id) {
-        queryClient.invalidateQueries({
-          queryKey: householdWithTasksKeys.detail(updates.household_id),
-        });
-      }
+      queryClient.invalidateQueries({
+        queryKey: householdWithTasksKeys.detail(updatedTask.household_id),
+      });
     },
   });
 };

@@ -7,8 +7,8 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { db } from '../firebase_client';
-import { requireCurrentUser } from './auth_functions';
 import type { Task } from '../types/task';
+import { requireCurrentUser } from './auth_functions';
 
 const collectionName = 'tasks';
 
@@ -65,16 +65,16 @@ const taskGet = async (taskId: string): Promise<Task> => {
   };
 };
 
-const taskUpdate = async (taskId: string, updates: Partial<Task>): Promise<void> => {
-  // requireCurrentUser();
+const taskUpdate = async (task: Task): Promise<void> => {
+  requireCurrentUser();
 
-  if (!updates.id) {
+  if (!task.id) {
     throw new Error('taskUpdate requires an id');
   }
 
-  const { id, created_by: _createdBy, ...fieldsToPersist } = updates;
+  const { id, created_by: _createdBy, ...fieldsToPersist } = task;
 
-  const filteredUpdates = Object.fromEntries(
+  const updates = Object.fromEntries(
     Object.entries(fieldsToPersist).filter(([, value]) => value !== undefined)
   ) as Partial<Omit<Task, 'id' | 'created_by'>>;
 
@@ -82,7 +82,7 @@ const taskUpdate = async (taskId: string, updates: Partial<Task>): Promise<void>
     return;
   }
 
-  await updateDoc(doc(db, collectionName, taskId), filteredUpdates);
+  await updateDoc(doc(db, collectionName, id), updates);
 };
 
 const taskDelete = async (taskId: string): Promise<void> => {
@@ -90,4 +90,5 @@ const taskDelete = async (taskId: string): Promise<void> => {
   await deleteDoc(doc(db, collectionName, taskId));
 };
 
-export { taskCreate, taskGet, taskUpdate, taskDelete };
+export { taskCreate, taskDelete, taskGet, taskUpdate };
+
