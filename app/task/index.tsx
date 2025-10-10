@@ -2,11 +2,10 @@ import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { MD3Theme, useTheme } from 'react-native-paper';
-import AvatarIcon, { Avatar } from '../components/getAvatar';
-import StyledButton from '../components/styled-button';
-import TimePeriodSelector from '../components/time-period-selector';
-import SmallArrowSelectorBar from '../components/small-arrow-selector-bar';
-import TaskButton from '../components/task-button';
+import AvatarIcon, { Avatar } from '../../components/getAvatar';
+import SmallArrowSelectorBar from '../../components/small-arrow-selector-bar';
+import TaskButton from '../../components/task-button';
+import StyledButton from '../../components/styled-button';
 
 interface Task {
   id: string;
@@ -55,11 +54,11 @@ const handleEditTask = (task: Task) => {
       description: task.description,
       frequency: task.frequency.toString(),
       points: task.points.toString(),
-    }
-});
+    },
+  });
 };
 
-export const HomeScreen = () => {
+export const TaskScreen = () => {
   const theme = useTheme();
   const s = createStyles(theme);
 
@@ -92,7 +91,7 @@ export const HomeScreen = () => {
         title={'Ändra'}
         // TODO FIXA SÅ ATT DENNA INTE KÖR PÅ [0] UTAN DEN VERKLIGA TASK:en MAN MARKERAT
         // handleEditTask SKALL INTE HELLER LIGGA PÅ DENNA KNAPP UTAN PÅ DEN TASK-SPECIFIKA EDIT-PENNAN
-        onPress={() => handleEditTask(tasks[0])} 
+        onPress={() => handleEditTask(tasks[0])}
         style={[s.button, s.bottomRight]}
       />
     </>
@@ -133,4 +132,4 @@ const createStyles = (theme: MD3Theme) =>
     },
   });
 
-export default HomeScreen;
+export default TaskScreen;
