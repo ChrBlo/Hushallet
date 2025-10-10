@@ -7,8 +7,8 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { db } from '../firebase_client';
-import { requireCurrentUser } from './auth_functions';
 import type { Task } from '../types/task';
+import { requireCurrentUser } from './auth_functions';
 
 const collectionName = 'tasks';
 
@@ -91,4 +91,5 @@ const taskDelete = async (taskId: string): Promise<void> => {
   await deleteDoc(doc(db, collectionName, taskId));
 };
 
-export { taskCreate, taskGet, taskUpdate, taskDelete };
+export { taskCreate, taskDelete, taskGet, taskUpdate };
+
