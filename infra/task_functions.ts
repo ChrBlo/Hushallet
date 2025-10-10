@@ -27,6 +27,7 @@ const taskCreate = async (
     created_date: task.created_date,
     execution_date: task.execution_date,
     frequency: task.frequency,
+    points: task.points,
     status: task.status,
     created_by: user.uid,
     household_id: task.household_id,

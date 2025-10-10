@@ -1,3 +1,4 @@
+import type { Task } from './task';
 import { HouseholdUser } from './household_user';
 
 type Household = {
@@ -8,4 +9,9 @@ type Household = {
   users: HouseholdUser[];
 };
 
-export { type Household };
+type HouseholdWithTasks = {
+  household: Household;
+  tasks: Task[];
+};
+
+export { type Household, type HouseholdWithTasks };

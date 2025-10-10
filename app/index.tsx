@@ -1,10 +1,12 @@
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { MD3Theme, useTheme } from 'react-native-paper';
+import AvatarIcon, { Avatar } from '../components/getAvatar';
 import StyledButton from '../components/styled-button';
-import TaskButton, { Avatar } from '../components/task-button';
 import TimePeriodSelector from '../components/time-period-selector';
+import SmallArrowSelectorBar from '../components/small-arrow-selector-bar';
+import TaskButton from '../components/task-button';
 
 interface Task {
   id: string;
@@ -64,21 +66,21 @@ export const HomeScreen = () => {
   return (
     <>
       <StatusBar style="auto" />
-      <TimePeriodSelector
+      <SmallArrowSelectorBar
         title={'Idag'}
-        onPrevDate={() => {}}
-        onNextDate={() => {}}
+        onPrev={() => {}}
+        onNext={() => {}}
       />
       <ScrollView contentContainerStyle={s.container}>
         {tasks.map(t => (
-          <TaskButton
-            id={t.id}
-            edit={false}
-            title={t.title}
-            executedBy={t.executedBy}
-            onClickDefault={() => {}}
-            onClickEdit={() => {}}
-          />
+          <TaskButton key={t.id} onPress={() => {}}>
+            <Text style={s.text}>{t.title}</Text>
+            <View style={s.row}>
+              {t.executedBy.map((avatar, index) => (
+                <AvatarIcon key={index} avatar={avatar.avatar} />
+              ))}
+            </View>
+          </TaskButton>
         ))}
       </ScrollView>
       <StyledButton
@@ -110,7 +112,8 @@ const createStyles = (theme: MD3Theme) =>
       height: 250,
     },
     text: {
-      color: theme.colors.onBackground,
+      fontSize: 18,
+      fontWeight: '600',
     },
     bottomRight: {
       position: 'absolute',
@@ -124,6 +127,9 @@ const createStyles = (theme: MD3Theme) =>
     },
     button: {
       width: '42%',
+    },
+    row: {
+      flexDirection: 'row',
     },
   });
 

@@ -11,7 +11,7 @@ const queryClient = new QueryClient();
 export default function RootLayout() {
   const colorScheme = useColorScheme();
 
-  console.log(colorScheme === "dark" ? "Dark" : "Light");
+  console.log(colorScheme === 'dark' ? 'Dark' : 'Light');
 
   const theme = colorScheme === 'dark' ? AppDarkTheme : AppDefaultTheme;
   useEffect(() => {
@@ -43,6 +43,10 @@ export default function RootLayout() {
                 animation: 'fade',
                 headerShown: false
               }} />
+            <Stack.Screen
+              name="groups/index"
+              options={{ headerShown: true, title: 'Grupper' }}
+            />
           </Stack>
         </QueryClientProvider>
       </ThemeProvider>
