@@ -10,6 +10,7 @@ export default function LoginScreen() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const logoSource = theme.dark
   ? require('../assets/images/logowhitebackground1.png')
@@ -42,7 +43,11 @@ export default function LoginScreen() {
         value={password}
         onChangeText={setPassword}
         mode="outlined"
-        activeOutlineColor={theme.colors.outline} 
+        activeOutlineColor={theme.colors.outline}
+        secureTextEntry={!showPassword}
+        right={
+          <TextInput.Icon icon={showPassword ? "eye-off" : "eye"} onPress={() => setShowPassword(!showPassword)}/>
+        }
         style={s.input}
       />
 
