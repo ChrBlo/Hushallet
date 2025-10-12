@@ -1,7 +1,7 @@
 import { router } from "expo-router";
 import { useState } from "react";
 import { Image, StyleSheet, View } from "react-native";
-import { MD3Theme, Text, TextInput, useTheme } from "react-native-paper";
+import { Button, MD3Theme, Text, TextInput, useTheme } from "react-native-paper";
 import StyledButton from '../components/styled-button';
 
 export default function LoginScreen() {
@@ -46,6 +46,11 @@ export default function LoginScreen() {
         style={s.input}
       />
 
+      <View style={s.linksContainer}>
+        <Button mode="text" onPress={()=>{}} compact textColor={theme.colors.onSurface}>Registrera dig</Button>
+        <Button mode="text" onPress={()=>{}} compact textColor={theme.colors.onSurface}>Glömt lösenord</Button>
+      </View>
+
       <StyledButton
         title="Logga in"
         onPress={() => router.push('/groups')}
@@ -87,5 +92,10 @@ const createStyles = (theme: MD3Theme) =>
     },
     loginButtonContent: {
       paddingVertical: 8,
+    },
+    linksContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: 24,
     },
   });
