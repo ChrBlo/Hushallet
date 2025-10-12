@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import { useState } from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { Image, KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native";
 import { Button, MD3Theme, Text, TextInput, useTheme } from "react-native-paper";
 import StyledButton from '../components/styled-button';
 
@@ -18,7 +18,10 @@ export default function LoginScreen() {
 
   return (
 
-    <View style={s.container}>
+    <KeyboardAvoidingView 
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={s.container}
+    >
       <View style={s.logoContainer}>
         <Image source={logoSource} style={s.logo} resizeMode="contain"/>
       </View>
@@ -61,7 +64,7 @@ export default function LoginScreen() {
         onPress={() => router.push('/groups')}
         style={s.loginButton}
       />
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
