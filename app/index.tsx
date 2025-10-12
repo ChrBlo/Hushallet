@@ -1,8 +1,9 @@
 import { router } from "expo-router";
 import { useState } from "react";
-import { Image, KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native";
+import { Alert, Image, KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native";
 import { Button, MD3Theme, Text, TextInput, useTheme } from "react-native-paper";
 import StyledButton from '../components/styled-button';
+import { signInWithEmail } from "../infra/auth_functions";
 
 export default function LoginScreen() {
   const theme = useTheme();
@@ -13,8 +14,37 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
 
   const logoSource = theme.dark
-  ? require('../assets/images/logowhitebackground1.png')
-  : require('../assets/images/logoblackbackground.png');
+    ? require('../assets/images/logowhitebackground1.png')
+    : require('../assets/images/logoblackbackground.png');
+  
+  const handleLogin = async () => {
+
+    if (!email.trim() || !password.trim())
+    {
+      Alert.alert(
+        "Ofullständiga uppgifter",
+        "Har du verkligen fyllt i både användarnamn och lösenord?",
+        [{ text: "OK" }]
+      );
+      return;
+    }
+    
+    try
+    {
+      await signInWithEmail(email.trim(), password.trim());
+      router.push("/groups");
+    }
+    catch (error: any)
+    {
+      console.error("Login error:", error);
+      Alert.alert(
+        "Inloggning misslyckades",
+        "Har du verkligen fyllt i ett korrekt användarnamn och lösenord?",
+        [{ text: "OK" }]
+      );
+    }
+
+  };
 
   return (
 
@@ -26,9 +56,7 @@ export default function LoginScreen() {
         <Image source={logoSource} style={s.logo} resizeMode="contain"/>
       </View>
 
-      <Text variant="headlineMedium" style={s.title}>
-        Logga in
-      </Text>
+      <Text variant="headlineMedium" style={s.title}>Logga in</Text>
 
       <TextInput
         label="Användarnamn"
@@ -59,11 +87,8 @@ export default function LoginScreen() {
         <Button mode="text" onPress={()=>{}} compact textColor={theme.colors.onSurface}>Glömt lösenord</Button>
       </View>
 
-      <StyledButton
-        title="Logga in"
-        onPress={() => router.push('/groups')}
-        style={s.loginButton}
-      />
+      <StyledButton title="Logga in" onPress={handleLogin} style={s.loginButton} />
+      
     </KeyboardAvoidingView>
   );
 }
