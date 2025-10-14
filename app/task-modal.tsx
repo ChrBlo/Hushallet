@@ -15,8 +15,8 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { CustomDropdown } from '../components/custom-drop-down';
 import { useTaskCreate } from '../infra/hooks/use_task_create';
 import { useTaskUpdate } from '../infra/hooks/use_task_update';
-import type { Task, Status } from '../types/task';
-import type { TaskUser } from '../types/task_user';
+import type { Status, Task } from '../types/task';
+import type { TaskCompletion } from '../types/task_completion';
 
 export default function TaskModal() {
   const theme = useTheme();
@@ -26,15 +26,9 @@ export default function TaskModal() {
   const isEditing = !!params.taskId;
 
   const [title, setTitle] = useState(params.title?.toString() || '');
-  const [description, setDescription] = useState(
-    params.description?.toString() || ''
-  );
-  const [frequency, setFrequency] = useState(
-    params.frequency ? parseInt(params.frequency.toString()) : 7
-  );
-  const [points, setPoints] = useState(
-    params.points ? parseInt(params.points.toString()) : 6
-  );
+  const [description, setDescription] = useState(params.description?.toString() || '');
+  const [frequency, setFrequency] = useState(params.frequency ? parseInt(params.frequency.toString()) : 7);
+  const [points, setPoints] = useState(params.points ? parseInt(params.points.toString()) : 6);
 
   const createMutation = useTaskCreate();
   const updateMutation = useTaskUpdate();
@@ -49,8 +43,7 @@ export default function TaskModal() {
     if (days === 1) label = 'Varje dag';
     else if (days === 2) label = 'Varannan dag';
     else if ([3, 13, 23].includes(days)) label = `Var ${days}:e dag`;
-    else if ([1, 2].includes(days % 10) && days > 20)
-      label = `Var ${days}:a dag`;
+    else if ([1, 2].includes(days % 10) && days > 20) label = `Var ${days}:a dag`;
     else label = `Var ${days}:e dag`;
 
     return { label, value: days };
@@ -70,12 +63,9 @@ export default function TaskModal() {
         created_date: params.created_date
           ? new Date(params.created_date.toString())
           : new Date(),
-        execution_date: params.execution_date
-          ? new Date(params.execution_date.toString())
-          : null,
         status: (params.status?.toString() || 'active') as Status,
-        users: params.users
-          ? (JSON.parse(params.users.toString()) as TaskUser[])
+        completions: params.users
+          ? (JSON.parse(params.users.toString()) as TaskCompletion[])
           : [],
         title: title.trim(),
         description: description.trim(),
@@ -84,7 +74,9 @@ export default function TaskModal() {
       };
 
       await updateMutation.mutateAsync(taskToUpdate);
-    } else {
+    }
+    else
+    {
       //TODO FIXA DEN HÄR SÅ VI GÅR PÅ VÅRT RIKTIGA CURRENT HOUSEHOLD
       // const FAKED_CURRENT_HOUSEHOLD = await householdGet('-');
       //
