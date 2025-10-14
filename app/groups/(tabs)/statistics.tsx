@@ -1,10 +1,10 @@
-import { Dimensions, View, StyleSheet, ScrollView } from 'react-native';
+import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
 import { MD3Theme, Text, useTheme } from 'react-native-paper';
-import SmallArrowSelectorBar from '../../../components/small-arrow-selector-bar';
 import PieChart from 'react-native-pie-chart';
+import SmallArrowSelectorBar from '../../../components/small-arrow-selector-bar';
 import { HouseholdWithTasks } from '../../../types/household';
-import { Task } from '../../../types/task';
 import { HouseholdUser } from '../../../types/household_user';
+import { Task } from '../../../types/task';
 
 interface ChartData {
   value: number;
@@ -20,7 +20,6 @@ const mockUser1: HouseholdUser = {
   nickname: 'Adde',
   role: 'admin',
   icon: 'octopus',
-  points: 0,
   status: 'active',
 };
 
@@ -29,7 +28,6 @@ const mockUser2: HouseholdUser = {
   nickname: 'Baddie',
   role: 'member',
   icon: 'frog',
-  points: 0,
   status: 'active',
 };
 
@@ -48,20 +46,17 @@ const mockHousehold: HouseholdWithTasks = {
       title: 'Städa i köket',
       description: 'Städa bara',
       created_date: new Date(),
-      execution_date: null,
       frequency: 0,
       points: 4,
       status: 'active',
-      users: [
+      completions: [
         {
-          user: mockUser1,
-          points: 4,
-          isDone: true,
+          household_member_id: mockUser1.id,
+          execution_date: new Date(),
         },
         {
-          user: mockUser2,
-          points: 8,
-          isDone: true,
+          household_member_id: mockUser2.id,
+          execution_date: new Date(),
         },
       ],
     },
@@ -71,15 +66,13 @@ const mockHousehold: HouseholdWithTasks = {
       title: 'Gå ut med Buster',
       description: 'Låt han inte bajsa i brevlådan',
       created_date: new Date(),
-      execution_date: null,
       frequency: 0,
       points: 2,
       status: 'active',
-      users: [
+      completions: [
         {
-          user: mockUser1,
-          points: 10,
-          isDone: true,
+          household_member_id: mockUser1.id,
+          execution_date: new Date(),
         },
       ],
     },
@@ -103,7 +96,7 @@ const getAvatar = (avatar: string) => {
 const getTotalChartData = (tasks: Task[]) => {
   const map = new Map<string, number>();
   tasks.forEach(t =>
-    t.users.forEach(u => {
+    t.completions.forEach(u => {
       const oldPoints = map.get(u.user.icon) ?? 0;
       map.set(u.user.icon, oldPoints + u.points);
     })
@@ -125,7 +118,7 @@ const getTotalChartData = (tasks: Task[]) => {
 // Takes all of the tasks for a certain datapoint (a certain task) and divides them avatar and points + adds font styling
 const getChartData = (task: Task) => {
   const data: ChartData[] = [];
-  for (const e of task.users) {
+  for (const e of task.completions) {
     const avatar = getAvatar(e.user.icon.toString());
     data.push({
       value: e.points,

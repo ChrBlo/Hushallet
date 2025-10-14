@@ -25,13 +25,12 @@ const taskCreate = async (
     title: task.title,
     description: task.description,
     created_date: task.created_date,
-    execution_date: task.execution_date,
     frequency: task.frequency,
     points: task.points,
     status: task.status,
     created_by: user.uid,
     household_id: task.household_id,
-    users: task.users ?? [],
+    users: task.completions ?? [],
   });
 
   return {
@@ -56,13 +55,12 @@ const taskGet = async (taskId: string): Promise<Task> => {
     title: data.title,
     description: data.description,
     created_date: data.created_date,
-    execution_date: data.execution_date,
     frequency: data.frequency,
     points: data.points,
     status: data.status,
     created_by: data.created_by ?? '',
     household_id: data.household_id ?? '',
-    users: (data.users ?? []) as Task['users'],
+    completions: (data.users ?? []) as Task['completions'],
   };
 };
 
