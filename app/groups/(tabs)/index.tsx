@@ -7,7 +7,7 @@ import SmallArrowSelectorBar from '../../../components/small-arrow-selector-bar'
 import StyledButton from '../../../components/styled-button';
 import TaskButton from '../../../components/task-button';
 import { useHouseholdGet } from '../../../infra/hooks/use_household';
-import { useSetHouseholdId } from '../../../providers/household_provider';
+import { useSelectedHouseholdId } from '../../../providers/household_provider';
 
 interface Task {
   id: string;
@@ -17,31 +17,6 @@ interface Task {
   frequency: number;
   points: number;
 }
-
-/* const executers: Avatar[] = [
-  { avatar: 'fox' },
-  { avatar: 'octopus' },
-  { avatar: 'owl' },
-]; */
-
-/* const tasks: Task[] = [
-  {
-    id: 'abc',
-    title: 'Städa sönder i köket',
-    description: 'Städa upp all gammal mat, skura golv, städa ut kylskåp',
-    executedBy: [executers[0], executers[1]],
-    frequency: 14,
-    points: 8,
-  },
-  {
-    id: 'def',
-    title: 'Gå ut med Buster',
-    description: 'Gå ut med hunden. OBS: Glöm inte att plocka upp bajset!!!',
-    executedBy: [executers[2]],
-    frequency: 1,
-    points: 2,
-  },
-]; */
 
 const handleCreateNewTask = () => {
   router.push('/task-modal');
@@ -64,7 +39,8 @@ export const TaskScreen = () => {
   const theme = useTheme();
   const s = createStyles(theme);
   const households = useHouseholdGet();
-  const { selectedHouseholdId } = useSetHouseholdId();
+  const { selectedHouseholdId, setSelectedHouseholdId } =
+    useSelectedHouseholdId();
 
   const selectedHousehold = households.data?.find(
     h => h.household.id === selectedHouseholdId
@@ -83,8 +59,8 @@ export const TaskScreen = () => {
         {tasks.map(t => (
           <TaskButton key={t.id} title={t.title} onPress={() => {}}>
             <View style={s.row}>
-              {t.users.map((taskUser, index) => (
-                <AvatarIcon key={index} avatar={taskUser.user.icon} />
+              {t.completions.map((householdUser, index) => (
+                <AvatarIcon key={index} avatar={'fox'} />
               ))}
             </View>
           </TaskButton>

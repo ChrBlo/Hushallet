@@ -4,18 +4,14 @@ import { MD3Theme, useTheme } from 'react-native-paper';
 import StyledButton from '../../components/styled-button';
 import TaskButton from '../../components/task-button';
 import { useHouseholdGet } from '../../infra/hooks/use_household';
-import { useSetHouseholdId } from '../../providers/household_provider';
+import { useSelectedHouseholdId } from '../../providers/household_provider';
 
 const GroupsScreen = () => {
   const theme = useTheme();
   const s = createStyles(theme);
   const houseHolds = useHouseholdGet();
 
-  console.log('Loading:', houseHolds.isLoading);
-  console.log('Error:', houseHolds.error);
-  console.log('Data:', houseHolds.data);
-  
-  const { setSelectedHouseholdId } = useSetHouseholdId();
+  const { setSelectedHouseholdId } = useSelectedHouseholdId();
 
   const handleButtonPress = (householdId: string) => {
     setSelectedHouseholdId(householdId);

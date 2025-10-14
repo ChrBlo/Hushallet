@@ -19,4 +19,4 @@ export default function HouseholdProvider(props: PropsWithChildren) {
   );
 }
 
-export const useSetHouseholdId = () => useContext(HouseholdContext);
+export const useSelectedHouseholdId = () => useContext(HouseholdContext);
