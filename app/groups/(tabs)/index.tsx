@@ -1,11 +1,13 @@
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { MD3Theme, useTheme } from 'react-native-paper';
 import AvatarIcon, { Avatar } from '../../../components/get-avatar';
 import SmallArrowSelectorBar from '../../../components/small-arrow-selector-bar';
 import StyledButton from '../../../components/styled-button';
 import TaskButton from '../../../components/task-button';
+import { useHouseholdGet } from '../../../infra/hooks/use_household';
+import { useSetHouseholdId } from '../../../providers/household_provider';
 
 interface Task {
   id: string;
@@ -16,13 +18,13 @@ interface Task {
   points: number;
 }
 
-const executers: Avatar[] = [
+/* const executers: Avatar[] = [
   { avatar: 'fox' },
   { avatar: 'octopus' },
   { avatar: 'owl' },
-];
+]; */
 
-const tasks: Task[] = [
+/* const tasks: Task[] = [
   {
     id: 'abc',
     title: 'Städa sönder i köket',
@@ -39,7 +41,7 @@ const tasks: Task[] = [
     frequency: 1,
     points: 2,
   },
-];
+]; */
 
 const handleCreateNewTask = () => {
   router.push('/task-modal');
@@ -61,6 +63,13 @@ const handleEditTask = (task: Task) => {
 export const TaskScreen = () => {
   const theme = useTheme();
   const s = createStyles(theme);
+  const households = useHouseholdGet();
+  const { selectedHouseholdId } = useSetHouseholdId();
+
+  const selectedHousehold = households.data?.find(
+    h => h.household.id === selectedHouseholdId
+  );
+  const tasks = selectedHousehold?.tasks || [];
 
   return (
     <>
@@ -73,10 +82,9 @@ export const TaskScreen = () => {
       <ScrollView contentContainerStyle={s.container}>
         {tasks.map(t => (
           <TaskButton key={t.id} title={t.title} onPress={() => {}}>
-            
             <View style={s.row}>
-              {t.executedBy.map((avatar, index) => (
-                <AvatarIcon key={index} avatar={avatar.avatar} />
+              {t.users.map((taskUser, index) => (
+                <AvatarIcon key={index} avatar={taskUser.user.icon} />
               ))}
             </View>
           </TaskButton>
@@ -91,7 +99,7 @@ export const TaskScreen = () => {
         title={'Ändra'}
         // TODO FIXA SÅ ATT DENNA INTE KÖR PÅ [0] UTAN DEN VERKLIGA TASK:en MAN MARKERAT
         // handleEditTask SKALL INTE HELLER LIGGA PÅ DENNA KNAPP UTAN PÅ DEN TASK-SPECIFIKA EDIT-PENNAN
-        onPress={() => handleEditTask(tasks[0])}
+        onPress={() => handleEditTask}
         style={[s.button, s.bottomRight]}
       />
     </>
