@@ -42,10 +42,7 @@ export default function RootLayout() {
                 name="index"
                 options={{ headerShown: true, title: 'Login' }}
               />
-              <Stack.Screen
-                name="groups/index"
-                options={{ headerShown: true, title: 'Grupper' }}
-              />
+              <Stack.Screen name="groups" options={{ headerShown: false }} />
               {/* <Stack.Screen */}
               {/*   name="task/index" */}
               {/*   options={{ headerShown: true, title: 'Task' }} */}

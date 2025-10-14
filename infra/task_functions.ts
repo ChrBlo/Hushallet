@@ -9,6 +9,7 @@ import {
 import { db } from '../firebase_client';
 import type { Task } from '../types/task';
 import { requireCurrentUser } from './auth_functions';
+import { normalizeDate } from './helpers/date';
 
 const collectionName = 'tasks';
 
@@ -54,13 +55,21 @@ const taskGet = async (taskId: string): Promise<Task> => {
     id: taskId,
     title: data.title,
     description: data.description,
-    created_date: data.created_date,
+    created_date: normalizeDate(data.created_date),
     frequency: data.frequency,
     points: data.points,
     status: data.status,
     created_by: data.created_by ?? '',
     household_id: data.household_id ?? '',
-    completions: (data.users ?? []) as Task['completions'],
+    completions: (data.users ?? []).map(
+      (completion: {
+        household_member_id: string;
+        execution_date?: unknown;
+      }) => ({
+        household_member_id: completion.household_member_id,
+        execution_date: normalizeDate(completion.execution_date),
+      })
+    ),
   };
 };
 
@@ -90,4 +99,3 @@ const taskDelete = async (taskId: string): Promise<void> => {
 };
 
 export { taskCreate, taskDelete, taskGet, taskUpdate };
-
