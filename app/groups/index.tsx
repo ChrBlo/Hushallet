@@ -4,11 +4,19 @@ import { MD3Theme, useTheme } from 'react-native-paper';
 import StyledButton from '../../components/styled-button';
 import TaskButton from '../../components/task-button';
 import { useHouseholdGet } from '../../infra/hooks/use_household';
+import { useSelectedHouseholdId } from '../../providers/household_provider';
 
 const GroupsScreen = () => {
   const theme = useTheme();
   const s = createStyles(theme);
   const houseHolds = useHouseholdGet();
+
+  const { setSelectedHouseholdId } = useSelectedHouseholdId();
+
+  const handleButtonPress = (householdId: string) => {
+    setSelectedHouseholdId(householdId);
+    router.push('/groups/(tabs)');
+  };
 
   return (
     <>
@@ -17,7 +25,7 @@ const GroupsScreen = () => {
           <TaskButton
             key={h.household.id}
             title={h.household.name}
-            onPress={() => {}}
+            onPress={() => handleButtonPress(h.household.id!)}
           ></TaskButton>
         ))}
         <View>
@@ -28,13 +36,13 @@ const GroupsScreen = () => {
           />
         </View>
       </ScrollView>
-      {/* För att gå med i ny grupp? */}
+
       <StyledButton
         title={'Lägg till'}
         onPress={() => {}}
         style={[s.button, s.bottomLeft]}
       />
-      {/* För att gå ur en grupp? */}
+
       <StyledButton
         title={'Ändra'}
         onPress={() => {}}
