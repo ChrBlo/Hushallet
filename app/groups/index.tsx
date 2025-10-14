@@ -1,39 +1,31 @@
 import { router } from 'expo-router';
-import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Button, ScrollView, StyleSheet, View } from 'react-native';
 import { MD3Theme, useTheme } from 'react-native-paper';
 import StyledButton from '../../components/styled-button';
 import TaskButton from '../../components/task-button';
-
-interface Household {
-  id: string;
-  name: string;
-}
-
-//Temp data
-const houseHolds: Household[] = [
-  {
-    id: '001',
-    name: 'Familjen Annorlunda',
-  },
-  {
-    id: '002',
-    name: 'Bastun',
-  },
-];
+import { useHouseholdGet } from '../../infra/hooks/use_household';
 
 const GroupsScreen = () => {
   const theme = useTheme();
   const s = createStyles(theme);
+  const houseHolds = useHouseholdGet();
 
   return (
     <>
       <ScrollView contentContainerStyle={s.container}>
-        {houseHolds.map(h => (
-          <TaskButton key={h.id} title={h.name} onPress={() => {}}></TaskButton>
+        {houseHolds.data?.map(h => (
+          <TaskButton
+            key={h.household.id}
+            title={h.household.name}
+            onPress={() => {}}
+          ></TaskButton>
         ))}
         <View>
           <Button title="tasks" onPress={() => router.push('/groups/(tabs)')} />
-          <Button title="statistics" onPress={() => router.push('/groups/statistics')} />
+          <Button
+            title="statistics"
+            onPress={() => router.push('/groups/(tabs)/statistics')}
+          />
         </View>
       </ScrollView>
       {/* För att gå med i ny grupp? */}
@@ -53,6 +45,7 @@ const GroupsScreen = () => {
 };
 
 export default GroupsScreen;
+
 const createStyles = (theme: MD3Theme) =>
   StyleSheet.create({
     container: {

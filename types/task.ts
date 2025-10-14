@@ -1,4 +1,4 @@
-import { TaskUser } from './task_user';
+import { TaskCompletion } from './task_completion';
 
 type Task = {
   id?: string;
@@ -7,13 +7,13 @@ type Task = {
   title: string;
   description: string;
   created_date: Date;
-  execution_date: Date | null;
   frequency: number;
   points: number;
   status: TaskStatus;
-  users: TaskUser[];
+  completions: TaskCompletion[];
 };
 
 type TaskStatus = 'active' | 'archived' | 'removed';
 
-export { type Task, type TaskStatus as Status };
+export { type TaskStatus as Status, type Task };
+

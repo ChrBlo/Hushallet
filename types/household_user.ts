@@ -3,11 +3,10 @@ type HouseholdUser = {
   nickname: string;
   role: Role;
   icon: Icon;
-  points: number;
   status: UserStatus;
 };
 
-type Role = 'admin' | 'moderator' | 'member';
+type Role = 'admin' | 'member';
 type UserStatus = 'active' | 'inactive' | 'requested';
 type Icon =
   | 'octopus'
@@ -16,6 +15,7 @@ type Icon =
   | 'unicorn'
   | 'chicken'
   | 'dolphin'
+  | 'fox'
   | 'owl';
 
 export { HouseholdUser, Role, UserStatus as Status, Icon };
