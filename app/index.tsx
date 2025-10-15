@@ -18,7 +18,6 @@ import {
 } from 'react-native-paper';
 import StyledButton from '../components/styled-button';
 import { observeAuthChanges, signInWithEmail } from '../infra/auth_functions';
-//merge
 
 export default function LoginScreen() {
   const theme = useTheme();
