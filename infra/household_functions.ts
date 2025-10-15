@@ -10,7 +10,6 @@ import {
 } from 'firebase/firestore';
 import { db } from '../firebase_client';
 import type { Household, HouseholdWithTasks } from '../types/household';
-import type { Task } from '../types/task';
 import { requireCurrentUser } from './auth_functions';
 import { normalizeDate } from './helpers/date';
 
