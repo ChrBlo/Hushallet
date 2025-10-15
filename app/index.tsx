@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Alert,
   Image,
@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import {
+  ActivityIndicator,
   Button,
   MD3Theme,
   Text,
@@ -16,7 +17,7 @@ import {
   useTheme,
 } from 'react-native-paper';
 import StyledButton from '../components/styled-button';
-import { signInWithEmail } from '../infra/auth_functions';
+import { observeAuthChanges, signInWithEmail } from '../infra/auth_functions';
 
 export default function LoginScreen() {
   const theme = useTheme();
@@ -25,6 +26,20 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = observeAuthChanges(user => {
+      if (user) {
+        router.replace('/groups');
+        return;
+      }
+
+      setIsCheckingAuth(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const logoSource = theme.dark
     ? require('../assets/images/logowhitebackground1.png')
@@ -66,6 +81,14 @@ export default function LoginScreen() {
       );
     }
   };
+
+  if (isCheckingAuth) {
+    return (
+      <View style={s.loaderContainer}>
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+      </View>
+    );
+  }
 
   return (
     <KeyboardAvoidingView
@@ -187,5 +210,12 @@ const createStyles = (theme: MD3Theme) =>
       flexDirection: 'row',
       justifyContent: 'space-between',
       marginBottom: 24,
+    },
+    loaderContainer: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 40,
     },
   });
