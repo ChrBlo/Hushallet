@@ -1,21 +1,23 @@
-import { Text } from 'react-native';
+import type { Icon as AvatarName } from '../types/household_user';
 
-export interface Avatar {
-  avatar: 'fox' | 'octopus' | 'owl';
-}
-
-const getAvatar = (avatar: Avatar) => {
-  if (avatar.avatar === 'fox') {
-    return '🦊';
-  } else if (avatar.avatar === 'octopus') {
-    return '🦑';
-  } else if (avatar.avatar === 'owl') {
-    return '🦉';
-  }
+type AvatarConfig = {
+  emoji: string;
+  color: string;
 };
 
-const AvatarIcon = ({ avatar }: Avatar) => {
-  return <Text>{getAvatar({ avatar })}</Text>;
+const avatarMap: Record<AvatarName, AvatarConfig> = {
+  octopus: { emoji: '🦑', color: '#A855F7' },
+  frog: { emoji: '🐸', color: '#4ADE80' },
+  pig: { emoji: '🐷', color: '#F472B6' },
+  unicorn: { emoji: '🦄', color: '#FDCB58' },
+  chicken: { emoji: '🐔', color: '#F97316' },
+  dolphin: { emoji: '🐬', color: '#38BDF8' },
+  owl: { emoji: '🦉', color: '#FACC15' },
+  fox: { emoji: '🦊', color: '#FB923C' },
 };
 
-export default AvatarIcon;
+const getAvatarConfig = (name: AvatarName): AvatarConfig =>
+  avatarMap[name] ?? avatarMap.octopus;
+
+export { avatarMap, getAvatarConfig };
+export type { AvatarConfig, AvatarName };

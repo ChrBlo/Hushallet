@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useColorScheme } from 'react-native';
 import { PaperProvider, ThemeProvider } from 'react-native-paper';
 import { signInWithEmail } from '../infra/auth_functions';
+import HouseholdProvider from '../providers/household_provider';
 import { AppDarkTheme, AppDefaultTheme } from '../theme';
 
 const queryClient = new QueryClient();
@@ -11,7 +12,7 @@ const queryClient = new QueryClient();
 export default function RootLayout() {
   const colorScheme = useColorScheme();
 
-  console.log(colorScheme === "dark" ? "Dark" : "Light");
+  console.log(colorScheme === 'dark' ? 'Dark' : 'Light');
 
   const theme = colorScheme === 'dark' ? AppDarkTheme : AppDefaultTheme;
   useEffect(() => {
@@ -35,29 +36,31 @@ export default function RootLayout() {
     <PaperProvider theme={theme} key={colorScheme}>
       <ThemeProvider theme={theme}>
         <QueryClientProvider client={queryClient}>
-          <Stack>
-            <Stack.Screen
-              name="index"
-              options={{ headerShown: true, title: 'Login' }}
-            />
-            <Stack.Screen
-              name="groups/index"
-              options={{ headerShown: true, title: 'Grupper' }}
-            />
-            {/* <Stack.Screen */}
-            {/*   name="task/index" */}
-            {/*   options={{ headerShown: true, title: 'Task' }} */}
-            {/* /> */}
-            {/* <Stack.Screen */}
-            {/*   name="task-modal" */}
-            {/*   options={{ */}
-            {/*     presentation: 'transparentModal', */}
-            {/*     animation: 'fade', */}
-            {/*     headerShown: false, */}
-            {/*   }} */}
-            {/* /> */}
-            <Stack.Screen name="statistics" options={{ headerShown: true, title: 'Statistics'}} />
-          </Stack>
+          <HouseholdProvider>
+            <Stack>
+              <Stack.Screen
+                name="index"
+                options={{ headerShown: true, title: 'Login' }}
+              />
+              <Stack.Screen name="groups" options={{ headerShown: false }} />
+              {/* <Stack.Screen
+                name="task/index"
+                options={{ headerShown: true, title: 'Task' }}
+              /> */}
+              <Stack.Screen
+                name="task-modal"
+                options={{
+                  presentation: 'transparentModal',
+                  animation: 'fade',
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="statistics"
+                options={{ headerShown: true, title: 'Statistics' }}
+              />
+            </Stack>
+          </HouseholdProvider>
         </QueryClientProvider>
       </ThemeProvider>
     </PaperProvider>
