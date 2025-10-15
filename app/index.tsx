@@ -55,7 +55,7 @@ export default function LoginScreen() {
 
   const handleDevLogin = async () => {
     try {
-      await signInWithEmail('test@test.com', 'testing');
+      await signInWithEmail('test7@test.com', 'testing');
       router.push('/groups');
     } catch (error: any) {
       console.error('Dev login error:', error);
