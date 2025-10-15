@@ -48,14 +48,6 @@ export default function RootLayout() {
                 options={{ headerShown: true, title: 'Task' }}
               /> */}
               <Stack.Screen
-                name="task-modal"
-                options={{
-                  presentation: 'transparentModal',
-                  animation: 'fade',
-                  headerShown: false,
-                }}
-              />
-              <Stack.Screen
                 name="statistics"
                 options={{ headerShown: true, title: 'Statistics' }}
               />
