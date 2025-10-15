@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Modal, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Modal, ScrollView, StyleSheet, TouchableOpacity, View, Platform } from "react-native";
 import { MD3Theme, Text, useTheme, } from "react-native-paper";
 
 
@@ -16,8 +16,8 @@ export function CustomDropdown({ value, selectedValue, options, onSelect }: {
   const buttonRef = useRef<View>(null);
   
   const handleOpen = () => {
-    buttonRef.current?.measure((fx, fy, width, height, px, py) => {
-      setDropdownLayout({ x: px, y: py, width, height });
+    buttonRef.current?.measureInWindow((x, y, width, height) => {
+      setDropdownLayout({ x, y, width, height });
       setVisible(true);
     });
   };

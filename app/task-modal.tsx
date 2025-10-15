@@ -2,19 +2,13 @@ import { BlurView } from 'expo-blur';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import {
-  Button,
-  Divider,
-  MD3Theme,
-  Surface,
-  Text,
-  TextInput,
-  useTheme,
-} from 'react-native-paper';
+import { Button, Divider, MD3Theme, Surface, Text, TextInput, useTheme } from 'react-native-paper';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { CustomDropdown } from '../components/custom-drop-down';
+import { auth } from '../firebase_client';
 import { useTaskCreate } from '../infra/hooks/use_task_create';
 import { useTaskUpdate } from '../infra/hooks/use_task_update';
+import { useSelectedHouseholdId } from '../providers/household_provider';
 import type { Status, Task } from '../types/task';
 import type { TaskCompletion } from '../types/task_completion';
 
@@ -25,6 +19,8 @@ export default function TaskModal() {
   const params = useLocalSearchParams();
   const isEditing = !!params.taskId;
 
+  const { selectedHouseholdId } = useSelectedHouseholdId();
+
   const [title, setTitle] = useState(params.title?.toString() || '');
   const [description, setDescription] = useState(params.description?.toString() || '');
   const [frequency, setFrequency] = useState(params.frequency ? parseInt(params.frequency.toString()) : 7);
@@ -33,8 +29,6 @@ export default function TaskModal() {
   const createMutation = useTaskCreate();
   const updateMutation = useTaskUpdate();
   const isSaving = createMutation.isPending || updateMutation.isPending;
-
-  // const currentUser = requireCurrentUser();
 
   const frequencyOptions = Array.from({ length: 31 }, (_, i) => {
     const days = i + 1;
@@ -77,25 +71,16 @@ export default function TaskModal() {
     }
     else
     {
-      //TODO FIXA DEN HÄR SÅ VI GÅR PÅ VÅRT RIKTIGA CURRENT HOUSEHOLD
-      // const FAKED_CURRENT_HOUSEHOLD = await householdGet('-');
-      //
-      // if (!FAKED_CURRENT_HOUSEHOLD?.id) {
-      //   alert('Kunde inte hitta hushåll');
-      //   return;
-      // }
-      //
-      // await createMutation.mutateAsync({
-      //   household_id: FAKED_CURRENT_HOUSEHOLD.id,
-      //   title: title,
-      //   description: description,
-      //   created_date: new Date(),
-      //   execution_date: null,
-      //   frequency: frequency,
-      //   points: points,
-      //   status: 'active',
-      //   users: [],
-      // });
+      await createMutation.mutateAsync({
+        household_id: selectedHouseholdId,
+        title: title,
+        description: description,
+        created_date: new Date(),
+        frequency: frequency,
+        points: points,
+        status: 'active',
+        completions: [],
+      });
     }
 
     router.back();
@@ -208,10 +193,9 @@ const createStyles = (theme: MD3Theme) =>
     modalContainer: {
       maxHeight: '85%',
       marginHorizontal: 16,
-      marginBottom: 16,
+      marginBottom: 130,
     },
     card: {
-      minHeight: '84%',
       borderWidth: 1,
       borderColor: theme.colors.outlineVariant,
       borderRadius: 15,
