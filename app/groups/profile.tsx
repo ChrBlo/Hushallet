@@ -5,6 +5,9 @@ import { getAvatarConfig } from '../../components/get-avatar';
 import { useHouseholdGet } from '../../infra/hooks/use_household';
 import { useSelectedHouseholdId } from '../../providers/household_provider';
 import { auth } from '../../firebase_client';
+import StyledButton from '../../components/styled-button';
+import { signOutUser } from '../../infra/auth_functions';
+import { router } from 'expo-router';
 
 const ProfileScreen = () => {
   const theme = useTheme();
@@ -20,6 +23,11 @@ const ProfileScreen = () => {
     u => u.id == auth.currentUser?.uid
   );
 
+  const handleLogOut = () => {
+    signOutUser();
+    router.replace('/');
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.name}>{currentUser?.nickname}</Text>
@@ -27,6 +35,7 @@ const ProfileScreen = () => {
         config={getAvatarConfig(currentUser?.icon ?? 'octopus')}
         size={150}
       />
+      <StyledButton title="Log Out" onPress={() => handleLogOut()} />
     </View>
   );
 };
