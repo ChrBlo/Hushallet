@@ -9,9 +9,9 @@ import {
   where,
 } from 'firebase/firestore';
 import { db } from '../firebase_client';
-import { requireCurrentUser } from './auth_functions';
 import type { Household, HouseholdWithTasks } from '../types/household';
 import type { Task } from '../types/task';
+import { requireCurrentUser } from './auth_functions';
 
 const collectionName = 'households';
 
@@ -57,13 +57,12 @@ const householdGet = async (): Promise<HouseholdWithTasks[]> => {
           title: data.title,
           description: data.description,
           created_date: data.created_date,
-          execution_date: data.execution_date,
           frequency: data.frequency,
           points: data.points,
           status: data.status,
           created_by: data.created_by ?? '',
           household_id: data.household_id ?? household.id,
-          users: (data.users ?? []) as Task['users'],
+          completions: (data.completions ?? []) as Task['completions'],
         };
       });
 
@@ -118,4 +117,5 @@ const householdDelete = async (householdId: string): Promise<void> => {
   await deleteDoc(doc(db, collectionName, householdId));
 };
 
-export { householdGet, householdCreate, householdUpdate, householdDelete };
+export { householdCreate, householdDelete, householdGet, householdUpdate };
+

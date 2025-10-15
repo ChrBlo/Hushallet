@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { MD3Theme, Surface, useTheme } from 'react-native-paper';
 
 //Lämnar pga osäker på två onclick?
@@ -14,16 +14,21 @@ import { MD3Theme, Surface, useTheme } from 'react-native-paper';
 
 interface Props {
   onPress: () => void;
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  title: string;
 }
 
-export const TaskButton = ({ onPress, children }: Props) => {
+export const TaskButton = ({ onPress, title, children }: Props) => {
   const s = createStyles(useTheme());
 
   return (
     <>
       <TouchableOpacity style={s.outerContainer} onPress={onPress}>
-        <Surface style={s.container}>{children}</Surface>
+        <Surface style={s.container}>
+          <Text style={s.textStyle}>{title}</Text>
+          {children}
+        </Surface>
+        
       </TouchableOpacity>
     </>
   );
@@ -50,4 +55,9 @@ const createStyles = (theme: MD3Theme) =>
       alignItems: 'center',
       flexDirection: 'row',
     },
+    textStyle: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: theme.colors.onSurface, 
+    }
   });
