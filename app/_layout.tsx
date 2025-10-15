@@ -15,22 +15,6 @@ export default function RootLayout() {
   console.log(colorScheme === 'dark' ? 'Dark' : 'Light');
 
   const theme = colorScheme === 'dark' ? AppDarkTheme : AppDefaultTheme;
-  useEffect(() => {
-    const signInDevAccount = async () => {
-      if (!__DEV__) {
-        return;
-      }
-
-      try {
-        await signInWithEmail('test@test.com', 'testing');
-        console.log('logged into dev account');
-      } catch (err) {
-        console.error('Automatic dev sign-in failed', err);
-      }
-    };
-
-    signInDevAccount();
-  }, []);
 
   return (
     <PaperProvider theme={theme} key={colorScheme}>
