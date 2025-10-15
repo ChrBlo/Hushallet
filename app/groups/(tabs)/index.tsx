@@ -51,7 +51,6 @@ export const TaskScreen = () => {
         {tasks.map(t => (
           <TaskButton key={t.id} title={t.title} onPress={() => {}}>
             <View style={s.row}>
-              {' '}
               {t.completions.map((completion, index) => {
                 const user = selectedHousehold?.household.users.find(
                   u => u.id === completion.household_member_id
