@@ -2,21 +2,14 @@ import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { MD3Theme, useTheme } from 'react-native-paper';
-import AvatarIcon, { Avatar } from '../../../components/get-avatar';
+import AvatarBubble from '../../../components/avatar-bubble';
+import { getAvatarConfig } from '../../../components/get-avatar';
 import SmallArrowSelectorBar from '../../../components/small-arrow-selector-bar';
 import StyledButton from '../../../components/styled-button';
 import TaskButton from '../../../components/task-button';
 import { useHouseholdGet } from '../../../infra/hooks/use_household';
 import { useSelectedHouseholdId } from '../../../providers/household_provider';
-
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  executedBy: Avatar[];
-  frequency: number;
-  points: number;
-}
+import type { Task } from '../../../types/task';
 
 const handleCreateNewTask = () => {
   router.push('/task-modal');
@@ -39,8 +32,7 @@ export const TaskScreen = () => {
   const theme = useTheme();
   const s = createStyles(theme);
   const households = useHouseholdGet();
-  const { selectedHouseholdId, setSelectedHouseholdId } =
-    useSelectedHouseholdId();
+  const { selectedHouseholdId } = useSelectedHouseholdId();
 
   const selectedHousehold = households.data?.find(
     h => h.household.id === selectedHouseholdId
@@ -59,16 +51,21 @@ export const TaskScreen = () => {
         {tasks.map(t => (
           <TaskButton key={t.id} title={t.title} onPress={() => {}}>
             <View style={s.row}>
-              {' '}
-              {/* Need avatarMap to fix showing of icon */}
               {t.completions.map((completion, index) => {
                 const user = selectedHousehold?.household.users.find(
                   u => u.id === completion.household_member_id
                 );
+
+                if (!user) {
+                  return null;
+                }
+
                 return (
-                  <AvatarIcon
-                    key={completion.household_member_id}
-                    avatar={'fox'}
+                  <AvatarBubble
+                    key={`${completion.household_member_id}-${index}`}
+                    config={getAvatarConfig(user.icon)}
+                    size={28}
+                    style={s.avatarBubble}
                   />
                 );
               })}
@@ -119,6 +116,9 @@ const createStyles = (theme: MD3Theme) =>
     },
     row: {
       flexDirection: 'row',
+    },
+    avatarBubble: {
+      marginLeft: 4,
     },
   });
 
