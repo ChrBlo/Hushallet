@@ -7,7 +7,6 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "cross-env ESLINT_USE_FLAT_CONFIG=false expo lint",
     "type-check": "tsc --noEmit",
     "prettier-check": "npx prettier . --check"
   },
