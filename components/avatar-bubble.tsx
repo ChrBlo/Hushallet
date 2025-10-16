@@ -20,7 +20,7 @@ const AvatarBubble = ({ config, size = 32, style }: AvatarBubbleProps) => (
       style,
     ]}
   >
-    <Text style={styles.emoji}>{config.emoji}</Text>
+    <Text style={[styles.emoji, { fontSize: size * 0.8 }]}>{config.emoji}</Text>
   </View>
 );
 

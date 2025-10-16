@@ -64,13 +64,13 @@ export const TaskScreen = () => {
           text: 'Ja',
           style: 'destructive',
           onPress: async () => {
-          setDeletingTaskId(task.id!);
-          await Promise.all([
-            deleteMutation.mutateAsync(task.id!),
-            new Promise(resolve => setTimeout(resolve, 400))
-          ]);
-          setDeletingTaskId(null);
-        },
+            setDeletingTaskId(task.id!);
+            await Promise.all([
+              deleteMutation.mutateAsync(task.id!),
+              new Promise(resolve => setTimeout(resolve, 400)),
+            ]);
+            setDeletingTaskId(null);
+          },
         },
       ]
     );
@@ -79,10 +79,15 @@ export const TaskScreen = () => {
   return (
     <>
       <StatusBar style="auto" />
-
       <ScrollView contentContainerStyle={s.container}>
         {tasks.map(t => (
-          <TaskButton key={t.id} title={t.title} onPress={() => {handleEditTask(t)}}>
+          <TaskButton
+            key={t.id}
+            title={t.title}
+            onPress={() => {
+              handleEditTask(t);
+            }}
+          >
             <View style={s.row}>
               {isEditMode ? (
                 <>
@@ -94,7 +99,11 @@ export const TaskScreen = () => {
                     contentStyle={s.iconButtonContent}
                     style={s.iconButton}
                   >
-                    <Feather name="edit-3" size={21} color={theme.colors.onSurface} />
+                    <Feather
+                      name="edit-3"
+                      size={21}
+                      color={theme.colors.onSurface}
+                    />
                   </Button>
 
                   <Button
