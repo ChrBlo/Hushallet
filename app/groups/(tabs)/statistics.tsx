@@ -2,9 +2,13 @@ import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
 import { MD3Theme, Text, useTheme } from 'react-native-paper';
 import PieChart from 'react-native-pie-chart';
 import SmallArrowSelectorBar from '../../../components/small-arrow-selector-bar';
-import { HouseholdWithTasks } from '../../../types/household';
-import { HouseholdUser } from '../../../types/household_user';
+import { Household, HouseholdWithTasks } from '../../../types/household';
 import { Task } from '../../../types/task';
+import { householdGet } from '../../../infra/household_functions';
+import { useSelectedHouseholdId } from '../../../providers/household_provider';
+import { useEffect, useState } from 'react';
+import { getAvatarConfig } from '../../../components/get-avatar';
+import { getTimePeriods, TimePeriod } from '../../../infra/helpers/statistics';
 
 interface ChartData {
   value: number;
@@ -15,115 +19,74 @@ interface ChartData {
   };
 }
 
-const mockUser1: HouseholdUser = {
-  id: '000',
-  nickname: 'Adde',
-  role: 'admin',
-  icon: 'octopus',
-  status: 'active',
+const isWithinPeriod = (date: Date, period: TimePeriod): boolean => {
+  const accepted = date >= period.start && date <= period.end;
+  return accepted;
 };
 
-const mockUser2: HouseholdUser = {
-  id: '001',
-  nickname: 'Baddie',
-  role: 'member',
-  icon: 'frog',
-  status: 'active',
-};
-
-const mockHousehold: HouseholdWithTasks = {
-  household: {
-    created_by: 'Adolf',
-    id: '420blazeit',
-    invitation_code: 'smok_til_i_die',
-    name: 'Smokerz',
-    users: [mockUser1, mockUser2],
-  },
-  tasks: [
-    {
-      created_by: 'Adde',
-      household_id: '420blazeit',
-      title: 'Städa i köket',
-      description: 'Städa bara',
-      created_date: new Date(),
-      frequency: 0,
-      points: 4,
-      status: 'active',
-      completions: [
-        {
-          household_member_id: mockUser1.id,
-          execution_date: new Date(),
-        },
-        {
-          household_member_id: mockUser2.id,
-          execution_date: new Date(),
-        },
-      ],
-    },
-    {
-      created_by: 'Adde',
-      household_id: '420blazeit',
-      title: 'Gå ut med Buster',
-      description: 'Låt han inte bajsa i brevlådan',
-      created_date: new Date(),
-      frequency: 0,
-      points: 2,
-      status: 'active',
-      completions: [
-        {
-          household_member_id: mockUser1.id,
-          execution_date: new Date(),
-        },
-      ],
-    },
-  ],
-};
-
-// Swap for complete function in other issue
-const getAvatar = (avatar: string) => {
-  console.log('getColor() - avatar: ' + avatar);
-
-  if (avatar === 'octopus') {
-    return { color: '#b232ff', icon: '🦑' };
-  } else if (avatar === 'frog') {
-    return { color: '#60ff3c', icon: '🐸' };
-  } else {
-    return { color: '#ff9100', icon: '🤔' };
+const titleLength: number = 18;
+const processChartTitle = (str: string) => {
+  if (str.trim().length >= titleLength) {
+    return str.slice(0, titleLength - 3).trim() + '...';
   }
+  return str.trim();
 };
 
 // Takes all of the tasks in the data set and sums them, dividing them into avatar and points + adds font styling
-const getTotalChartData = (tasks: Task[]) => {
+const getTotalChartData = (tasks: Task[], household: Household) => {
   const map = new Map<string, number>();
-  tasks.forEach(t =>
-    t.completions.forEach(u => {
-      const oldPoints = map.get(u.user.icon) ?? 0;
-      map.set(u.user.icon, oldPoints + u.points);
+  let totalPoints = 0;
+  tasks.forEach(task =>
+    task.completions.forEach(completion => {
+      const oldPoints = map.get(completion.household_member_id) ?? 0;
+      map.set(completion.household_member_id, oldPoints + task.points);
+      totalPoints += task.points;
     })
   );
 
   const chartData: ChartData[] = [];
   for (const key of map.keys()) {
-    const avatar = getAvatar(key);
+    const avatar = getAvatarConfig(
+      household.users.find(u => u.id === key)!.icon
+    );
     const dataPoint = {
       value: map.get(key) ?? 0,
       color: avatar.color,
-      label: { text: avatar.icon, fontSize: 32 },
+      label: { text: avatar.emoji, fontSize: 32 },
     };
     chartData.push(dataPoint);
+  }
+
+  if (chartData.length < 1) {
+    chartData.push({
+      value: 1,
+      color: '#ccc',
+      label: { text: '❔', fontSize: 160 },
+    });
   }
   return chartData;
 };
 
 // Takes all of the tasks for a certain datapoint (a certain task) and divides them avatar and points + adds font styling
-const getChartData = (task: Task) => {
+const getChartData = (task: Task, household: Household) => {
   const data: ChartData[] = [];
-  for (const e of task.completions) {
-    const avatar = getAvatar(e.user.icon.toString());
+  if (task.completions.length < 1) {
     data.push({
-      value: e.points,
+      value: 1,
+      color: '#ccc',
+      label: { text: '❔', fontSize: 68 },
+    });
+    return data;
+  }
+
+  for (const e of task.completions) {
+    const avatar = getAvatarConfig(
+      household.users.find(u => u.id === e.household_member_id)!.icon
+    );
+    data.push({
+      value: task.points,
       color: avatar.color,
-      label: { text: avatar.icon, fontSize: 24 },
+      label: { text: avatar.emoji, fontSize: 24 },
     });
   }
   return data;
@@ -132,37 +95,82 @@ const getChartData = (task: Task) => {
 export const StatisticsScreen = () => {
   const s = createStyles(useTheme());
   const dimensions = Dimensions.get('window');
+  const { selectedHouseholdId} = useSelectedHouseholdId();
+  const [data, setData] = useState<HouseholdWithTasks>();
+  const [isLoading, setIsLoading] = useState(true);
+  const timePeriods: TimePeriod[] = [...getTimePeriods()];
+  const [periodIndex, setPeriodIndex] = useState<number>(
+    timePeriods.length - 1
+  );
 
-  // Swap for real data once it's available
-  const data = mockHousehold;
+  const increasePeriodIndex = () => {
+    const newIndex =
+      periodIndex === timePeriods.length - 1 ? 0 : periodIndex + 1;
+    setPeriodIndex(newIndex);
+  };
+
+  const decreasePeriodIndex = () => {
+    const newIndex =
+      periodIndex === 0 ? timePeriods.length - 1 : periodIndex - 1;
+    setPeriodIndex(newIndex);
+  };
+
+  useEffect(() => {
+    const getData = async () => {
+      const fetchedData = await householdGet();
+      const household = fetchedData.find(
+        h => h.household.id === selectedHouseholdId
+      );
+      setData(household);
+      setIsLoading(false);
+    };
+    getData();
+  }, []);
+
+  const filteredTasks: Task[] = [];
+  data?.tasks?.forEach(t => {
+    const task: Task = {
+      ...t,
+      completions: t.completions.filter(c =>
+        isWithinPeriod(c.execution_date, timePeriods[periodIndex])
+      ),
+    };
+    filteredTasks.push(task);
+  });
 
   return (
     <View style={[s.flex, s.container]}>
       <SmallArrowSelectorBar
-        title={'Your period here'}
-        onNext={() => {}}
-        onPrev={() => {}}
+        title={timePeriods[periodIndex].title}
+        onNext={increasePeriodIndex}
+        onPrev={decreasePeriodIndex}
       />
-      <ScrollView style={s.flex}>
-        <PieChart
-          style={s.mainChart}
-          widthAndHeight={dimensions.width / 1.5}
-          series={getTotalChartData(data.tasks)}
-        />
-        <Text style={s.totalText}>Total</Text>
-        <View style={[s.flex, s.minorChartContainer, s.center]}>
-          {data.tasks.map(t => (
-            <View key={t.title} style={s.center}>
-              <PieChart
-                style={s.minorChart}
-                widthAndHeight={dimensions.width / 3.5}
-                series={getChartData(t)}
-              />
-              <Text style={s.smText}>{t.title}</Text>
-            </View>
-          ))}
+      {filteredTasks.length > 0 && data?.household ? (
+        <ScrollView style={s.flex}>
+          <PieChart
+            style={s.mainChart}
+            widthAndHeight={dimensions.width / 1.5}
+            series={getTotalChartData(filteredTasks, data.household)}
+          />
+          <Text style={s.totalText}>Total</Text>
+          <View style={[s.flex, s.minorChartContainer, s.center]}>
+            {filteredTasks.map(t => (
+              <View key={t.title} style={s.center}>
+                <PieChart
+                  style={s.minorChart}
+                  widthAndHeight={dimensions.width / 3.5}
+                  series={getChartData(t, data.household)}
+                />
+                <Text style={s.smText}>{processChartTitle(t.title)}</Text>
+              </View>
+            ))}
+          </View>
+        </ScrollView>
+      ) : (
+        <View style={[s.flex, s.container, s.center]}>
+          <Text>{isLoading ? "Hämtar data..." : "Det finns ingen data att visa."}</Text>
         </View>
-      </ScrollView>
+      )}
     </View>
   );
 };
@@ -201,6 +209,7 @@ const createStyles = (theme: MD3Theme) =>
     smText: {
       fontWeight: 'bold',
       color: theme.colors.onBackground,
+      fontSize: 13,
     },
   });
 
