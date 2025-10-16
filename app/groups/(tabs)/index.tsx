@@ -79,7 +79,7 @@ export const TaskScreen = () => {
   return (
     <>
       <StatusBar style="auto" />
-      <ScrollView contentContainerStyle={s.container}>
+      <ScrollView style={s.scrollView} contentContainerStyle={s.container}>
         {tasks.map(t => (
           <TaskButton
             key={t.id}
@@ -161,10 +161,12 @@ export const TaskScreen = () => {
 const createStyles = (theme: MD3Theme) =>
   StyleSheet.create({
     container: {
-      backgroundColor: theme.colors.background,
       paddingTop: 10,
-      paddingBottom: 120,
       gap: 10,
+    },
+    scrollView: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
     },
     logo: {
       width: 250,
