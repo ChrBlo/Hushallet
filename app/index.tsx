@@ -120,7 +120,7 @@ export default function LoginScreen() {
       <View style={s.linksContainer}>
         <Button
           mode="text"
-          onPress={() => {}}
+          onPress={() => {router.push("/sign-up")}}
           compact
           textColor={theme.colors.onSurface}
         >

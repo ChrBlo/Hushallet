@@ -42,6 +42,10 @@ export default function RootLayout() {
                 name="index"
                 options={{ headerShown: true, title: 'Login' }}
               />
+              <Stack.Screen
+                name="sign-up"
+                options={{ headerShown: true, title: 'Register' }}
+              />
               <Stack.Screen name="groups" options={{ headerShown: false }} />
               {/* <Stack.Screen
                 name="task/index"
