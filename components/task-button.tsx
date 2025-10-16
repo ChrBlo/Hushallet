@@ -60,6 +60,6 @@ const createStyles = (theme: MD3Theme) =>
       fontSize: 18,
       fontWeight: '600',
       color: theme.colors.onSurface, 
-      marginRight: 8,
+      marginRight: -4,
     }
   });

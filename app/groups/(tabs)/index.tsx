@@ -1,8 +1,9 @@
+import Feather from '@expo/vector-icons/Feather';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { MD3Theme, useTheme } from 'react-native-paper';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { Button, MD3Theme, useTheme } from 'react-native-paper';
 import AvatarBubble from '../../../components/avatar-bubble';
 import { getAvatarConfig } from '../../../components/get-avatar';
 import StyledButton from '../../../components/styled-button';
@@ -11,7 +12,6 @@ import { useHouseholdGet } from '../../../infra/hooks/use_household';
 import { useTaskDelete } from '../../../infra/hooks/use_task_delete';
 import { useSelectedHouseholdId } from '../../../providers/household_provider';
 import type { Task } from '../../../types/task';
-import Feather from '@expo/vector-icons/Feather';
 
 const handleCreateNewTask = () => {
   router.push('/task-modal');
@@ -42,6 +42,7 @@ export const TaskScreen = () => {
   const { selectedHouseholdId } = useSelectedHouseholdId();
   const [isEditMode, setIsEditMode] = useState(false);
   const deleteMutation = useTaskDelete();
+  const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null);
 
   const selectedHousehold = households.data?.find(
     h => h.household.id === selectedHouseholdId
@@ -50,6 +51,7 @@ export const TaskScreen = () => {
 
   const handleDeleteTask = async (task: Task) => {
     if (task.id) {
+      setDeletingTaskId(task.id);
       await deleteMutation.mutateAsync(task.id);
     }
   };
@@ -64,13 +66,30 @@ export const TaskScreen = () => {
             <View style={s.row}>
               {isEditMode ? (
                 <>
-                  <TouchableOpacity onPress={() => handleEditTask(t)} style={s.iconButton} hitSlop={8}>
-                    <Feather name="edit-3" size={24} color={theme.colors.onSurface} />
-                  </TouchableOpacity>
+                  <Button
+                    mode="text"
+                    onPress={() => handleEditTask(t)}
+                    disabled={deletingTaskId === t.id}
+                    compact
+                    contentStyle={s.iconButtonContent}
+                    style={s.iconButton}
+                  >
+                    <Feather name="edit-3" size={21} color={theme.colors.onSurface} />
+                  </Button>
 
-                  <TouchableOpacity onPress={() => {handleDeleteTask(t)}} style={s.iconButton} hitSlop={8}>
-                    <Feather name="trash-2" size={24} color="#D32F2F" />
-                  </TouchableOpacity>
+                  <Button
+                    mode="text"
+                    onPress={() => handleDeleteTask(t)}
+                    disabled={deletingTaskId === t.id}
+                    loading={deletingTaskId === t.id}
+                    compact
+                    contentStyle={s.iconButtonContent}
+                    style={s.iconButton}
+                  >
+                    {deletingTaskId !== t.id && (
+                      <Feather name="trash-2" size={21} color="#D32F2F" />
+                    )}
+                  </Button>
                 </>
               ) : (
                 t.completions.map((completion, index) => {
@@ -142,8 +161,14 @@ const createStyles = (theme: MD3Theme) =>
       marginLeft: 4,
     },
     iconButton: {
-      marginLeft: 8,
-      padding: 4,
+      marginRight: -8,
+      marginVertical: 0,
+    },
+    iconButtonContent: {
+      marginHorizontal: 0,
+      marginVertical: 0,
+      paddingHorizontal: 4,
+      paddingVertical: 4,
     },
   });
 
