@@ -20,7 +20,7 @@ const CombinedDarkTheme = merge(MD3DarkTheme, DarkTheme);
 export const AppDefaultTheme = merge(CombinedDefaultTheme, {
   roundness: 10,
   colors: {
-    primary: 'rgb(0, 95, 175)',
+    primary: 'rgba(204, 204, 204, 1)',
     onPrimary: 'rgb(255, 255, 255)',
     primaryContainer: 'rgb(212, 227, 255)',
     onPrimaryContainer: 'rgb(0, 28, 58)',
@@ -66,8 +66,8 @@ export const AppDefaultTheme = merge(CombinedDefaultTheme, {
 export const AppDarkTheme = merge(CombinedDarkTheme, {
   roundness: 10,
   colors: {
-    primary: 'rgb(165, 200, 255)',
-    onPrimary: 'rgb(0, 49, 95)',
+    primary: 'rgba(9, 11, 14, 1)',
+    onPrimary: 'rgba(161, 161, 161, 1)',
     primaryContainer: 'rgb(0, 71, 134)',
     onPrimaryContainer: 'rgb(212, 227, 255)',
     secondary: 'rgb(188, 199, 220)',
