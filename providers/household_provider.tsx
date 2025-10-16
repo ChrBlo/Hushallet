@@ -2,7 +2,7 @@ import { createContext, PropsWithChildren, useContext, useState } from 'react';
 
 interface ContextValue {
   selectedHouseholdId: string;
-  setSelectedHouseholdId: (id: string ) => void;
+  setSelectedHouseholdId: (id: string) => void;
 }
 
 const HouseholdContext = createContext({} as ContextValue);

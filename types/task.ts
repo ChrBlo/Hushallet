@@ -16,4 +16,3 @@ type Task = {
 type TaskStatus = 'active' | 'archived' | 'removed';
 
 export { type TaskStatus as Status, type Task };
-
