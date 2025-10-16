@@ -1,9 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from 'expo-router';
-import { useEffect } from 'react';
 import { useColorScheme } from 'react-native';
 import { PaperProvider, ThemeProvider } from 'react-native-paper';
-import { signInWithEmail } from '../infra/auth_functions';
 import HouseholdProvider from '../providers/household_provider';
 import { AppDarkTheme, AppDefaultTheme } from '../theme';
 
@@ -27,18 +25,6 @@ export default function RootLayout() {
                 options={{ headerShown: true, title: 'Login' }}
               />
               <Stack.Screen name="groups" options={{ headerShown: false }} />
-              {/* <Stack.Screen
-                name="task/index"
-                options={{ headerShown: true, title: 'Task' }}
-              /> */}
-              <Stack.Screen
-                name="task-modal"
-                options={{
-                  presentation: 'transparentModal',
-                  animation: 'fade',
-                  headerShown: false,
-                }}
-              />
               <Stack.Screen
                 name="statistics"
                 options={{ headerShown: true, title: 'Statistics' }}
