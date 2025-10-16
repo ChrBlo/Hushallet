@@ -24,6 +24,11 @@ const handleEditTask = (task: Task) => {
       description: task.description,
       frequency: task.frequency.toString(),
       points: task.points.toString(),
+      household_id: task.household_id,
+      created_by: task.created_by,
+      created_date: task.created_date.toISOString(),
+      status: task.status,
+      users: JSON.stringify(task.completions),
     },
   });
 };
@@ -49,7 +54,7 @@ export const TaskScreen = () => {
       />
       <ScrollView contentContainerStyle={s.container}>
         {tasks.map(t => (
-          <TaskButton key={t.id} title={t.title} onPress={() => {}}>
+          <TaskButton key={t.id} title={t.title} onPress={() => {handleEditTask(t)}}>
             <View style={s.row}>
               {t.completions.map((completion, index) => {
                 const user = selectedHousehold?.household.users.find(
@@ -80,9 +85,8 @@ export const TaskScreen = () => {
       />
       <StyledButton
         title={'Ändra'}
-        // TODO FIXA SÅ ATT DENNA INTE KÖR PÅ [0] UTAN DEN VERKLIGA TASK:en MAN MARKERAT
-        // handleEditTask SKALL INTE HELLER LIGGA PÅ DENNA KNAPP UTAN PÅ DEN TASK-SPECIFIKA EDIT-PENNAN
-        onPress={() => handleEditTask}
+        //TODO FIXA SÅ ATT DENNA OMVANDLAR MEDLEMS-IKONER TILL PENNA OCH PAPPERSKORG, SÄTTA TASK-LISTAN I EDITERA-LÄGE
+        onPress={() => {}}
         style={[s.button, s.bottomRight]}
       />
     </>
