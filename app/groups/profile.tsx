@@ -1,4 +1,4 @@
-import { Alert, StyleSheet, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -145,90 +145,92 @@ const ProfileScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.profileContent}>
-        {isEditingName ? (
-          <View style={styles.nameEditWrapper}>
-            <TextInput
-              value={nameInput}
-              onChangeText={setNameInput}
-              style={styles.nameInput}
-              mode="outlined"
-              maxLength={24}
-              autoFocus
-              disabled={isSavingName}
-              returnKeyType="done"
-              onSubmitEditing={handleSaveName}
-            />
-            <View style={styles.editActions}>
-              {isSavingName ? (
-                <ActivityIndicator
-                  animating
-                  size="small"
-                  style={styles.editActionSpinner}
-                />
-              ) : (
+    <ScrollView>
+      <View style={styles.container}>
+        <View style={styles.profileContent}>
+          {isEditingName ? (
+            <View style={styles.nameEditWrapper}>
+              <TextInput
+                value={nameInput}
+                onChangeText={setNameInput}
+                style={styles.nameInput}
+                mode="outlined"
+                maxLength={24}
+                autoFocus
+                disabled={isSavingName}
+                returnKeyType="done"
+                onSubmitEditing={handleSaveName}
+              />
+              <View style={styles.editActions}>
+                {isSavingName ? (
+                  <ActivityIndicator
+                    animating
+                    size="small"
+                    style={styles.editActionSpinner}
+                  />
+                ) : (
+                  <IconButton
+                    icon="check"
+                    size={26}
+                    onPress={handleSaveName}
+                    accessibilityLabel="Spara namn"
+                    disabled={!canSubmitName}
+                    style={styles.editActionButton}
+                  />
+                )}
                 <IconButton
-                  icon="check"
+                  icon="close"
                   size={26}
-                  onPress={handleSaveName}
-                  accessibilityLabel="Spara namn"
-                  disabled={!canSubmitName}
+                  onPress={handleCancelEditing}
+                  accessibilityLabel="Avbryt"
+                  disabled={isSavingName}
                   style={styles.editActionButton}
                 />
-              )}
-              <IconButton
-                icon="close"
-                size={26}
-                onPress={handleCancelEditing}
-                accessibilityLabel="Avbryt"
-                disabled={isSavingName}
-                style={styles.editActionButton}
-              />
+              </View>
             </View>
-          </View>
-        ) : (
-          <View style={styles.nameRow}>
-            <View style={styles.nameActionSlot} pointerEvents="none" />
-            <View style={styles.nameCenter}>
-              <Text style={styles.name}>{currentUser?.nickname}</Text>
+          ) : (
+            <View style={styles.nameRow}>
+              <View style={styles.nameActionSlot} pointerEvents="none" />
+              <View style={styles.nameCenter}>
+                <Text style={styles.name}>{currentUser?.nickname}</Text>
+              </View>
+              <View style={styles.nameActionSlot}>
+                <IconButton
+                  icon="pencil"
+                  size={28}
+                  onPress={handleStartEditing}
+                  accessibilityLabel="Redigera namn"
+                  style={styles.editButton}
+                  disabled={!currentUser}
+                />
+              </View>
             </View>
-            <View style={styles.nameActionSlot}>
-              <IconButton
-                icon="pencil"
-                size={28}
-                onPress={handleStartEditing}
-                accessibilityLabel="Redigera namn"
-                style={styles.editButton}
-                disabled={!currentUser}
-              />
-            </View>
-          </View>
-        )}
-        <AvatarBubble
-          config={getAvatarConfig(currentUser?.icon ?? 'octopus')}
-          size={150}
-          style={styles.avatar}
-        />
-        {selectedHousehold?.household && currentUser ? (
-          <HouseholdAvatarSelector
-            household={selectedHousehold.household}
-            currentUserId={currentUser.id}
-            selectedIcon={currentUser.icon}
-            onSelect={handleSelectIcon}
-            isSaving={updateHousehold.isPending}
+          )}
+          <AvatarBubble
+            config={getAvatarConfig(currentUser?.icon ?? 'octopus')}
+            size={150}
+            style={styles.avatar}
           />
-        ) : null}
+          {selectedHousehold?.household && currentUser ? (
+            <HouseholdAvatarSelector
+              household={selectedHousehold.household}
+              currentUserId={currentUser.id}
+              selectedIcon={currentUser.icon}
+              onSelect={handleSelectIcon}
+              isSaving={updateHousehold.isPending}
+            />
+          ) : null}
+        </View>
+
+        <Text style={styles.emailText}>{auth.currentUser?.email ?? ''}</Text>
+
+        <StyledButton
+          title="Log Out"
+          onPress={() => handleLogOut()}
+          style={styles.logoutButton}
+        />
       </View>
-
-      <Text style={styles.emailText}>{auth.currentUser?.email ?? ''}</Text>
-
-      <StyledButton
-        title="Log Out"
-        onPress={() => handleLogOut()}
-        style={styles.logoutButton}
-      />
-    </View>
+    </ScrollView>
   );
 };
 
