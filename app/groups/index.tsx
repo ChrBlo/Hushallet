@@ -30,10 +30,6 @@ const GroupsScreen = () => {
         ))}
         <View>
           <Button title="tasks" onPress={() => router.push('/groups/(tabs)')} />
-          <Button
-            title="statistics"
-            onPress={() => router.push('/groups/(tabs)/statistics')}
-          />
         </View>
       </ScrollView>
 
