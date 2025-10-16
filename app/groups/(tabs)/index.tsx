@@ -203,4 +203,3 @@ const createStyles = (theme: MD3Theme) =>
   });
 
 export default TaskScreen;
-
