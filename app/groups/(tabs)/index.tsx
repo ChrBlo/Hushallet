@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { useState } from 'react';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { MD3Theme, useTheme } from 'react-native-paper';
 import AvatarBubble from '../../../components/avatar-bubble';
 import { getAvatarConfig } from '../../../components/get-avatar';
@@ -10,6 +11,7 @@ import TaskButton from '../../../components/task-button';
 import { useHouseholdGet } from '../../../infra/hooks/use_household';
 import { useSelectedHouseholdId } from '../../../providers/household_provider';
 import type { Task } from '../../../types/task';
+import Feather from '@expo/vector-icons/Feather';
 
 const handleCreateNewTask = () => {
   router.push('/task-modal');
@@ -38,6 +40,7 @@ export const TaskScreen = () => {
   const s = createStyles(theme);
   const households = useHouseholdGet();
   const { selectedHouseholdId } = useSelectedHouseholdId();
+  const [isEditMode, setIsEditMode] = useState(false);
 
   const selectedHousehold = households.data?.find(
     h => h.household.id === selectedHouseholdId
@@ -56,24 +59,36 @@ export const TaskScreen = () => {
         {tasks.map(t => (
           <TaskButton key={t.id} title={t.title} onPress={() => {handleEditTask(t)}}>
             <View style={s.row}>
-              {t.completions.map((completion, index) => {
-                const user = selectedHousehold?.household.users.find(
-                  u => u.id === completion.household_member_id
-                );
+              {isEditMode ? (
+                <>
+                  <TouchableOpacity onPress={() => handleEditTask(t)} style={s.iconButton} hitSlop={8}>
+                    <Feather name="edit-3" size={24} color={theme.colors.onSurface} />
+                  </TouchableOpacity>
 
-                if (!user) {
-                  return null;
-                }
+                  <TouchableOpacity onPress={() => {}} style={s.iconButton} hitSlop={8}>
+                    <Feather name="trash-2" size={24} color="#D32F2F" />
+                  </TouchableOpacity>
+                </>
+              ) : (
+                t.completions.map((completion, index) => {
+                  const user = selectedHousehold?.household.users.find(
+                    u => u.id === completion.household_member_id
+                  );
 
-                return (
-                  <AvatarBubble
-                    key={`${completion.household_member_id}-${index}`}
-                    config={getAvatarConfig(user.icon)}
-                    size={28}
-                    style={s.avatarBubble}
-                  />
-                );
-              })}
+                  if (!user) {
+                    return null;
+                  }
+
+                  return (
+                    <AvatarBubble
+                      key={`${completion.household_member_id}-${index}`}
+                      config={getAvatarConfig(user.icon)}
+                      size={28}
+                      style={s.avatarBubble}
+                    />
+                  );
+                })
+              )}
             </View>
           </TaskButton>
         ))}
@@ -84,9 +99,8 @@ export const TaskScreen = () => {
         style={[s.button, s.bottomLeft]}
       />
       <StyledButton
-        title={'Ändra'}
-        //TODO FIXA SÅ ATT DENNA OMVANDLAR MEDLEMS-IKONER TILL PENNA OCH PAPPERSKORG, SÄTTA TASK-LISTAN I EDITERA-LÄGE
-        onPress={() => {}}
+        title={isEditMode ? 'Klar' : 'Ändra'}
+        onPress={() => setIsEditMode(!isEditMode)}
         style={[s.button, s.bottomRight]}
       />
     </>
@@ -123,6 +137,10 @@ const createStyles = (theme: MD3Theme) =>
     },
     avatarBubble: {
       marginLeft: 4,
+    },
+    iconButton: {
+      marginLeft: 8,
+      padding: 4,
     },
   });
 
