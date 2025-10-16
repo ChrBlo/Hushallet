@@ -95,7 +95,7 @@ const getChartData = (task: Task, household: Household) => {
 export const StatisticsScreen = () => {
   const s = createStyles(useTheme());
   const dimensions = Dimensions.get('window');
-  const { selectedHouseholdId} = useSelectedHouseholdId();
+  const { selectedHouseholdId } = useSelectedHouseholdId();
   const [data, setData] = useState<HouseholdWithTasks>();
   const [isLoading, setIsLoading] = useState(true);
   const timePeriods: TimePeriod[] = [...getTimePeriods()];
@@ -168,7 +168,9 @@ export const StatisticsScreen = () => {
         </ScrollView>
       ) : (
         <View style={[s.flex, s.container, s.center]}>
-          <Text>{isLoading ? "Hämtar data..." : "Det finns ingen data att visa."}</Text>
+          <Text>
+            {isLoading ? 'Hämtar data...' : 'Det finns ingen data att visa.'}
+          </Text>
         </View>
       )}
     </View>

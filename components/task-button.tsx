@@ -25,10 +25,11 @@ export const TaskButton = ({ onPress, title, children }: Props) => {
     <>
       <TouchableOpacity style={s.outerContainer} onPress={onPress}>
         <Surface style={s.container}>
-          <Text style={s.textStyle} numberOfLines={1} ellipsizeMode="tail">{title}</Text>
+          <Text style={s.textStyle} numberOfLines={1} ellipsizeMode="tail">
+            {title}
+          </Text>
           {children}
         </Surface>
-        
       </TouchableOpacity>
     </>
   );
@@ -59,7 +60,7 @@ const createStyles = (theme: MD3Theme) =>
       flex: 1,
       fontSize: 18,
       fontWeight: '600',
-      color: theme.colors.onSurface, 
+      color: theme.colors.onSurface,
       marginRight: -4,
-    }
+    },
   });

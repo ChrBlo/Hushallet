@@ -2,7 +2,15 @@ import { BlurView } from 'expo-blur';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { Button, Divider, MD3Theme, Surface, Text, TextInput, useTheme } from 'react-native-paper';
+import {
+  Button,
+  Divider,
+  MD3Theme,
+  Surface,
+  Text,
+  TextInput,
+  useTheme,
+} from 'react-native-paper';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { CustomDropdown } from '../components/custom-drop-down';
 import { auth } from '../firebase_client';
@@ -22,9 +30,15 @@ export default function TaskModal() {
   const { selectedHouseholdId } = useSelectedHouseholdId();
 
   const [title, setTitle] = useState(params.title?.toString() || '');
-  const [description, setDescription] = useState(params.description?.toString() || '');
-  const [frequency, setFrequency] = useState(params.frequency ? parseInt(params.frequency.toString()) : 7);
-  const [points, setPoints] = useState(params.points ? parseInt(params.points.toString()) : 6);
+  const [description, setDescription] = useState(
+    params.description?.toString() || ''
+  );
+  const [frequency, setFrequency] = useState(
+    params.frequency ? parseInt(params.frequency.toString()) : 7
+  );
+  const [points, setPoints] = useState(
+    params.points ? parseInt(params.points.toString()) : 6
+  );
 
   const createMutation = useTaskCreate();
   const updateMutation = useTaskUpdate();
@@ -37,7 +51,8 @@ export default function TaskModal() {
     if (days === 1) label = 'Varje dag';
     else if (days === 2) label = 'Varannan dag';
     else if ([3, 13, 23].includes(days)) label = `Var ${days}:e dag`;
-    else if ([1, 2].includes(days % 10) && days > 20) label = `Var ${days}:a dag`;
+    else if ([1, 2].includes(days % 10) && days > 20)
+      label = `Var ${days}:a dag`;
     else label = `Var ${days}:e dag`;
 
     return { label, value: days };
@@ -68,9 +83,7 @@ export default function TaskModal() {
       };
 
       await updateMutation.mutateAsync(taskToUpdate);
-    }
-    else
-    {
+    } else {
       await createMutation.mutateAsync({
         household_id: selectedHouseholdId,
         title: title,
