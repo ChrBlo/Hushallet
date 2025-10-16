@@ -13,7 +13,6 @@ import { useTaskDelete } from '../../../infra/hooks/use_task_delete';
 import { useSelectedHouseholdId } from '../../../providers/household_provider';
 import type { Task } from '../../../types/task';
 
-//f
 const handleCreateNewTask = () => {
   router.push('/task-modal');
 };
