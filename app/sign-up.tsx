@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Alert,
   Image,
@@ -9,7 +9,6 @@ import {
   View,
 } from 'react-native';
 import {
-  ActivityIndicator,
   Button,
   MD3Theme,
   Text,
@@ -17,7 +16,7 @@ import {
   useTheme,
 } from 'react-native-paper';
 import StyledButton from '../components/styled-button';
-import { observeAuthChanges, signInWithEmail } from '../infra/auth_functions';
+import { registerWithEmail } from '../infra/auth_functions';
 
 export default function LoginScreen() {
   const theme = useTheme();
@@ -26,26 +25,12 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-
-  useEffect(() => {
-    const unsubscribe = observeAuthChanges(user => {
-      if (user) {
-        router.replace('/groups');
-        return;
-      }
-
-      setIsCheckingAuth(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
 
   const logoSource = theme.dark
     ? require('../assets/images/logowhitebackground1.png')
     : require('../assets/images/logoblackbackground.png');
 
-  const handleLogin = async () => {
+  const handleRegistration = async () => {
     if (!email.trim() || !password.trim()) {
       Alert.alert(
         'Ofullständiga uppgifter',
@@ -56,61 +41,29 @@ export default function LoginScreen() {
     }
 
     try {
-      await signInWithEmail(email.trim(), password.trim());
+      await registerWithEmail(email.trim(), password.trim());
       router.push('/groups');
     } catch (error: any) {
       console.error('Login error:', error);
       Alert.alert(
-        'Inloggning misslyckades',
+        'Registrering misslyckades',
         'Har du verkligen fyllt i ett korrekt användarnamn och lösenord?',
         [{ text: 'OK' }]
       );
     }
   };
 
-  const handleDevLogin = async () => {
-    try {
-      await signInWithEmail('test7@test.com', 'testing');
-      router.push('/groups');
-    } catch (error: any) {
-      console.error('Dev login error:', error);
-      Alert.alert(
-        'Snabbinloggning misslyckades',
-        'Den förifyllda testanvändaren kunde inte loggas in automatiskt.',
-        [{ text: 'OK' }]
-      );
-    }
-  };
-
-  if (isCheckingAuth) {
-    return (
-      <View style={s.loaderContainer}>
-        <ActivityIndicator size="large" color={theme.colors.primary} />
-      </View>
-    );
-  }
-
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={s.container}
     >
-      <Button
-        mode="text"
-        onPress={handleDevLogin}
-        compact
-        style={s.devLoginButton}
-        textColor={theme.colors.onSurface}
-      >
-        Logga in som test
-      </Button>
-
       <View style={s.logoContainer}>
         <Image source={logoSource} style={s.logo} resizeMode="contain" />
       </View>
 
       <Text variant="headlineMedium" style={s.title}>
-        Logga in
+        Registrera konto
       </Text>
 
       <TextInput
@@ -144,26 +97,17 @@ export default function LoginScreen() {
         <Button
           mode="text"
           onPress={() => {
-            router.replace('/sign-up');
+            router.replace('/');
           }}
           compact
           textColor={theme.colors.onSurface}
         >
-          Registrera dig
-        </Button>
-        <Button
-          mode="text"
-          onPress={() => {}}
-          compact
-          textColor={theme.colors.onSurface}
-        >
-          Glömt lösenord
+          Redan användare?
         </Button>
       </View>
-
       <StyledButton
-        title="Logga in"
-        onPress={handleLogin}
+        title="Registrera"
+        onPress={handleRegistration}
         style={s.loginButton}
       />
     </KeyboardAvoidingView>
@@ -212,12 +156,5 @@ const createStyles = (theme: MD3Theme) =>
       flexDirection: 'row',
       justifyContent: 'space-between',
       marginBottom: 24,
-    },
-    loaderContainer: {
-      flex: 1,
-      backgroundColor: theme.colors.background,
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: 40,
     },
   });
