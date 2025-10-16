@@ -2,7 +2,7 @@ import Feather from '@expo/vector-icons/Feather';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 import { Button, MD3Theme, useTheme } from 'react-native-paper';
 import AvatarBubble from '../../../components/avatar-bubble';
 import { getAvatarConfig } from '../../../components/get-avatar';
@@ -50,10 +50,30 @@ export const TaskScreen = () => {
   const tasks = selectedHousehold?.tasks || [];
 
   const handleDeleteTask = async (task: Task) => {
-    if (task.id) {
-      setDeletingTaskId(task.id);
-      await deleteMutation.mutateAsync(task.id);
-    }
+    if (!task.id) return;
+
+    Alert.alert(
+      'Ta bort syssla',
+      `Är du säker på att du vill ta bort "${task.title}"?`,
+      [
+        {
+          text: 'Nej',
+          style: 'cancel',
+        },
+        {
+          text: 'Ja',
+          style: 'destructive',
+          onPress: async () => {
+          setDeletingTaskId(task.id!);
+          await Promise.all([
+            deleteMutation.mutateAsync(task.id!),
+            new Promise(resolve => setTimeout(resolve, 400))
+          ]);
+          setDeletingTaskId(null);
+        },
+        },
+      ]
+    );
   };
 
   return (
