@@ -50,11 +50,7 @@ export const TaskScreen = () => {
   return (
     <>
       <StatusBar style="auto" />
-      <SmallArrowSelectorBar
-        title={'Idag'}
-        onPrev={() => {}}
-        onNext={() => {}}
-      />
+
       <ScrollView contentContainerStyle={s.container}>
         {tasks.map(t => (
           <TaskButton key={t.id} title={t.title} onPress={() => {handleEditTask(t)}}>
