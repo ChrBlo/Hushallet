@@ -97,7 +97,7 @@ export default function LoginScreen() {
         <Button
           mode="text"
           onPress={() => {
-            router.push('/');
+            router.replace('/');
           }}
           compact
           textColor={theme.colors.onSurface}
