@@ -5,10 +5,10 @@ import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { MD3Theme, useTheme } from 'react-native-paper';
 import AvatarBubble from '../../../components/avatar-bubble';
 import { getAvatarConfig } from '../../../components/get-avatar';
-import SmallArrowSelectorBar from '../../../components/small-arrow-selector-bar';
 import StyledButton from '../../../components/styled-button';
 import TaskButton from '../../../components/task-button';
 import { useHouseholdGet } from '../../../infra/hooks/use_household';
+import { useTaskDelete } from '../../../infra/hooks/use_task_delete';
 import { useSelectedHouseholdId } from '../../../providers/household_provider';
 import type { Task } from '../../../types/task';
 import Feather from '@expo/vector-icons/Feather';
@@ -41,11 +41,18 @@ export const TaskScreen = () => {
   const households = useHouseholdGet();
   const { selectedHouseholdId } = useSelectedHouseholdId();
   const [isEditMode, setIsEditMode] = useState(false);
+  const deleteMutation = useTaskDelete();
 
   const selectedHousehold = households.data?.find(
     h => h.household.id === selectedHouseholdId
   );
   const tasks = selectedHousehold?.tasks || [];
+
+  const handleDeleteTask = async (task: Task) => {
+    if (task.id) {
+      await deleteMutation.mutateAsync(task.id);
+    }
+  };
 
   return (
     <>
@@ -61,7 +68,7 @@ export const TaskScreen = () => {
                     <Feather name="edit-3" size={24} color={theme.colors.onSurface} />
                   </TouchableOpacity>
 
-                  <TouchableOpacity onPress={() => {}} style={s.iconButton} hitSlop={8}>
+                  <TouchableOpacity onPress={() => {handleDeleteTask(t)}} style={s.iconButton} hitSlop={8}>
                     <Feather name="trash-2" size={24} color="#D32F2F" />
                   </TouchableOpacity>
                 </>
