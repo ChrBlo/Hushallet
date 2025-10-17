@@ -10,7 +10,7 @@ import {
 } from 'react-native-paper';
 import AvatarBubble from '../../components/avatar-bubble';
 import HouseholdAvatarSelector from '../../components/household-avatar-selector';
-import { getAvatarConfig, type AvatarName } from '../../components/get-avatar';
+import { getAvatarConfig } from '../../components/get-avatar';
 import { useHouseholdGet } from '../../infra/hooks/use_household';
 import { useHouseholdUpdate } from '../../infra/hooks/use_household_update';
 import { useSelectedHouseholdId } from '../../providers/household_provider';
@@ -111,39 +111,6 @@ const ProfileScreen = () => {
     nameInput.trim().length > 0 &&
     nameInput.trim() !== currentUser.nickname;
 
-  const handleSelectIcon = async (icon: AvatarName) => {
-    if (
-      !selectedHousehold?.household ||
-      !currentUser ||
-      icon === currentUser.icon ||
-      updateHousehold.isPending
-    ) {
-      return;
-    }
-
-    try {
-      const updatedUsers = selectedHousehold.household.users.map(user =>
-        user.id === currentUser.id
-          ? {
-              ...user,
-              icon,
-            }
-          : user
-      );
-
-      await updateHousehold.mutateAsync({
-        ...selectedHousehold.household,
-        users: updatedUsers,
-      });
-    } catch (error) {
-      console.error('Failed to update avatar', error);
-      Alert.alert(
-        'Kunde inte uppdatera',
-        'Ett fel uppstod när avataren skulle sparas. Försök igen.'
-      );
-    }
-  };
-
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -212,13 +179,7 @@ const ProfileScreen = () => {
             style={styles.avatar}
           />
           {selectedHousehold?.household && currentUser ? (
-            <HouseholdAvatarSelector
-              household={selectedHousehold.household}
-              currentUserId={currentUser.id}
-              selectedIcon={currentUser.icon}
-              onSelect={handleSelectIcon}
-              isSaving={updateHousehold.isPending}
-            />
+            <HouseholdAvatarSelector memberId={currentUser.id} />
           ) : null}
         </View>
 
