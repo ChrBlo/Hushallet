@@ -1,18 +1,30 @@
 import { BlurView } from 'expo-blur';
 import { router } from 'expo-router';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { useState } from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import {
   Button,
   Divider,
   MD3Theme,
   Surface,
+  TextInput,
   useTheme,
 } from 'react-native-paper';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
+import GenerateAccessCode from '../components/generate-access-code';
 
 export default function HouseholdModal() {
   const theme = useTheme();
   const s = createStyles(theme);
+
+  const [name, setName] = useState('');
+  const [accessCode, setAccessCode] = useState('');
+
+  const handleGenerateCode = () => {
+    const code = GenerateAccessCode();
+    setAccessCode(code);
+  };
+
   return (
     <Animated.View entering={FadeIn.duration(200)} style={s.backdrop}>
       <BlurView
@@ -25,7 +37,46 @@ export default function HouseholdModal() {
         style={s.modalContainer}
       >
         <Surface style={s.card} elevation={5}>
-          <ScrollView contentContainerStyle={s.scrollContent}></ScrollView>
+          <ScrollView contentContainerStyle={s.scrollContent}>
+            <Text style={s.header}>Lägg till hushåll</Text>
+
+            <TextInput
+              style={s.inputTitle}
+              label="Namn på hushållet"
+              value={name}
+              onChangeText={setName}
+              mode="outlined"
+              maxLength={42}
+              outlineColor={theme.colors.outlineVariant}
+              activeOutlineColor={theme.colors.outline}
+              textColor={theme.colors.onSurface} // When typing
+              theme={{ colors: { onSurfaceVariant: theme.colors.onSurface } }}
+            />
+            <View>
+              <TextInput
+                style={s.inputTitle}
+                label={accessCode ? '' : 'Generera kod'}
+                value={accessCode}
+                editable={false}
+                mode="outlined"
+                outlineColor={theme.colors.outlineVariant}
+                activeOutlineColor={theme.colors.outline}
+                textColor={theme.colors.onSurface}
+                theme={{ colors: { onSurfaceVariant: theme.colors.onSurface } }}
+              ></TextInput>
+              <Button
+                mode="text"
+                onPress={handleGenerateCode}
+                style={s.button}
+                labelStyle={s.buttonLabel}
+                contentStyle={s.buttonContent}
+                rippleColor="transparent"
+              >
+                Generera hushålls-kod
+              </Button>
+            </View>
+          </ScrollView>
+
           <View style={s.buttonContainer}>
             <Button
               mode="text"
@@ -68,7 +119,7 @@ const createStyles = (theme: MD3Theme) =>
       backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalContainer: {
-      maxHeight: '85%',
+      minHeight: '50%',
       marginHorizontal: 16,
       marginBottom: 130,
     },
@@ -97,8 +148,7 @@ const createStyles = (theme: MD3Theme) =>
     buttonContent: {
       justifyContent: 'center',
       alignItems: 'center',
-      fontSize: 20,
-      paddingVertical: 6,
+      paddingVertical: 8,
     },
     separator: {
       borderLeftWidth: 1,
@@ -108,5 +158,16 @@ const createStyles = (theme: MD3Theme) =>
     buttonLabel: {
       color: theme.colors.onSurface,
       fontSize: 20,
+      lineHeight: 22,
+    },
+    header: {
+      fontSize: 20,
+      marginBottom: 24,
+      color: theme.colors.onPrimaryContainer,
+    },
+    inputTitle: {
+      color: theme.colors.onSurfaceVariant,
+      backgroundColor: theme.colors.surfaceVariant,
+      marginBottom: 12,
     },
   });
