@@ -1,35 +1,88 @@
-import { memo, useMemo } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { memo, useMemo, useCallback } from 'react';
+import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { MD3Theme, Text, useTheme } from 'react-native-paper';
 import AvatarBubble from './avatar-bubble';
 import { avatarMap, type AvatarName } from './get-avatar';
-import type { Household } from '../types/household';
+import { useSelectedHouseholdId } from '../providers/household_provider';
+import { useHouseholdGet } from '../infra/hooks/use_household';
+import { useHouseholdUpdate } from '../infra/hooks/use_household_update';
 
 type HouseholdAvatarSelectorProps = {
-  household: Household;
-  currentUserId: string;
-  selectedIcon?: AvatarName;
-  onSelect: (icon: AvatarName) => void;
-  isSaving?: boolean;
+  memberId: string;
 };
 
 const HouseholdAvatarSelector = ({
-  household,
-  currentUserId,
-  selectedIcon,
-  onSelect,
-  isSaving,
+  memberId,
 }: HouseholdAvatarSelectorProps) => {
   const theme = useTheme();
   const styles = createStyles(theme);
+  const { selectedHouseholdId } = useSelectedHouseholdId();
+  const households = useHouseholdGet();
+  const updateHousehold = useHouseholdUpdate();
+
+  const selectedHousehold = households.data?.find(
+    householdWithTasks =>
+      householdWithTasks.household.id === selectedHouseholdId
+  );
+
+  const currentMember = selectedHousehold?.household.users.find(
+    user => user.id === memberId
+  );
 
   const unavailableIcons = useMemo(() => {
-    const taken = household.users
-      .filter(user => user.id !== currentUserId)
+    if (!selectedHousehold || !currentMember) {
+      return new Set<AvatarName>();
+    }
+
+    const taken = selectedHousehold.household.users
+      .filter(user => user.id !== currentMember.id)
       .map(user => user.icon);
 
     return new Set<AvatarName>(taken);
-  }, [household.users, currentUserId]);
+  }, [selectedHousehold, currentMember]);
+
+  const handleSelectIcon = useCallback(
+    async (icon: AvatarName) => {
+      if (
+        !selectedHousehold ||
+        !currentMember ||
+        icon === currentMember.icon ||
+        updateHousehold.isPending
+      ) {
+        return;
+      }
+
+      try {
+        const updatedUsers = selectedHousehold.household.users.map(user =>
+          user.id === currentMember.id
+            ? {
+                ...user,
+                icon,
+              }
+            : user
+        );
+
+        await updateHousehold.mutateAsync({
+          ...selectedHousehold.household,
+          users: updatedUsers,
+        });
+      } catch (error) {
+        console.error('Failed to update avatar', error);
+        Alert.alert(
+          'Kunde inte uppdatera',
+          'Ett fel uppstod när avataren skulle sparas. Försök igen.'
+        );
+      }
+    },
+    [selectedHousehold, currentMember, updateHousehold]
+  );
+
+  if (!selectedHousehold || !currentMember) {
+    return null;
+  }
+
+  const selectedIcon = currentMember.icon;
+  const isSaving = updateHousehold.isPending;
 
   return (
     <View style={styles.container}>
@@ -48,7 +101,7 @@ const HouseholdAvatarSelector = ({
               isDisabled && !isSelected && styles.optionDisabled,
             ]}
             disabled={isDisabled}
-            onPress={() => onSelect(icon)}
+            onPress={() => handleSelectIcon(icon)}
             accessibilityLabel={`Välj avatar ${config.emoji}`}
             accessibilityState={{ disabled: isDisabled, selected: isSelected }}
           >
