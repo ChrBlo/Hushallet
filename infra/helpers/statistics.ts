@@ -4,27 +4,11 @@ export interface TimePeriod {
   title: string;
 }
 
-const monthNames: string[] = [
-  'januari',
-  'februari',
-  'mars',
-  'april',
-  'maj',
-  'juni',
-  'juli',
-  'augusti',
-  'september',
-  'oktober',
-  'november',
-  'december',
-];
-
 export const getTimePeriods = () => {
   const array: TimePeriod[] = [];
-  array.push(getThisYear());
-  getAllPreviousMonths().forEach(m => array.push(m));
   array.push(getThisWeek());
-  array.push(getToday());
+  array.push(getThisMonth());
+  array.push(getThisYear());
   return array;
 };
 
@@ -40,22 +24,17 @@ const getThisYear = (): TimePeriod => {
   };
 };
 
-const getAllPreviousMonths = () => {
-  const array: TimePeriod[] = [];
+const getThisMonth = (): TimePeriod => {
   const today = new Date();
   const n = today.getMonth();
 
-  for (let i = 0; i <= n; i++) {
-    const start = new Date(today.getFullYear(), i, 1);
-    const end = new Date(today.getFullYear(), i + 1, 1);
-    const name = monthNames[start.getMonth()];
-    array.push({
-      start: start,
-      end: end,
-      title: name[0].toUpperCase() + name.substring(1),
-    });
-  }
-  return array;
+  const start = new Date(today.getFullYear(), n, 1);
+  const end = new Date(today.getFullYear(), n + 1, 1);
+  return {
+    start: start,
+    end: end,
+    title: 'Denna Månaden',
+  };
 };
 
 const getThisWeek = (): TimePeriod => {
@@ -71,20 +50,5 @@ const getThisWeek = (): TimePeriod => {
     start: weekStart,
     end: weekEnd,
     title: 'Denna Veckan',
-  };
-};
-
-const getToday = (): TimePeriod => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const tomorrow = new Date();
-  tomorrow.setDate(today.getDate() + 1);
-  tomorrow.setHours(0, 0, 0, 0);
-
-  return {
-    start: today,
-    end: tomorrow,
-    title: 'Idag',
   };
 };
