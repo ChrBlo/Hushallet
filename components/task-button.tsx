@@ -8,12 +8,21 @@ interface Props {
   title: string;
 }
 
-export const TaskButton = ({ onPress, onLongPress, title, children }: Props) => {
+export const TaskButton = ({
+  onPress,
+  onLongPress,
+  title,
+  children,
+}: Props) => {
   const s = createStyles(useTheme());
 
   return (
     <>
-      <TouchableOpacity style={s.outerContainer} onPress={onPress} onLongPress={onLongPress}>
+      <TouchableOpacity
+        style={s.outerContainer}
+        onPress={onPress}
+        onLongPress={onLongPress}
+      >
         <Surface style={s.container}>
           <Text style={s.textStyle} numberOfLines={1} ellipsizeMode="tail">
             {title}

@@ -86,9 +86,8 @@ export const TaskScreen = () => {
   };
 
   const handleTaskPress = async (task: Task) => {
-
     if (isEditMode || !currentUserId || !task.id) return;
-  
+
     const completion: TaskCompletion = {
       household_member_id: currentUserId,
       execution_date: new Date(),
@@ -101,18 +100,19 @@ export const TaskScreen = () => {
   };
 
   const handleTaskLongPress = async (task: Task) => {
-
     if (isEditMode || !currentUserId || !task.id) return;
 
     const userCompletions = task.completions
       .filter(c => c.household_member_id === currentUserId)
       .sort((a, b) => b.execution_date.getTime() - a.execution_date.getTime());
-    
+
     const latestCompletion = userCompletions[0];
-    
-    if (userCompletions.length === 0)
-    {
-      Alert.alert('Registrering hittades inte', 'Du har inte bockat av denna syssla ännu.');
+
+    if (userCompletions.length === 0) {
+      Alert.alert(
+        'Registrering hittades inte',
+        'Du har inte bockat av denna syssla ännu.'
+      );
       return;
     }
 
@@ -149,12 +149,9 @@ export const TaskScreen = () => {
             key={t.id}
             title={t.title}
             onPress={() => {
-              if (isEditMode)
-              {
+              if (isEditMode) {
                 handleEditTask(t);
-              }
-              else
-              {
+              } else {
                 handleTaskPress(t);
               }
             }}
