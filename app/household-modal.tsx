@@ -49,13 +49,13 @@ export default function HouseholdModal() {
               maxLength={42}
               outlineColor={theme.colors.outlineVariant}
               activeOutlineColor={theme.colors.outline}
-              textColor={theme.colors.onSurface} // When typing
+              textColor={theme.colors.onSurface}
               theme={{ colors: { onSurfaceVariant: theme.colors.onSurface } }}
             />
             <View>
               <TextInput
                 style={s.inputTitle}
-                label={accessCode ? '' : 'Generera kod'}
+                label={'Generera kod'}
                 value={accessCode}
                 editable={false}
                 mode="outlined"
@@ -63,17 +63,15 @@ export default function HouseholdModal() {
                 activeOutlineColor={theme.colors.outline}
                 textColor={theme.colors.onSurface}
                 theme={{ colors: { onSurfaceVariant: theme.colors.onSurface } }}
-              ></TextInput>
-              <Button
-                mode="text"
-                onPress={handleGenerateCode}
-                style={s.button}
-                labelStyle={s.buttonLabel}
-                contentStyle={s.buttonContent}
-                rippleColor="transparent"
-              >
-                Generera hushålls-kod
-              </Button>
+                right={
+                  <TextInput.Icon
+                    icon="refresh"
+                    onPress={handleGenerateCode}
+                    rippleColor="transparent"
+                    forceTextInputFocus={false}
+                  />
+                }
+              />
             </View>
           </ScrollView>
 
