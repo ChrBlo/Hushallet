@@ -11,6 +11,7 @@ import TaskButton from '../../../components/task-button';
 import { auth } from '../../../firebase_client';
 import { useHouseholdGet } from '../../../infra/hooks/use_household';
 import { useTaskCompletionCreate } from '../../../infra/hooks/use_task_completion_create';
+import { useTaskCompletionDelete } from '../../../infra/hooks/use_task_completion_delete';
 import { useTaskDelete } from '../../../infra/hooks/use_task_delete';
 import { useSelectedHouseholdId } from '../../../providers/household_provider';
 import type { Task } from '../../../types/task';
@@ -48,7 +49,9 @@ export const TaskScreen = () => {
   const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null);
 
   const completionCreateMutation = useTaskCompletionCreate();
+  const completionDeleteMutation = useTaskCompletionDelete();
   const currentUserId = auth.currentUser?.uid;
+  const [processingTaskId, setProcessingTaskId] = useState<string | null>(null);
 
   const selectedHousehold = households.data?.find(
     h => h.household.id === selectedHouseholdId
@@ -95,7 +98,46 @@ export const TaskScreen = () => {
       taskId: task.id,
       completion,
     });
+  };
 
+  const handleTaskLongPress = async (task: Task) => {
+
+    if (isEditMode || !currentUserId || !task.id) return;
+
+    const userCompletions = task.completions
+      .filter(c => c.household_member_id === currentUserId)
+      .sort((a, b) => b.execution_date.getTime() - a.execution_date.getTime());
+    
+    const latestCompletion = userCompletions[0];
+    
+    if (userCompletions.length === 0)
+    {
+      Alert.alert('Registrering hittades inte', 'Du har inte bockat av denna syssla ännu.');
+      return;
+    }
+
+    Alert.alert(
+      'Ta bort avbockad syssla',
+      `Vill du ta bort din senast avbockade "${task.title}"?`,
+      [
+        {
+          text: 'Nej',
+          style: 'cancel',
+        },
+        {
+          text: 'Ja',
+          style: 'destructive',
+          onPress: async () => {
+            setProcessingTaskId(task.id!);
+            await completionDeleteMutation.mutateAsync({
+              taskId: task.id!,
+              completion: latestCompletion,
+            });
+            setProcessingTaskId(null);
+          },
+        },
+      ]
+    );
   };
 
   return (
@@ -116,6 +158,7 @@ export const TaskScreen = () => {
                 handleTaskPress(t);
               }
             }}
+            onLongPress={() => handleTaskLongPress(t)}
           >
             <View style={s.row}>
               {isEditMode ? (
