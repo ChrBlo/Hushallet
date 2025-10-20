@@ -15,3 +15,17 @@ export const taskCompletionCreate = async (taskId: string, completion: TaskCompl
     users: arrayUnion(firestoreCompletion),
   });
 };
+
+export const taskCompletionDelete = async (taskId: string, completion: TaskCompletion) => {
+    
+  const taskRef = doc(db, 'tasks', taskId);
+
+  const firestoreCompletion = {
+    household_member_id: completion.household_member_id,
+    execution_date: Timestamp.fromDate(completion.execution_date),
+  };
+    
+  await updateDoc(taskRef, {
+    users: arrayRemove(firestoreCompletion),
+  });
+};
