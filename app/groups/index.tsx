@@ -55,7 +55,9 @@ const GroupsScreen = () => {
 
       <StyledButton
         title={'Lägg till'}
-        onPress={() => {}}
+        onPress={() => {
+          router.push('household-modal');
+        }}
         style={[s.button, s.bottomLeft]}
       />
 
