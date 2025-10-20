@@ -88,17 +88,6 @@ export const TaskScreen = () => {
   const handleTaskPress = async (task: Task) => {
     if (isEditMode || !currentUserId || !task.id) return;
 
-    const userHasCompleted = task.completions.some(
-      c => c.household_member_id === currentUserId
-    );
-
-    if (userHasCompleted) {
-      Alert.alert(
-        'Redan avbockad',
-        'Du har redan klarmarkerat denna syssla. Tryck länge på en syssla för att ta bort klarmarkering.'
-      );
-      return;
-    }
     const completion: TaskCompletion = {
       household_member_id: currentUserId,
       execution_date: new Date(),
