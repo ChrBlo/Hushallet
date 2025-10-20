@@ -88,6 +88,17 @@ export const TaskScreen = () => {
   const handleTaskPress = async (task: Task) => {
     if (isEditMode || !currentUserId || !task.id) return;
 
+    const userHasCompleted = task.completions.some(
+      c => c.household_member_id === currentUserId
+    );
+
+    if (userHasCompleted) {
+      Alert.alert(
+        'Redan avbockad',
+        'Du har redan klarmarkerat denna syssla. Tryck länge på en syssla för att ta bort klarmarkering.'
+      );
+      return;
+    }
     const completion: TaskCompletion = {
       household_member_id: currentUserId,
       execution_date: new Date(),
@@ -111,14 +122,14 @@ export const TaskScreen = () => {
     if (userCompletions.length === 0) {
       Alert.alert(
         'Registrering hittades inte',
-        'Du har inte bockat av denna syssla ännu.'
+        'Du har inte klarmarkerat denna syssla ännu.'
       );
       return;
     }
 
     Alert.alert(
-      'Ta bort avbockad syssla',
-      `Vill du ta bort din senast avbockade "${task.title}"?`,
+      'Ta bort klarmarkering av syssla',
+      `Vill du ta bort klarmarkeringen för "${task.title}"?`,
       [
         {
           text: 'Nej',
