@@ -8,10 +8,13 @@ import AvatarBubble from '../../../components/avatar-bubble';
 import { getAvatarConfig } from '../../../components/get-avatar';
 import StyledButton from '../../../components/styled-button';
 import TaskButton from '../../../components/task-button';
+import { auth } from '../../../firebase_client';
 import { useHouseholdGet } from '../../../infra/hooks/use_household';
+import { useTaskCompletionCreate } from '../../../infra/hooks/use_task_completion_create';
 import { useTaskDelete } from '../../../infra/hooks/use_task_delete';
 import { useSelectedHouseholdId } from '../../../providers/household_provider';
 import type { Task } from '../../../types/task';
+import { TaskCompletion } from '../../../types/task_completion';
 
 const handleCreateNewTask = () => {
   router.push('/task-modal');
@@ -43,6 +46,9 @@ export const TaskScreen = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const deleteMutation = useTaskDelete();
   const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null);
+
+  const completionCreateMutation = useTaskCompletionCreate();
+  const currentUserId = auth.currentUser?.uid;
 
   const selectedHousehold = households.data?.find(
     h => h.household.id === selectedHouseholdId
@@ -76,6 +82,22 @@ export const TaskScreen = () => {
     );
   };
 
+  const handleTaskPress = async (task: Task) => {
+
+    if (isEditMode || !currentUserId || !task.id) return;
+  
+    const completion: TaskCompletion = {
+      household_member_id: currentUserId,
+      execution_date: new Date(),
+    };
+
+    await completionCreateMutation.mutateAsync({
+      taskId: task.id,
+      completion,
+    });
+
+  };
+
   return (
     <>
       <StatusBar style="auto" />
@@ -85,7 +107,14 @@ export const TaskScreen = () => {
             key={t.id}
             title={t.title}
             onPress={() => {
-              handleEditTask(t);
+              if (isEditMode)
+              {
+                handleEditTask(t);
+              }
+              else
+              {
+                handleTaskPress(t);
+              }
             }}
           >
             <View style={s.row}>
