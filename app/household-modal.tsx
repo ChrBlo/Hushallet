@@ -12,17 +12,38 @@ import {
 } from 'react-native-paper';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import GenerateAccessCode from '../components/generate-access-code';
+import { auth } from '../firebase_client';
+import { useHouseholdCreate } from '../infra/hooks/use_household_create';
+import { HouseholdUser } from '../types/household_user';
 
 export default function HouseholdModal() {
   const theme = useTheme();
   const s = createStyles(theme);
 
   const [name, setName] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [accessCode, setAccessCode] = useState('');
+  const creatMutation = useHouseholdCreate();
 
-  const handleGenerateCode = () => {
+  const handleGeneratedCode = () => {
     const code = GenerateAccessCode();
     setAccessCode(code);
+  };
+
+  const handleSave = async () => {
+    const newUser: HouseholdUser = {
+      id: auth.currentUser!.uid.toString(),
+      nickname: displayName.trim(),
+      role: 'admin',
+      icon: 'fox',
+      status: 'active',
+    };
+    await creatMutation.mutateAsync({
+      name: name.trim(),
+      invitation_code: accessCode.trim(),
+      users: [newUser],
+    });
+    router.back();
   };
 
   return (
@@ -52,6 +73,18 @@ export default function HouseholdModal() {
               textColor={theme.colors.onSurface}
               theme={{ colors: { onSurfaceVariant: theme.colors.onSurface } }}
             />
+            <TextInput
+              style={s.inputTitle}
+              label="Ditt namn i hushållet"
+              value={displayName}
+              onChangeText={setDisplayName}
+              mode="outlined"
+              maxLength={42}
+              outlineColor={theme.colors.outlineVariant}
+              activeOutlineColor={theme.colors.outline}
+              textColor={theme.colors.onSurface}
+              theme={{ colors: { onSurfaceVariant: theme.colors.onSurface } }}
+            />
             <View>
               <TextInput
                 style={s.inputTitle}
@@ -66,7 +99,7 @@ export default function HouseholdModal() {
                 right={
                   <TextInput.Icon
                     icon="refresh"
-                    onPress={handleGenerateCode}
+                    onPress={handleGeneratedCode}
                     rippleColor="transparent"
                     forceTextInputFocus={false}
                   />
@@ -83,7 +116,6 @@ export default function HouseholdModal() {
               labelStyle={s.buttonLabel}
               contentStyle={s.buttonContent}
               rippleColor="transparent"
-              /* disabled={} */
             >
               Avbryt
             </Button>
@@ -92,13 +124,11 @@ export default function HouseholdModal() {
 
             <Button
               mode="text"
-              onPress={() => {}}
+              onPress={handleSave}
               style={s.button}
               labelStyle={s.buttonLabel}
               contentStyle={s.buttonContent}
               rippleColor="transparent"
-              /* disabled={} */
-              /* loading={} */
             >
               Spara
             </Button>
@@ -117,7 +147,7 @@ const createStyles = (theme: MD3Theme) =>
       backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalContainer: {
-      minHeight: '50%',
+      minHeight: '70%',
       marginHorizontal: 16,
       marginBottom: 130,
     },
