@@ -19,7 +19,17 @@ export default function RootLayout() {
       <ThemeProvider theme={theme}>
         <QueryClientProvider client={queryClient}>
           <HouseholdProvider>
-            <Stack>
+            <Stack
+              screenOptions={{
+                headerStyle: {
+                  backgroundColor: theme.colors.primary,
+                },
+                headerTintColor: theme.colors.onPrimary,
+                headerTitleStyle: {
+                  fontWeight: 'bold',
+                },
+              }}
+            >
               <Stack.Screen
                 name="index"
                 options={{ headerShown: true, title: 'Login' }}

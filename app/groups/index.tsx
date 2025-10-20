@@ -20,7 +20,7 @@ const GroupsScreen = () => {
 
   return (
     <>
-      <ScrollView contentContainerStyle={s.container}>
+      <ScrollView style={s.scrollView} contentContainerStyle={s.container}>
         {houseHolds.data?.map(h => (
           <TaskButton
             key={h.household.id}
@@ -53,10 +53,12 @@ export default GroupsScreen;
 const createStyles = (theme: MD3Theme) =>
   StyleSheet.create({
     container: {
-      backgroundColor: theme.colors.background,
       paddingTop: 10,
-      paddingBottom: 120,
       gap: 10,
+    },
+    scrollView: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
     },
     text: {
       fontSize: 18,
