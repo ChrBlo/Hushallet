@@ -43,6 +43,14 @@ export default function RootLayout() {
                 name="statistics"
                 options={{ headerShown: true, title: 'Statistics' }}
               />
+              <Stack.Screen
+                name="household-modal"
+                options={{
+                  presentation: 'transparentModal',
+                  animation: 'slide_from_bottom',
+                  headerShown: false,
+                }}
+              />
             </Stack>
           </HouseholdProvider>
         </QueryClientProvider>
