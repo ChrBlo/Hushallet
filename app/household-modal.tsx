@@ -103,7 +103,7 @@ export default function HouseholdModal() {
             ]}
           />
 
-          <ScrollView contentContainerStyle={s.scrollContent}>
+          <ScrollView key={activeTab} contentContainerStyle={s.scrollContent}>
             {activeTab === 'create' ? (
               <>
                 <Text style={s.header}>Lägg till hushåll</Text>
@@ -145,6 +145,16 @@ export default function HouseholdModal() {
                   label="Skriv in kod"
                   value={joinCode}
                   onChangeText={setJoinCode}
+                  mode="outlined"
+                  outlineColor={theme.colors.outlineVariant}
+                  activeOutlineColor={theme.colors.outline}
+                  textColor={theme.colors.onSurface}
+                />
+                <TextInput
+                  style={s.inputTitle}
+                  label="Ditt namn i hushållet"
+                  value={displayName}
+                  onChangeText={setDisplayName}
                   mode="outlined"
                   outlineColor={theme.colors.outlineVariant}
                   activeOutlineColor={theme.colors.outline}
