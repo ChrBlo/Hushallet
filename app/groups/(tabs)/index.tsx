@@ -143,6 +143,7 @@ export const TaskScreen = () => {
   return (
     <>
       <StatusBar style="auto" />
+      
       <ScrollView style={s.scrollView} contentContainerStyle={s.container}>
         {tasks.map(t => (
           <TaskButton
