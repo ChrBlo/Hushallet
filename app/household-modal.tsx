@@ -1,6 +1,6 @@
 import { BlurView } from 'expo-blur';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import {
   Button,
@@ -25,10 +25,10 @@ export default function HouseholdModal() {
   const [accessCode, setAccessCode] = useState('');
   const creatMutation = useHouseholdCreate();
 
-  const handleGeneratedCode = () => {
+  useEffect(() => {
     const code = GenerateAccessCode();
     setAccessCode(code);
-  };
+  }, []);
 
   const handleSave = async () => {
     const newUser: HouseholdUser = {
@@ -96,14 +96,6 @@ export default function HouseholdModal() {
                 activeOutlineColor={theme.colors.outline}
                 textColor={theme.colors.onSurface}
                 theme={{ colors: { onSurfaceVariant: theme.colors.onSurface } }}
-                right={
-                  <TextInput.Icon
-                    icon="refresh"
-                    onPress={handleGeneratedCode}
-                    rippleColor="transparent"
-                    forceTextInputFocus={false}
-                  />
-                }
               />
             </View>
           </ScrollView>
