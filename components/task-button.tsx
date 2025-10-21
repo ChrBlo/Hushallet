@@ -1,29 +1,28 @@
 import { StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { MD3Theme, Surface, useTheme } from 'react-native-paper';
 
-//Lämnar pga osäker på två onclick?
-
-/* interface Props {
-  id: string;
-  title: string;
-  edit: boolean;
-  executedBy: Avatar[];
-  onClickDefault: () => void;
-  onClickEdit: () => void;
-} */
-
 interface Props {
   onPress: () => void;
+  onLongPress?: () => void;
   children?: React.ReactNode;
   title: string;
 }
 
-export const TaskButton = ({ onPress, title, children }: Props) => {
+export const TaskButton = ({
+  onPress,
+  onLongPress,
+  title,
+  children,
+}: Props) => {
   const s = createStyles(useTheme());
 
   return (
     <>
-      <TouchableOpacity style={s.outerContainer} onPress={onPress}>
+      <TouchableOpacity
+        style={s.outerContainer}
+        onPress={onPress}
+        onLongPress={onLongPress}
+      >
         <Surface style={s.container}>
           <Text style={s.textStyle} numberOfLines={1} ellipsizeMode="tail">
             {title}

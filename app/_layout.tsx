@@ -44,10 +44,10 @@ export default function RootLayout() {
                 options={{ headerShown: true, title: 'Statistics' }}
               />
               <Stack.Screen
-                name="household-modal"
+                name="task-modal"
                 options={{
                   presentation: 'transparentModal',
-                  animation: 'slide_from_bottom',
+                  animation: 'fade',
                   headerShown: false,
                 }}
               />
