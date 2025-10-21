@@ -68,7 +68,7 @@ export const AppDarkTheme = merge(CombinedDarkTheme, {
   colors: {
     primary: 'rgba(9, 11, 14, 1)',
     onPrimary: 'rgba(161, 161, 161, 1)',
-    primaryContainer: 'rgb(0, 71, 134)',
+    primaryContainer: 'rgba(0, 52, 97, 1)',
     onPrimaryContainer: 'rgb(212, 227, 255)',
     secondary: 'rgb(188, 199, 220)',
     onSecondary: 'rgb(39, 49, 65)',

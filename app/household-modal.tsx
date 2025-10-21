@@ -6,6 +6,7 @@ import {
   Button,
   Divider,
   MD3Theme,
+  SegmentedButtons,
   Surface,
   TextInput,
   useTheme,
@@ -20,15 +21,19 @@ export default function HouseholdModal() {
   const theme = useTheme();
   const s = createStyles(theme);
 
+  const [activeTab, setActiveTab] = useState<'create' | 'join'>('create');
   const [name, setName] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [accessCode, setAccessCode] = useState('');
+  const [joinCode, setJoinCode] = useState('');
   const creatMutation = useHouseholdCreate();
 
   useEffect(() => {
-    const code = GenerateAccessCode();
-    setAccessCode(code);
-  }, []);
+    if (activeTab === 'create') {
+      const code = GenerateAccessCode();
+      setAccessCode(code);
+    }
+  }, [activeTab]);
 
   const handleSave = async () => {
     const newUser: HouseholdUser = {
@@ -46,6 +51,12 @@ export default function HouseholdModal() {
     router.back();
   };
 
+  /* const handleJoin = async () => {
+    // Här hanterar du logiken för att gå med i hushåll via joinCode
+    console.log('Går med i hushåll med kod:', joinCode);
+    router.back();
+  }; */
+
   return (
     <Animated.View entering={FadeIn.duration(200)} style={s.backdrop}>
       <BlurView
@@ -58,46 +69,89 @@ export default function HouseholdModal() {
         style={s.modalContainer}
       >
         <Surface style={s.card} elevation={5}>
-          <ScrollView contentContainerStyle={s.scrollContent}>
-            <Text style={s.header}>Lägg till hushåll</Text>
+          <SegmentedButtons
+            value={activeTab}
+            onValueChange={v => setActiveTab(v as 'create' | 'join')}
+            style={s.tabBar}
+            buttons={[
+              {
+                value: 'create',
+                label: 'Skapa hushåll',
+                style: [
+                  s.tabButton,
+                  { borderRightWidth: 0 },
+                  activeTab === 'create' && s.tabButtonActive,
+                ],
+                labelStyle: [
+                  s.tabLabel,
+                  activeTab === 'create' && s.tabLabelActive,
+                ],
+              },
+              {
+                value: 'join',
+                label: 'Gå med i hushåll',
+                style: [
+                  s.tabButton,
+                  { borderLeftWidth: 0 },
+                  activeTab === 'join' && s.tabButtonActive,
+                ],
+                labelStyle: [
+                  s.tabLabel,
+                  activeTab === 'join' && s.tabLabelActive,
+                ],
+              },
+            ]}
+          />
 
-            <TextInput
-              style={s.inputTitle}
-              label="Namn på hushållet"
-              value={name}
-              onChangeText={setName}
-              mode="outlined"
-              maxLength={42}
-              outlineColor={theme.colors.outlineVariant}
-              activeOutlineColor={theme.colors.outline}
-              textColor={theme.colors.onSurface}
-              theme={{ colors: { onSurfaceVariant: theme.colors.onSurface } }}
-            />
-            <TextInput
-              style={s.inputTitle}
-              label="Ditt namn i hushållet"
-              value={displayName}
-              onChangeText={setDisplayName}
-              mode="outlined"
-              maxLength={42}
-              outlineColor={theme.colors.outlineVariant}
-              activeOutlineColor={theme.colors.outline}
-              textColor={theme.colors.onSurface}
-              theme={{ colors: { onSurfaceVariant: theme.colors.onSurface } }}
-            />
-            <View>
-              <TextInput
-                style={s.inputTitle}
-                label={'Generera kod'}
-                value={accessCode}
-                editable={false}
-                mode="outlined"
-                outlineColor={theme.colors.outlineVariant}
-                activeOutlineColor={theme.colors.outline}
-                textColor={theme.colors.onSurface}
-                theme={{ colors: { onSurfaceVariant: theme.colors.onSurface } }}
-              />
-            </View>
+          <ScrollView contentContainerStyle={s.scrollContent}>
+            {activeTab === 'create' ? (
+              <>
+                <Text style={s.header}>Lägg till hushåll</Text>
+
+                <TextInput
+                  style={s.inputTitle}
+                  label="Namn på hushållet"
+                  value={name}
+                  onChangeText={setName}
+                  mode="outlined"
+                  maxLength={42}
+                  outlineColor={theme.colors.outlineVariant}
+                  activeOutlineColor={theme.colors.outline}
+                  textColor={theme.colors.onSurface}
+                  theme={{
+                    colors: { onSurfaceVariant: theme.colors.onSurface },
+                  }}
+                />
+                <TextInput
+                  style={s.inputTitle}
+                  label="Ditt namn i hushållet"
+                  value={displayName}
+                  onChangeText={setDisplayName}
+                  mode="outlined"
+                  maxLength={42}
+                  outlineColor={theme.colors.outlineVariant}
+                  activeOutlineColor={theme.colors.outline}
+                  textColor={theme.colors.onSurface}
+                  theme={{
+                    colors: { onSurfaceVariant: theme.colors.onSurface },
+                  }}
+                />
+              </>
+            ) : (
+              <>
+                <Text style={s.header}>Gå med i hushåll</Text>
+                <TextInput
+                  style={s.inputTitle}
+                  label="Skriv in kod"
+                  value={joinCode}
+                  onChangeText={setJoinCode}
+                  mode="outlined"
+                  outlineColor={theme.colors.outlineVariant}
+                  activeOutlineColor={theme.colors.outline}
+                  textColor={theme.colors.onSurface}
+                />
+              </>
+            )}
           </ScrollView>
 
           <View style={s.buttonContainer}>
@@ -189,5 +243,31 @@ const createStyles = (theme: MD3Theme) =>
       color: theme.colors.onSurfaceVariant,
       backgroundColor: theme.colors.surfaceVariant,
       marginBottom: 12,
+    },
+    tabBar: {
+      flexDirection: 'row',
+      borderRadius: 10,
+      borderColor: theme.colors.outlineVariant,
+      marginHorizontal: 16,
+      marginTop: 16,
+    },
+    tabButton: {
+      flex: 1,
+      borderRadius: 10,
+      borderWidth: 0,
+      backgroundColor: theme.colors.surfaceVariant,
+    },
+    tabButtonActive: {
+      backgroundColor: theme.colors.primaryContainer,
+    },
+    tabLabel: {
+      textAlign: 'center',
+      color: theme.colors.onSurfaceVariant,
+      fontWeight: '500',
+      paddingVertical: 6,
+    },
+    tabLabelActive: {
+      color: theme.colors.onPrimaryContainer,
+      fontWeight: '600',
     },
   });
