@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { BlurView } from 'expo-blur';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -14,6 +15,7 @@ import {
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import GenerateAccessCode from '../components/generate-access-code';
 import { auth } from '../firebase_client';
+import { householdKeys } from '../infra/hooks/use_household';
 import { useHouseholdCreate } from '../infra/hooks/use_household_create';
 import {
   householdGetByInvitationCode,
@@ -22,6 +24,7 @@ import {
 import { HouseholdUser } from '../types/household_user';
 
 export default function HouseholdModal() {
+  const queryClient = useQueryClient();
   const theme = useTheme();
   const s = createStyles(theme);
 
@@ -74,6 +77,9 @@ export default function HouseholdModal() {
       users: [...(household.users ?? []), newUser],
     });
 
+    await queryClient.invalidateQueries({
+      queryKey: householdKeys.list(),
+    });
     router.back();
   };
 
