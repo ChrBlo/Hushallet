@@ -81,6 +81,31 @@ const householdGet = async (): Promise<HouseholdWithTasks[]> => {
   return householdsWithTasks;
 };
 
+const householdGetByInvitationCode = async (
+  code: string
+): Promise<Household | null> => {
+  requireCurrentUser();
+
+  const householdSnapshot = await getDocs(
+    query(collection(db, collectionName), where('invitation_code', '==', code))
+  );
+
+  if (householdSnapshot.empty) {
+    return null;
+  }
+
+  const householdDoc = householdSnapshot.docs[0];
+  const data = householdDoc.data();
+
+  return {
+    id: householdDoc.id,
+    created_by: data.created_by ?? '',
+    name: data.name,
+    invitation_code: data.invitation_code,
+    users: (data.users ?? []) as Household['users'],
+  };
+};
+
 const householdCreate = async (
   household: Omit<Household, 'id' | 'created_by'>
 ): Promise<Household> => {
@@ -125,4 +150,10 @@ const householdDelete = async (householdId: string): Promise<void> => {
   await deleteDoc(doc(db, collectionName, householdId));
 };
 
-export { householdCreate, householdDelete, householdGet, householdUpdate };
+export {
+  householdCreate,
+  householdDelete,
+  householdGet,
+  householdUpdate,
+  householdGetByInvitationCode,
+};
