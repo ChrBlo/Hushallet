@@ -84,7 +84,7 @@ export const AppDarkTheme = merge(CombinedDarkTheme, {
     onErrorContainer: 'rgb(255, 180, 171)',
     background: 'rgb(50,53,56)',
     onBackground: 'rgb(227, 226, 230)',
-    surface: 'rgb(26, 28, 30)',
+    surface: 'rgba(26, 28, 30, 1)1%, 1.00)',
     onSurface: 'rgb(227, 226, 230)',
     surfaceVariant: 'rgb(67, 71, 78)',
     onSurfaceVariant: 'rgb(195, 198, 207)',

@@ -5,7 +5,7 @@
     "scheme": "reactnativepaper",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/splashScreenLogo.png",
+    "icon": "./assets/appIcon.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -32,7 +32,7 @@
           "image": "./assets/splashScreenLogo.png",
           "dark": {
             "image": "./assets/splashScreenLogo.png",
-            "backgroundColor": "#1a1a1a"
+            "backgroundColor": "#1a1c1eff"
           },
           "resizeMode": "contain"
         }
