@@ -16,6 +16,7 @@ import GenerateAccessCode from '../components/generate-access-code';
 import { auth } from '../firebase_client';
 import { useHouseholdCreate } from '../infra/hooks/use_household_create';
 import { HouseholdUser } from '../types/household_user';
+import { useHouseholdGet } from '../infra/hooks/use_household';
 
 export default function HouseholdModal() {
   const theme = useTheme();
@@ -27,6 +28,7 @@ export default function HouseholdModal() {
   const [accessCode, setAccessCode] = useState('');
   const [joinCode, setJoinCode] = useState('');
   const creatMutation = useHouseholdCreate();
+  const updateMutation = useHouseholdGet//Hooken
 
   useEffect(() => {
     if (activeTab === 'create') {
@@ -51,11 +53,27 @@ export default function HouseholdModal() {
     router.back();
   };
 
-  /* const handleJoin = async () => {
-    // Här hanterar du logiken för att gå med i hushåll via joinCode
-    console.log('Går med i hushåll med kod:', joinCode);
+  //Pågående, inväntar api-anrop
+  const handleJoin = async () => {
+    const household = //API-anrop
+    if(!household) return alert('Inget hushåll finns på angiven kod');
+
+    const newUser: HouseholdUser = {
+      id: auth.currentUser!.uid.toString(),
+      nickname: displayName.trim(),
+      role: 'member',
+      icon: 'octopus',
+      status: 'active',
+    };
+    await updateMutation.mutateAsync({
+      id:household.id,
+      name: household.name,
+      invitation_code: household.invitation_code,
+      users: [newUser],
+    });
+
     router.back();
-  }; */
+  };
 
   return (
     <Animated.View entering={FadeIn.duration(200)} style={s.backdrop}>
