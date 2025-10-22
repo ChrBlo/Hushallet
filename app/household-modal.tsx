@@ -15,8 +15,11 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import GenerateAccessCode from '../components/generate-access-code';
 import { auth } from '../firebase_client';
 import { useHouseholdCreate } from '../infra/hooks/use_household_create';
+import {
+  householdGetByInvitationCode,
+  householdUpdate,
+} from '../infra/household_functions';
 import { HouseholdUser } from '../types/household_user';
-import { useHouseholdGet } from '../infra/hooks/use_household';
 
 export default function HouseholdModal() {
   const theme = useTheme();
@@ -28,7 +31,6 @@ export default function HouseholdModal() {
   const [accessCode, setAccessCode] = useState('');
   const [joinCode, setJoinCode] = useState('');
   const creatMutation = useHouseholdCreate();
-  const updateMutation = useHouseholdGet//Hooken
 
   useEffect(() => {
     if (activeTab === 'create') {
@@ -53,10 +55,9 @@ export default function HouseholdModal() {
     router.back();
   };
 
-  //Pågående, inväntar api-anrop
   const handleJoin = async () => {
-    const household = //API-anrop
-    if(!household) return alert('Inget hushåll finns på angiven kod');
+    const household = await householdGetByInvitationCode(joinCode);
+    if (!household) return alert('Inget hushåll finns på angiven kod');
 
     const newUser: HouseholdUser = {
       id: auth.currentUser!.uid.toString(),
@@ -65,11 +66,12 @@ export default function HouseholdModal() {
       icon: 'octopus',
       status: 'active',
     };
-    await updateMutation.mutateAsync({
-      id:household.id,
+    await householdUpdate({
+      id: household.id,
+      created_by: household.created_by,
       name: household.name,
       invitation_code: household.invitation_code,
-      users: [newUser],
+      users: [...(household.users ?? []), newUser],
     });
 
     router.back();
@@ -198,13 +200,13 @@ export default function HouseholdModal() {
 
             <Button
               mode="text"
-              onPress={handleSave}
+              onPress={activeTab === 'create' ? handleSave : handleJoin}
               style={s.button}
               labelStyle={s.buttonLabel}
               contentStyle={s.buttonContent}
               rippleColor="transparent"
             >
-              Spara
+              {activeTab === 'create' ? 'Spara' : 'Gå med'}
             </Button>
           </View>
         </Surface>
