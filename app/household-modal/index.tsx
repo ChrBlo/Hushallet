@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { BlurView } from 'expo-blur';
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import {
   Button,
@@ -13,15 +13,17 @@ import {
   useTheme,
 } from 'react-native-paper';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
-import GenerateAccessCode from '../components/generate-access-code';
-import { auth } from '../firebase_client';
-import { householdKeys } from '../infra/hooks/use_household';
-import { useHouseholdCreate } from '../infra/hooks/use_household_create';
+import GenerateAccessCode from '../../components/generate-access-code';
+import { AvatarName } from '../../components/get-avatar';
+import { auth } from '../../firebase_client';
+import { householdKeys } from '../../infra/hooks/use_household';
+import { useHouseholdCreate } from '../../infra/hooks/use_household_create';
 import {
   householdGetByInvitationCode,
   householdUpdate,
-} from '../infra/household_functions';
-import { HouseholdUser } from '../types/household_user';
+} from '../../infra/household_functions';
+import { HouseholdUser } from '../../types/household_user';
+import SimpleAvatarSelector from './avatar-selector';
 
 export default function HouseholdModal() {
   const queryClient = useQueryClient();
@@ -33,6 +35,8 @@ export default function HouseholdModal() {
   const [displayName, setDisplayName] = useState('');
   const [accessCode, setAccessCode] = useState('');
   const [joinCode, setJoinCode] = useState('');
+  const [selectedIcon, setSelectedIcon] = useState<AvatarName>('octopus');
+  const [joinHousehold, setJoinHousehold] = useState<any>(null);
   const creatMutation = useHouseholdCreate();
 
   useEffect(() => {
@@ -41,6 +45,21 @@ export default function HouseholdModal() {
       setAccessCode(code);
     }
   }, [activeTab]);
+
+  useEffect(() => {
+    const fetchHousehold = async () => {
+      if (joinCode.length >= 6) {
+        const household = await householdGetByInvitationCode(joinCode);
+        setJoinHousehold(household);
+      } else {
+        setJoinHousehold(null);
+      }
+    };
+
+    if (activeTab === 'join') {
+      fetchHousehold();
+    }
+  }, [joinCode, activeTab]);
 
   const handleSave = async () => {
     const newUser: HouseholdUser = {
@@ -59,22 +78,21 @@ export default function HouseholdModal() {
   };
 
   const handleJoin = async () => {
-    const household = await householdGetByInvitationCode(joinCode);
-    if (!household) return alert('Inget hushåll finns på angiven kod');
+    if (!joinHousehold) return alert('Inget hushåll finns på angiven kod');
 
     const newUser: HouseholdUser = {
       id: auth.currentUser!.uid.toString(),
       nickname: displayName.trim(),
       role: 'member',
-      icon: 'octopus',
+      icon: selectedIcon,
       status: 'active',
     };
     await householdUpdate({
-      id: household.id,
-      created_by: household.created_by,
-      name: household.name,
-      invitation_code: household.invitation_code,
-      users: [...(household.users ?? []), newUser],
+      id: joinHousehold.id,
+      created_by: joinHousehold.created_by,
+      name: joinHousehold.name,
+      invitation_code: joinHousehold.invitation_code,
+      users: [...(joinHousehold.users ?? []), newUser],
     });
 
     await queryClient.invalidateQueries({
@@ -186,6 +204,20 @@ export default function HouseholdModal() {
                   activeOutlineColor={theme.colors.outline}
                   textColor={theme.colors.onSurface}
                 />
+                {joinHousehold && (
+                  <>
+                    <Text style={s.sectionHeader}>Välj din avatar</Text>
+                    <SimpleAvatarSelector
+                      selectedIcon={selectedIcon}
+                      unavailableIcons={
+                        new Set(
+                          joinHousehold.users?.map((u: any) => u.icon) || []
+                        )
+                      }
+                      onSelectIcon={setSelectedIcon}
+                    />
+                  </>
+                )}
               </>
             )}
           </ScrollView>
@@ -305,5 +337,12 @@ const createStyles = (theme: MD3Theme) =>
     tabLabelActive: {
       color: theme.colors.onPrimaryContainer,
       fontWeight: '600',
+    },
+    sectionHeader: {
+      fontSize: 16,
+      marginTop: 16,
+      marginBottom: 8,
+      color: theme.colors.onSurface,
+      fontWeight: '500',
     },
   });
