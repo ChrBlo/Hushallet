@@ -8,7 +8,7 @@ import { householdGet } from '../../../infra/household_functions';
 import { useSelectedHouseholdId } from '../../../providers/household_provider';
 import { useEffect, useState } from 'react';
 import { getAvatarConfig } from '../../../components/get-avatar';
-import { getTimePeriods, TimePeriod } from '../../../infra/helpers/statistics';
+import { getTimePeriods, isWithinPeriod, TimePeriod } from '../../../infra/helpers/statistics';
 
 interface ChartData {
   value: number;
@@ -18,9 +18,6 @@ interface ChartData {
     fontSize: number;
   };
 }
-
-const isWithinPeriod = (date: Date, period: TimePeriod): boolean =>
-  date >= period.start && date <= period.end;
 
 const titleLength: number = 18;
 const processChartTitle = (str: string) => {

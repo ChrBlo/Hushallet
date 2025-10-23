@@ -104,8 +104,8 @@ export const TaskScreen = () => {
       pathname: '/view-task-modal',
       params: {
         taskId: task.id,
-      }
-    })
+      },
+    });
   };
 
   const handleTaskLongPress = async (task: Task) => {

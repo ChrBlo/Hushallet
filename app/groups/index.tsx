@@ -5,6 +5,8 @@ import StyledButton from '../../components/styled-button';
 import TaskButton from '../../components/task-button';
 import { useHouseholdGet } from '../../infra/hooks/use_household';
 import { useSelectedHouseholdId } from '../../providers/household_provider';
+import AvatarBubble from '../../components/avatar-bubble';
+import { getAvatarConfig } from '../../components/get-avatar';
 
 const GroupsScreen = () => {
   const theme = useTheme();
