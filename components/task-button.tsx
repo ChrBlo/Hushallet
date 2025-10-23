@@ -8,8 +8,8 @@ interface Props {
   children?: React.ReactNode;
   title: string;
   lastCompletionDate?: Date;
-  taskCreatedDate: Date;
-  frequency: number;
+  taskCreatedDate?: Date;
+  frequency?: number;
   isEditMode?: boolean;
 }
 
@@ -35,7 +35,7 @@ export const TaskButton = ({
 }: Props) => {
   const s = createStyles(useTheme());
   const daysSince = getDaysSinceCompletion(lastCompletionDate, taskCreatedDate);
-  const showBadge = !isEditMode && daysSince !== null && daysSince > 0;
+  const showBadge = !isEditMode && daysSince !== null && daysSince > 0 && frequency !== undefined;
 
   return (
     <>
