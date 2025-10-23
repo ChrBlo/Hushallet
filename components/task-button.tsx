@@ -10,6 +10,7 @@ interface Props {
   lastCompletionDate?: Date;
   taskCreatedDate: Date;
   frequency: number;
+  isEditMode?: boolean;
 }
 
 const getBadgeColor = (daysSince: number, frequency: number): string => {
@@ -35,11 +36,12 @@ export const TaskButton = ({
   lastCompletionDate,
   taskCreatedDate,
   frequency,
+  isEditMode = false,
 }: Props) => {
 
   const s = createStyles(useTheme());
   const daysSince = getDaysSinceCompletion(lastCompletionDate, taskCreatedDate);
-  const showBadge = daysSince !== null && daysSince > 0;
+  const showBadge = !isEditMode && daysSince !== null && daysSince > 0;
 
   return (
     <>

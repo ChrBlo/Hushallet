@@ -9,6 +9,7 @@ import { getAvatarConfig } from '../../../components/get-avatar';
 import StyledButton from '../../../components/styled-button';
 import TaskButton from '../../../components/task-button';
 import { auth } from '../../../firebase_client';
+import { getDaysSinceCompletion } from '../../../infra/helpers/get_days_since_completion';
 import { useHouseholdGet } from '../../../infra/hooks/use_household';
 import { useTaskCompletionCreate } from '../../../infra/hooks/use_task_completion_create';
 import { useTaskCompletionDelete } from '../../../infra/hooks/use_task_completion_delete';
@@ -150,6 +151,7 @@ export const TaskScreen = () => {
             title={t.title}
             frequency={t.frequency}
             taskCreatedDate={t.created_date}
+            isEditMode={isEditMode}
             lastCompletionDate={
               t.completions.length > 0
                 ? t.completions
@@ -199,24 +201,38 @@ export const TaskScreen = () => {
                   </Button>
                 </>
               ) : (
-                t.completions.map((completion, index) => {
-                  const user = selectedHousehold?.household.users.find(
-                    u => u.id === completion.household_member_id
+                (() => {
+                  const daysSince = getDaysSinceCompletion(
+                    t.completions.length > 0
+                      ? t.completions.sort((a, b) => b.execution_date.getTime() - a.execution_date.getTime())[0].execution_date
+                      : undefined,
+                    t.created_date
                   );
+                  const shouldShowBadge = daysSince !== null && daysSince > 0;
+                  
+                  // Dont show avatars if badge should show
+                  if (shouldShowBadge) return null;
+                  
+                  // Otherwise, show avatars
+                  return t.completions.map((completion, index) => {
+                    const user = selectedHousehold?.household.users.find(
+                      u => u.id === completion.household_member_id
+                    );
 
-                  if (!user) {
-                    return null;
-                  }
+                    if (!user) {
+                      return null;
+                    }
 
-                  return (
-                    <AvatarBubble
-                      key={`${completion.household_member_id}-${index}`}
-                      config={getAvatarConfig(user.icon)}
-                      size={28}
-                      style={s.avatarBubble}
-                    />
-                  );
-                })
+                    return (
+                      <AvatarBubble
+                        key={`${completion.household_member_id}-${index}`}
+                        config={getAvatarConfig(user.icon)}
+                        size={28}
+                        style={s.avatarBubble}
+                      />
+                    );
+                  });
+                })()
               )}
             </View>
           </TaskButton>
