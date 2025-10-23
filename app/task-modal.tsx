@@ -13,7 +13,6 @@ import {
 } from 'react-native-paper';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { CustomDropdown } from '../components/custom-drop-down';
-import { auth } from '../firebase_client';
 import { useTaskCreate } from '../infra/hooks/use_task_create';
 import { useTaskUpdate } from '../infra/hooks/use_task_update';
 import { useSelectedHouseholdId } from '../providers/household_provider';

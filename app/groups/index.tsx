@@ -28,9 +28,6 @@ const GroupsScreen = () => {
             onPress={() => handleButtonPress(h.household.id!)}
           ></TaskButton>
         ))}
-        <View>
-          <Button title="tasks" onPress={() => router.push('/groups/(tabs)')} />
-        </View>
       </ScrollView>
 
       <StyledButton

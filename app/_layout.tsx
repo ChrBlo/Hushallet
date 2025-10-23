@@ -51,6 +51,7 @@ export default function RootLayout() {
                   headerShown: false,
                 }}
               />
+n
               <Stack.Screen
                 name="household-modal"
                 options={{

@@ -48,6 +48,7 @@ export const TaskScreen = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const deleteMutation = useTaskDelete();
   const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   const completionCreateMutation = useTaskCompletionCreate();
   const completionDeleteMutation = useTaskCompletionDelete();
@@ -86,18 +87,25 @@ export const TaskScreen = () => {
     );
   };
 
-  const handleTaskPress = async (task: Task) => {
-    if (isEditMode || !currentUserId || !task.id) return;
+  const handleTaskPress = (task: Task) => {
+    // if (isEditMode || !currentUserId || !task.id) return;
+    //
+    // const completion: TaskCompletion = {
+    //   household_member_id: currentUserId,
+    //   execution_date: new Date(),
+    // };
+    //
+    // await completionCreateMutation.mutateAsync({
+    //   taskId: task.id,
+    //   completion,
+    // });
 
-    const completion: TaskCompletion = {
-      household_member_id: currentUserId,
-      execution_date: new Date(),
-    };
-
-    await completionCreateMutation.mutateAsync({
-      taskId: task.id,
-      completion,
-    });
+    router.push({
+      pathname: '/view-task-modal',
+      params: {
+        taskId: task.id,
+      }
+    })
   };
 
   const handleTaskLongPress = async (task: Task) => {
@@ -144,7 +152,6 @@ export const TaskScreen = () => {
   return (
     <>
       <StatusBar style="auto" />
-
       <ScrollView style={s.scrollView} contentContainerStyle={s.container}>
         {tasks.map(t => (
           <TaskButton
@@ -161,13 +168,9 @@ export const TaskScreen = () => {
                   )[0].execution_date
                 : undefined
             }
-            onPress={() => {
-              if (isEditMode) {
-                handleEditTask(t);
-              } else {
-                handleTaskPress(t);
-              }
-            }}
+            onPress={() =>
+              isEditMode ? handleEditTask(t) : handleTaskPress(t)
+            }
             onLongPress={() => handleTaskLongPress(t)}
           >
             <View style={s.row}>
