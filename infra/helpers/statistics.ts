@@ -7,7 +7,9 @@ export interface TimePeriod {
 export const getTimePeriods = () => {
   const array: TimePeriod[] = [];
   array.push(getThisWeek());
+  array.push(getLastWeek());
   array.push(getThisMonth());
+  array.push(getLastMonth());
   array.push(getThisYear());
   return array;
 };
@@ -37,6 +39,19 @@ const getThisMonth = (): TimePeriod => {
   };
 };
 
+const getLastMonth = (): TimePeriod => {
+  const today = new Date();
+  const n = today.getMonth();
+
+  const start = new Date(today.getFullYear(), n - 1, 1);
+  const end = new Date(today.getFullYear(), n, 1);
+  return {
+    start: start,
+    end: end,
+    title: 'Förra Månaden',
+  };
+};
+
 const getThisWeek = (): TimePeriod => {
   const weekStart = new Date();
   weekStart.setDate(weekStart.getDate() - weekStart.getDay() + 1);
@@ -51,4 +66,12 @@ const getThisWeek = (): TimePeriod => {
     end: weekEnd,
     title: 'Denna Veckan',
   };
+};
+
+const getLastWeek = (): TimePeriod => {
+  const period = getThisWeek();
+  period.start.setDate(period.start.getDate() - 7);
+  period.end.setDate(period.end.getDate() - 7);
+  period.title = 'Förra Veckan';
+  return period;
 };

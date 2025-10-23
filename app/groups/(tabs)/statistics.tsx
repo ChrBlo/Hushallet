@@ -77,12 +77,18 @@ const getChartData = (task: Task, household: Household) => {
     return data;
   }
 
+  const map = new Map<string, number>();
   for (const e of task.completions) {
-    const avatar = getAvatarConfig(
-      household.users.find(u => u.id === e.household_member_id)!.icon
+    map.set(
+      e.household_member_id,
+      (map.get(e.household_member_id) ?? 0) + task.points
     );
+  }
+
+  for (const key of map.keys()) {
+    const avatar = getAvatarConfig(household.users.find(u => u.id === key)!.icon);
     data.push({
-      value: task.points,
+      value: map.get(key) ?? 0,
       color: avatar.color,
       label: { text: avatar.emoji, fontSize: 24 },
     });
@@ -133,6 +139,8 @@ export const StatisticsScreen = () => {
     };
     filteredTasks.push(task);
   });
+
+  console.log(filteredTasks);
 
   return (
     <View style={[s.flex, s.container]}>
