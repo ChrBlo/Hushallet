@@ -1,5 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MD3Theme, Surface, useTheme } from 'react-native-paper';
+import { getDaysSinceCompletion } from '../infra/helpers/get_days_since_completion';
 
 interface Props {
   onPress: () => void;
@@ -9,21 +10,6 @@ interface Props {
   lastCompletionDate?: Date;
   frequency: number;
 }
-
-const getDaysSinceCompletion = (lastCompletionDate?: Date): number | null => {
-  if (!lastCompletionDate) return null;
-  
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  
-  const completionDate = new Date(lastCompletionDate);
-  completionDate.setHours(0, 0, 0, 0);
-  
-  const diffTime = today.getTime() - completionDate.getTime();
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  
-  return diffDays;
-};
 
 export const TaskButton = ({
   onPress,
