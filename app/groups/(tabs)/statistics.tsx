@@ -19,10 +19,8 @@ interface ChartData {
   };
 }
 
-const isWithinPeriod = (date: Date, period: TimePeriod): boolean => {
-  const accepted = date >= period.start && date <= period.end;
-  return accepted;
-};
+const isWithinPeriod = (date: Date, period: TimePeriod): boolean =>
+  date >= period.start && date <= period.end;
 
 const titleLength: number = 18;
 const processChartTitle = (str: string) => {
@@ -99,9 +97,7 @@ export const StatisticsScreen = () => {
   const [data, setData] = useState<HouseholdWithTasks>();
   const [isLoading, setIsLoading] = useState(true);
   const timePeriods: TimePeriod[] = [...getTimePeriods()];
-  const [periodIndex, setPeriodIndex] = useState<number>(
-    timePeriods.length - 1
-  );
+  const [periodIndex, setPeriodIndex] = useState<number>(0);
 
   const increasePeriodIndex = () => {
     const newIndex =
