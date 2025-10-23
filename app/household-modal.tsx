@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { BlurView } from 'expo-blur';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -6,6 +7,7 @@ import {
   Button,
   Divider,
   MD3Theme,
+  SegmentedButtons,
   Surface,
   TextInput,
   useTheme,
@@ -13,22 +15,32 @@ import {
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import GenerateAccessCode from '../components/generate-access-code';
 import { auth } from '../firebase_client';
+import { householdKeys } from '../infra/hooks/use_household';
 import { useHouseholdCreate } from '../infra/hooks/use_household_create';
+import {
+  householdGetByInvitationCode,
+  householdUpdate,
+} from '../infra/household_functions';
 import { HouseholdUser } from '../types/household_user';
 
 export default function HouseholdModal() {
+  const queryClient = useQueryClient();
   const theme = useTheme();
   const s = createStyles(theme);
 
+  const [activeTab, setActiveTab] = useState<'create' | 'join'>('create');
   const [name, setName] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [accessCode, setAccessCode] = useState('');
+  const [joinCode, setJoinCode] = useState('');
   const creatMutation = useHouseholdCreate();
 
   useEffect(() => {
-    const code = GenerateAccessCode();
-    setAccessCode(code);
-  }, []);
+    if (activeTab === 'create') {
+      const code = GenerateAccessCode();
+      setAccessCode(code);
+    }
+  }, [activeTab]);
 
   const handleSave = async () => {
     const newUser: HouseholdUser = {
@@ -46,6 +58,31 @@ export default function HouseholdModal() {
     router.back();
   };
 
+  const handleJoin = async () => {
+    const household = await householdGetByInvitationCode(joinCode);
+    if (!household) return alert('Inget hushåll finns på angiven kod');
+
+    const newUser: HouseholdUser = {
+      id: auth.currentUser!.uid.toString(),
+      nickname: displayName.trim(),
+      role: 'member',
+      icon: 'octopus',
+      status: 'active',
+    };
+    await householdUpdate({
+      id: household.id,
+      created_by: household.created_by,
+      name: household.name,
+      invitation_code: household.invitation_code,
+      users: [...(household.users ?? []), newUser],
+    });
+
+    await queryClient.invalidateQueries({
+      queryKey: householdKeys.list(),
+    });
+    router.back();
+  };
+
   return (
     <Animated.View entering={FadeIn.duration(200)} style={s.backdrop}>
       <BlurView
@@ -58,46 +95,99 @@ export default function HouseholdModal() {
         style={s.modalContainer}
       >
         <Surface style={s.card} elevation={5}>
-          <ScrollView contentContainerStyle={s.scrollContent}>
-            <Text style={s.header}>Lägg till hushåll</Text>
+          <SegmentedButtons
+            value={activeTab}
+            onValueChange={v => setActiveTab(v as 'create' | 'join')}
+            style={s.tabBar}
+            buttons={[
+              {
+                value: 'create',
+                label: 'Skapa hushåll',
+                style: [
+                  s.tabButton,
+                  { borderRightWidth: 0 },
+                  activeTab === 'create' && s.tabButtonActive,
+                ],
+                labelStyle: [
+                  s.tabLabel,
+                  activeTab === 'create' && s.tabLabelActive,
+                ],
+              },
+              {
+                value: 'join',
+                label: 'Gå med i hushåll',
+                style: [
+                  s.tabButton,
+                  { borderLeftWidth: 0 },
+                  activeTab === 'join' && s.tabButtonActive,
+                ],
+                labelStyle: [
+                  s.tabLabel,
+                  activeTab === 'join' && s.tabLabelActive,
+                ],
+              },
+            ]}
+          />
 
-            <TextInput
-              style={s.inputTitle}
-              label="Namn på hushållet"
-              value={name}
-              onChangeText={setName}
-              mode="outlined"
-              maxLength={42}
-              outlineColor={theme.colors.outlineVariant}
-              activeOutlineColor={theme.colors.outline}
-              textColor={theme.colors.onSurface}
-              theme={{ colors: { onSurfaceVariant: theme.colors.onSurface } }}
-            />
-            <TextInput
-              style={s.inputTitle}
-              label="Ditt namn i hushållet"
-              value={displayName}
-              onChangeText={setDisplayName}
-              mode="outlined"
-              maxLength={42}
-              outlineColor={theme.colors.outlineVariant}
-              activeOutlineColor={theme.colors.outline}
-              textColor={theme.colors.onSurface}
-              theme={{ colors: { onSurfaceVariant: theme.colors.onSurface } }}
-            />
-            <View>
-              <TextInput
-                style={s.inputTitle}
-                label={'Generera kod'}
-                value={accessCode}
-                editable={false}
-                mode="outlined"
-                outlineColor={theme.colors.outlineVariant}
-                activeOutlineColor={theme.colors.outline}
-                textColor={theme.colors.onSurface}
-                theme={{ colors: { onSurfaceVariant: theme.colors.onSurface } }}
-              />
-            </View>
+          <ScrollView key={activeTab} contentContainerStyle={s.scrollContent}>
+            {activeTab === 'create' ? (
+              <>
+                <Text style={s.header}>Lägg till hushåll</Text>
+
+                <TextInput
+                  style={s.inputTitle}
+                  label="Namn på hushållet"
+                  value={name}
+                  onChangeText={setName}
+                  mode="outlined"
+                  maxLength={42}
+                  outlineColor={theme.colors.outlineVariant}
+                  activeOutlineColor={theme.colors.outline}
+                  textColor={theme.colors.onSurface}
+                  theme={{
+                    colors: { onSurfaceVariant: theme.colors.onSurface },
+                  }}
+                />
+                <TextInput
+                  style={s.inputTitle}
+                  label="Ditt namn i hushållet"
+                  value={displayName}
+                  onChangeText={setDisplayName}
+                  mode="outlined"
+                  maxLength={42}
+                  outlineColor={theme.colors.outlineVariant}
+                  activeOutlineColor={theme.colors.outline}
+                  textColor={theme.colors.onSurface}
+                  theme={{
+                    colors: { onSurfaceVariant: theme.colors.onSurface },
+                  }}
+                />
+              </>
+            ) : (
+              <>
+                <Text style={s.header}>Gå med i hushåll</Text>
+                <TextInput
+                  style={s.inputTitle}
+                  label="Skriv in kod"
+                  value={joinCode}
+                  onChangeText={setJoinCode}
+                  mode="outlined"
+                  outlineColor={theme.colors.outlineVariant}
+                  activeOutlineColor={theme.colors.outline}
+                  textColor={theme.colors.onSurface}
+                />
+                <TextInput
+                  style={s.inputTitle}
+                  label="Ditt namn i hushållet"
+                  value={displayName}
+                  onChangeText={setDisplayName}
+                  mode="outlined"
+                  outlineColor={theme.colors.outlineVariant}
+                  activeOutlineColor={theme.colors.outline}
+                  textColor={theme.colors.onSurface}
+                />
+              </>
+            )}
           </ScrollView>
 
           <View style={s.buttonContainer}>
@@ -116,13 +206,13 @@ export default function HouseholdModal() {
 
             <Button
               mode="text"
-              onPress={handleSave}
+              onPress={activeTab === 'create' ? handleSave : handleJoin}
               style={s.button}
               labelStyle={s.buttonLabel}
               contentStyle={s.buttonContent}
               rippleColor="transparent"
             >
-              Spara
+              {activeTab === 'create' ? 'Spara' : 'Gå med'}
             </Button>
           </View>
         </Surface>
@@ -189,5 +279,31 @@ const createStyles = (theme: MD3Theme) =>
       color: theme.colors.onSurfaceVariant,
       backgroundColor: theme.colors.surfaceVariant,
       marginBottom: 12,
+    },
+    tabBar: {
+      flexDirection: 'row',
+      borderRadius: 10,
+      borderColor: theme.colors.outlineVariant,
+      marginHorizontal: 16,
+      marginTop: 16,
+    },
+    tabButton: {
+      flex: 1,
+      borderRadius: 10,
+      borderWidth: 0,
+      backgroundColor: theme.colors.surfaceVariant,
+    },
+    tabButtonActive: {
+      backgroundColor: theme.colors.primaryContainer,
+    },
+    tabLabel: {
+      textAlign: 'center',
+      color: theme.colors.onSurfaceVariant,
+      fontWeight: '500',
+      paddingVertical: 6,
+    },
+    tabLabelActive: {
+      color: theme.colors.onPrimaryContainer,
+      fontWeight: '600',
     },
   });
