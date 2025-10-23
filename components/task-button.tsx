@@ -11,6 +11,21 @@ interface Props {
   frequency: number;
 }
 
+const getBadgeColor = (daysSince: number, frequency: number): string => {
+  if (daysSince < frequency)
+  {
+    return '#67c06aff';
+  }
+  else if (daysSince === frequency)
+  {
+    return '#e6a646ff';
+  }
+  else
+  {
+    return '#e75050ff';
+  }
+};
+
 export const TaskButton = ({
   onPress,
   onLongPress,
@@ -40,7 +55,7 @@ export const TaskButton = ({
               <View
                 style={[
                   s.badge,
-                  { backgroundColor: '#666' },
+                  { backgroundColor: getBadgeColor(daysSince, frequency) },
                 ]}
               >
                 <Text style={s.badgeText}>{daysSince}</Text>
