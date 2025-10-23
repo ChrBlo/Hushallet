@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MD3Theme, Surface, useTheme } from 'react-native-paper';
 
 interface Props {
@@ -27,7 +27,12 @@ export const TaskButton = ({
           <Text style={s.textStyle} numberOfLines={1} ellipsizeMode="tail">
             {title}
           </Text>
-          {children}
+          <View style={s.rightContent}>
+            <View style={[ s.badge, { backgroundColor: '#666' },]}>
+              <Text style={s.badgeText}>666</Text>
+            </View>
+            {children}
+          </View>
         </Surface>
       </TouchableOpacity>
     </>
@@ -61,5 +66,22 @@ const createStyles = (theme: MD3Theme) =>
       fontWeight: '600',
       color: theme.colors.onSurface,
       marginRight: -4,
+    },
+    rightContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    badge: {
+      width: 28,
+      height: 28,
+      borderRadius: 16,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginLeft: 4,
+    },
+    badgeText: {
+      color: '#FFFFFF',
+      fontSize: 14,
+      fontWeight: '700',
     },
   });
