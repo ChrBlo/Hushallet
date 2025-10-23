@@ -142,8 +142,6 @@ export const StatisticsScreen = () => {
     filteredTasks.push(task);
   });
 
-  console.log(filteredTasks);
-
   return (
     <View style={[s.flex, s.container]}>
       <SmallArrowSelectorBar
