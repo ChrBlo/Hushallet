@@ -35,7 +35,11 @@ export const TaskButton = ({
 }: Props) => {
   const s = createStyles(useTheme());
   const daysSince = getDaysSinceCompletion(lastCompletionDate, taskCreatedDate);
-  const showBadge = !isEditMode && daysSince !== null && daysSince > 0 && frequency !== undefined;
+  const showBadge =
+    !isEditMode &&
+    daysSince !== null &&
+    daysSince > 0 &&
+    frequency !== undefined;
 
   return (
     <>
