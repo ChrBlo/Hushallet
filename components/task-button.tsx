@@ -6,15 +6,37 @@ interface Props {
   onLongPress?: () => void;
   children?: React.ReactNode;
   title: string;
+  lastCompletionDate?: Date;
+  frequency: number;
 }
+
+const getDaysSinceCompletion = (lastCompletionDate?: Date): number | null => {
+  if (!lastCompletionDate) return null;
+  
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const completionDate = new Date(lastCompletionDate);
+  completionDate.setHours(0, 0, 0, 0);
+  
+  const diffTime = today.getTime() - completionDate.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  
+  return diffDays;
+};
 
 export const TaskButton = ({
   onPress,
   onLongPress,
   title,
   children,
+  lastCompletionDate,
+  frequency,
 }: Props) => {
+
   const s = createStyles(useTheme());
+  const daysSince = getDaysSinceCompletion(lastCompletionDate);
+  const showBadge = daysSince !== null && daysSince > 0;
 
   return (
     <>
@@ -28,9 +50,16 @@ export const TaskButton = ({
             {title}
           </Text>
           <View style={s.rightContent}>
-            <View style={[ s.badge, { backgroundColor: '#666' },]}>
-              <Text style={s.badgeText}>666</Text>
-            </View>
+            {showBadge && (
+              <View
+                style={[
+                  s.badge,
+                  { backgroundColor: '#666' },
+                ]}
+              >
+                <Text style={s.badgeText}>{daysSince}</Text>
+              </View>
+            )}
             {children}
           </View>
         </Surface>

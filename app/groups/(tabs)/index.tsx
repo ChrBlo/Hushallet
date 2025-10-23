@@ -148,6 +148,14 @@ export const TaskScreen = () => {
           <TaskButton
             key={t.id}
             title={t.title}
+            frequency={t.frequency}
+            lastCompletionDate={
+              t.completions.length > 0
+                ? t.completions
+                    .sort((a, b) => b.execution_date.getTime() - a.execution_date.getTime())[0]
+                    .execution_date
+                : undefined
+            }
             onPress={() => {
               if (isEditMode) {
                 handleEditTask(t);
