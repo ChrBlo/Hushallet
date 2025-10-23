@@ -154,9 +154,10 @@ export const TaskScreen = () => {
             isEditMode={isEditMode}
             lastCompletionDate={
               t.completions.length > 0
-                ? t.completions
-                    .sort((a, b) => b.execution_date.getTime() - a.execution_date.getTime())[0]
-                    .execution_date
+                ? t.completions.sort(
+                    (a, b) =>
+                      b.execution_date.getTime() - a.execution_date.getTime()
+                  )[0].execution_date
                 : undefined
             }
             onPress={() => {
@@ -204,31 +205,35 @@ export const TaskScreen = () => {
                 (() => {
                   const daysSince = getDaysSinceCompletion(
                     t.completions.length > 0
-                      ? t.completions.sort((a, b) => b.execution_date.getTime() - a.execution_date.getTime())[0].execution_date
+                      ? t.completions.sort(
+                          (a, b) =>
+                            b.execution_date.getTime() -
+                            a.execution_date.getTime()
+                        )[0].execution_date
                       : undefined,
                     t.created_date
                   );
                   const shouldShowBadge = daysSince !== null && daysSince > 0;
-                  
+
                   // Dont show avatars if badge should show
                   if (shouldShowBadge) return null;
-                  
+
                   const today = new Date();
                   today.setHours(0, 0, 0, 0);
-                    
+
                   const todaysCompletions = t.completions.filter(completion => {
                     const completionDate = new Date(completion.execution_date);
                     completionDate.setHours(0, 0, 0, 0);
                     return completionDate.getTime() === today.getTime();
                   });
-                    
+
                   // show avatars only for todays completions
                   return todaysCompletions.map((completion, index) => {
                     const user = selectedHousehold?.household.users.find(
                       u => u.id === completion.household_member_id
                     );
                     if (!user) return null;
-                    
+
                     return (
                       <AvatarBubble
                         key={`${completion.household_member_id}-${index}`}

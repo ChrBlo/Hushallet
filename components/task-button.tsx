@@ -14,16 +14,11 @@ interface Props {
 }
 
 const getBadgeColor = (daysSince: number, frequency: number): string => {
-  if (daysSince < frequency)
-  {
+  if (daysSince < frequency) {
     return '#67c06aff';
-  }
-  else if (daysSince === frequency)
-  {
+  } else if (daysSince === frequency) {
     return '#e6a646ff';
-  }
-  else
-  {
+  } else {
     return '#e75050ff';
   }
 };
@@ -38,7 +33,6 @@ export const TaskButton = ({
   frequency,
   isEditMode = false,
 }: Props) => {
-
   const s = createStyles(useTheme());
   const daysSince = getDaysSinceCompletion(lastCompletionDate, taskCreatedDate);
   const showBadge = !isEditMode && daysSince !== null && daysSince > 0;
