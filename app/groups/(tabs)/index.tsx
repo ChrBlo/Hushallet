@@ -213,16 +213,22 @@ export const TaskScreen = () => {
                   // Dont show avatars if badge should show
                   if (shouldShowBadge) return null;
                   
-                  // Otherwise, show avatars
-                  return t.completions.map((completion, index) => {
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0);
+                    
+                  const todaysCompletions = t.completions.filter(completion => {
+                    const completionDate = new Date(completion.execution_date);
+                    completionDate.setHours(0, 0, 0, 0);
+                    return completionDate.getTime() === today.getTime();
+                  });
+                    
+                  // show avatars only for todays completions
+                  return todaysCompletions.map((completion, index) => {
                     const user = selectedHousehold?.household.users.find(
                       u => u.id === completion.household_member_id
                     );
-
-                    if (!user) {
-                      return null;
-                    }
-
+                    if (!user) return null;
+                    
                     return (
                       <AvatarBubble
                         key={`${completion.household_member_id}-${index}`}
