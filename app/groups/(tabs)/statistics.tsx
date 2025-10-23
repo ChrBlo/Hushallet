@@ -86,7 +86,9 @@ const getChartData = (task: Task, household: Household) => {
   }
 
   for (const key of map.keys()) {
-    const avatar = getAvatarConfig(household.users.find(u => u.id === key)!.icon);
+    const avatar = getAvatarConfig(
+      household.users.find(u => u.id === key)!.icon
+    );
     data.push({
       value: map.get(key) ?? 0,
       color: avatar.color,
