@@ -149,6 +149,7 @@ export const TaskScreen = () => {
             key={t.id}
             title={t.title}
             frequency={t.frequency}
+            taskCreatedDate={t.created_date}
             lastCompletionDate={
               t.completions.length > 0
                 ? t.completions
