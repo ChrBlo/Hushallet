@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useTheme } from 'react-native-paper';
+import * as Haptics from 'expo-haptics';
 
 interface Props {
   callback: () => void;
@@ -14,21 +15,18 @@ export const RoundButton = ({ symbol, size = 32, color, callback }: Props) => {
     color = theme.dark ? 'white' : 'black';
   }
   const s = createStyles(size, color);
-  const fraction = size / 16;
 
   return (
-    <View style={[s.container, s.center]}>
-      <TouchableOpacity onPress={callback}>
-        <Text
-          style={[
-            s.font,
-            { transform: [{ scale: fraction }, { translateY: -1.5 }] },
-          ]}
-        >
-          {symbol}
-        </Text>
-      </TouchableOpacity>
-    </View>
+    <TouchableOpacity
+      onPress={() => {
+        callback();
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }}
+    >
+      <View style={[s.container, s.center]}>
+        <Text style={s.font}>{symbol}</Text>
+      </View>
+    </TouchableOpacity>
   );
 };
 
@@ -48,7 +46,9 @@ const createStyles = (size: number, color: string) =>
     font: {
       fontSize: 20,
       color: color,
+      paddingBottom: size / 20,
     },
+    transform: {},
   });
 
 export default RoundButton;

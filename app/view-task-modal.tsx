@@ -1,8 +1,7 @@
-import { router, useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Task } from '../types/task';
 import {
   Button,
-  Divider,
   MD3Theme,
   Surface,
   Text,
@@ -12,7 +11,6 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { BlurView } from 'expo-blur';
 import React, { useEffect, useState } from 'react';
-import { useTaskGet } from '../infra/hooks/use_task';
 import { getToday, isWithinPeriod } from '../infra/helpers/statistics';
 import AvatarBubble from '../components/avatar-bubble';
 import { getAvatarConfig } from '../components/get-avatar';
@@ -21,12 +19,11 @@ import { useSelectedHouseholdId } from '../providers/household_provider';
 import { HouseholdWithTasks } from '../types/household';
 import { Icon } from '../types/household_user';
 import RoundButton from '../components/round-button';
-import { TaskCompletion } from '../types/task_completion';
 import { auth } from '../firebase_client';
-import { useTaskUpdate } from '../infra/hooks/use_task_update';
 import { useTaskCompletionCreate } from '../infra/hooks/use_task_completion_create';
+import { useTaskCompletionDelete } from '../infra/hooks/use_task_completion_delete';
 
-interface Completion {
+interface CompletionIcon {
   emoji: Icon;
   times: number;
 }
@@ -38,7 +35,7 @@ const getCompletions = (task: Task, household: HouseholdWithTasks) => {
     map.set(c.household_member_id, (map.get(c.household_member_id) ?? 0) + 1);
   });
 
-  const result: Completion[] = [];
+  const result: CompletionIcon[] = [];
   for (const x of map.keys()) {
     const value = map.get(x);
     const userEmoji = household.household.users.find(u => u.id === x)?.icon;
@@ -52,40 +49,75 @@ const getCompletions = (task: Task, household: HouseholdWithTasks) => {
 export const ViewTaskModal = () => {
   const router = useRouter();
   const theme = useTheme();
+  const s = createStyles(theme);
   const currentUserId = auth.currentUser?.uid;
   const params = useLocalSearchParams();
-  const task = useTaskGet(params.taskId.toString());
-  const s = createStyles(theme);
+  const taskId = params.taskId.toString();
   const { selectedHouseholdId } = useSelectedHouseholdId();
-  const [completions, setCompletions] = useState<Completion[]>([]);
-  const createCompletion = useTaskCompletionCreate();
+  const [task, setTask] = useState<Task | null>(null);
+  const [household, setHousehold] = useState<HouseholdWithTasks>();
+  const [completions, setCompletions] = useState<CompletionIcon[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const createCompletionCallback = useTaskCompletionCreate();
+  const deleteCompletionCallback = useTaskCompletionDelete();
 
-  const addCompletion = async () => {
-    if (!currentUserId || !task.data?.id) return;
+  const getDbData = async () => {
+    const data = await householdGet();
+    const household = data.find(h => h.household.id === selectedHouseholdId);
+    setHousehold(() => household);
+  };
 
-    const completion: TaskCompletion = {
+  const addCompletion = () => {
+    if (!currentUserId || !task) return;
+
+    const c = {
       household_member_id: currentUserId,
       execution_date: new Date(),
     };
 
-    createCompletion.mutate({
-      taskId: task.data?.id,
-      completion: {
-        household_member_id: currentUserId,
-        execution_date: new Date(),
-      },
+    setIsLoading(() => true);
+    createCompletionCallback.mutate({
+      taskId: taskId,
+      completion: c,
     });
+    getDbData();
+  };
+
+  const deleteCompletion = () => {
+    console.log(currentUserId);
+    if (!currentUserId || !task) return;
+
+    const c = task.completions.find(
+      x =>
+        x.household_member_id === currentUserId &&
+        isWithinPeriod(x.execution_date, getToday())
+    );
+    if (!c) return;
+    setIsLoading(() => true);
+    deleteCompletionCallback.mutate({
+      taskId: taskId,
+      completion: c,
+    });
+    getDbData();
   };
 
   useEffect(() => {
-    const getData = async () => {
-      const data = await householdGet();
-      const household = data.find(h => h.household.id === selectedHouseholdId);
-      if (household && task.data) {
-        setCompletions(getCompletions(task.data, household));
-      }
-    };
-    getData();
+    getDbData();
+  }, []);
+
+  useEffect(() => {
+    if (!household) return;
+    const t = household?.tasks.find(x => x.id === taskId);
+    if (!t) return;
+    setTask(() => t);
+  }, [household]);
+
+  useEffect(() => {
+    if (!task) return;
+    if (household && task) {
+      setCompletions(getCompletions(task, household));
+      setIsLoading(() => false);
+    }
   }, [task]);
 
   return (
@@ -101,22 +133,22 @@ export const ViewTaskModal = () => {
         style={s.modalContainer}
       >
         <Surface style={s.card} elevation={5}>
-          <Text style={[s.header]}>{task.data?.title}</Text>
+          <Text style={[s.header]}>{task?.title}</Text>
 
           <ScrollView contentContainerStyle={s.scrollContent}>
             <View style={s.textSection}>
               <Text style={[s.label, s.bottomPadding]}>Beskrivning:</Text>
-              <Text style={[s.bottomBorder]}>{task.data?.description}</Text>
+              <Text style={[s.bottomBorder]}>{task?.description}</Text>
             </View>
 
             <View style={[s.valueSection, s.bottomBorder]}>
               <Text style={s.label}>Intervall:</Text>
-              <Text style={s.label}>{task.data?.frequency}</Text>
+              <Text style={s.label}>{task?.frequency}</Text>
             </View>
 
             <View style={[s.valueSection, s.bottomBorder]}>
               <Text style={s.label}>Poäng:</Text>
-              <Text style={s.label}>{task.data?.points}</Text>
+              <Text style={s.label}>{task?.points}</Text>
             </View>
 
             <View style={[s.textSection, s.bottomBorder]}>
@@ -136,16 +168,17 @@ export const ViewTaskModal = () => {
                 )}
               </View>
             </View>
-            <View style={[s.row, s.spaceBetween]}>
+            <View style={[s.row, s.spaceBetween, s.alignCenter]}>
               <RoundButton
                 symbol={'-'}
                 color={'#982323'}
-                callback={() => console.log('MINUS')}
+                callback={deleteCompletion}
               />
+              {isLoading && <Text>Laddar...</Text>}
               <RoundButton
                 symbol={'+'}
                 color={'#2f8d2f'}
-                callback={() => console.log('PLUS')}
+                callback={addCompletion}
               />
             </View>
           </ScrollView>
@@ -226,17 +259,15 @@ const createStyles = (theme: MD3Theme) =>
       flex: 1,
       borderRadius: 0,
     },
+    alignCenter: {
+      alignItems: 'center',
+    },
     buttonContent: {
       justifyContent: 'center',
       alignItems: 'center',
       fontSize: 20,
       lineHeight: 22,
       paddingVertical: 6,
-    },
-    separator: {
-      borderLeftWidth: 1,
-      borderLeftColor: theme.colors.outlineVariant,
-      height: '100%',
     },
     row: {
       flex: 1,
@@ -248,16 +279,6 @@ const createStyles = (theme: MD3Theme) =>
     buttonLabel: {
       color: theme.colors.onSurface,
       fontSize: 20,
-    },
-    inputTitle: {
-      color: theme.colors.onSurfaceVariant,
-      backgroundColor: theme.colors.surfaceVariant,
-      marginBottom: 12,
-    },
-    inputDescription: {
-      color: theme.colors.onSurfaceVariant,
-      backgroundColor: theme.colors.surfaceVariant,
-      marginBottom: 16,
     },
   });
 

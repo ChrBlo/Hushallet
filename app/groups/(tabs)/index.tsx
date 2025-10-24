@@ -12,11 +12,11 @@ import { auth } from '../../../firebase_client';
 import { getDaysSinceCompletion } from '../../../infra/helpers/get_days_since_completion';
 import { useHouseholdGet } from '../../../infra/hooks/use_household';
 import { useTaskCompletionCreate } from '../../../infra/hooks/use_task_completion_create';
-import { useTaskCompletionDelete } from '../../../infra/hooks/use_task_completion_delete';
 import { useTaskDelete } from '../../../infra/hooks/use_task_delete';
 import { useSelectedHouseholdId } from '../../../providers/household_provider';
 import type { Task } from '../../../types/task';
 import { TaskCompletion } from '../../../types/task_completion';
+import * as Haptics from 'expo-haptics';
 
 const handleCreateNewTask = () => {
   router.push('/task-modal');
@@ -48,10 +48,8 @@ export const TaskScreen = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const deleteMutation = useTaskDelete();
   const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null);
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   const completionCreateMutation = useTaskCompletionCreate();
-  const completionDeleteMutation = useTaskCompletionDelete();
   const currentUserId = auth.currentUser?.uid;
   const [processingTaskId, setProcessingTaskId] = useState<string | null>(null);
 
@@ -88,17 +86,7 @@ export const TaskScreen = () => {
   };
 
   const handleTaskPress = (task: Task) => {
-    // if (isEditMode || !currentUserId || !task.id) return;
-    //
-    // const completion: TaskCompletion = {
-    //   household_member_id: currentUserId,
-    //   execution_date: new Date(),
-    // };
-    //
-    // await completionCreateMutation.mutateAsync({
-    //   taskId: task.id,
-    //   completion,
-    // });
+    if (isEditMode || !currentUserId || !task.id) return;
 
     router.push({
       pathname: '/view-task-modal',
@@ -111,42 +99,17 @@ export const TaskScreen = () => {
   const handleTaskLongPress = async (task: Task) => {
     if (isEditMode || !currentUserId || !task.id) return;
 
-    const userCompletions = task.completions
-      .filter(c => c.household_member_id === currentUserId)
-      .sort((a, b) => b.execution_date.getTime() - a.execution_date.getTime());
+    const completion: TaskCompletion = {
+      household_member_id: currentUserId,
+      execution_date: new Date(),
+    };
 
-    const latestCompletion = userCompletions[0];
+    await completionCreateMutation.mutateAsync({
+      taskId: task.id,
+      completion,
+    });
 
-    if (userCompletions.length === 0) {
-      Alert.alert(
-        'Registrering hittades inte',
-        'Du har inte klarmarkerat denna syssla ännu.'
-      );
-      return;
-    }
-
-    Alert.alert(
-      'Ta bort klarmarkering av syssla',
-      `Vill du ta bort klarmarkeringen för "${task.title}"?`,
-      [
-        {
-          text: 'Nej',
-          style: 'cancel',
-        },
-        {
-          text: 'Ja',
-          style: 'destructive',
-          onPress: async () => {
-            setProcessingTaskId(task.id!);
-            await completionDeleteMutation.mutateAsync({
-              taskId: task.id!,
-              completion: latestCompletion,
-            });
-            setProcessingTaskId(null);
-          },
-        },
-      ]
-    );
+    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   };
 
   return (
