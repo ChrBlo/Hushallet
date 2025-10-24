@@ -20,6 +20,11 @@ import { householdGet } from '../infra/household_functions';
 import { useSelectedHouseholdId } from '../providers/household_provider';
 import { HouseholdWithTasks } from '../types/household';
 import { Icon } from '../types/household_user';
+import RoundButton from '../components/round-button';
+import { TaskCompletion } from '../types/task_completion';
+import { auth } from '../firebase_client';
+import { useTaskUpdate } from '../infra/hooks/use_task_update';
+import { useTaskCompletionCreate } from '../infra/hooks/use_task_completion_create';
 
 interface Completion {
   emoji: Icon;
@@ -47,11 +52,30 @@ const getCompletions = (task: Task, household: HouseholdWithTasks) => {
 export const ViewTaskModal = () => {
   const router = useRouter();
   const theme = useTheme();
+  const currentUserId = auth.currentUser?.uid;
   const params = useLocalSearchParams();
   const task = useTaskGet(params.taskId.toString());
   const s = createStyles(theme);
   const { selectedHouseholdId } = useSelectedHouseholdId();
   const [completions, setCompletions] = useState<Completion[]>([]);
+  const createCompletion = useTaskCompletionCreate();
+
+  const addCompletion = async () => {
+    if (!currentUserId || !task.data?.id) return;
+
+    const completion: TaskCompletion = {
+      household_member_id: currentUserId,
+      execution_date: new Date(),
+    };
+
+    createCompletion.mutate({
+      taskId: task.data?.id,
+      completion: {
+        household_member_id: currentUserId,
+        execution_date: new Date(),
+      },
+    });
+  };
 
   useEffect(() => {
     const getData = async () => {
@@ -81,34 +105,48 @@ export const ViewTaskModal = () => {
 
           <ScrollView contentContainerStyle={s.scrollContent}>
             <View style={s.textSection}>
-              <Text style={s.label}>Beskrivning</Text>
-              <Text style={{ padding: 4, backgroundColor: '#eee' }}>
-                {task.data?.description}
-              </Text>
+              <Text style={[s.label, s.bottomPadding]}>Beskrivning:</Text>
+              <Text style={[s.bottomBorder]}>{task.data?.description}</Text>
             </View>
 
-            <View style={s.valueSection}>
-              <Text>Intervall:</Text>
-              <Text>{task.data?.frequency}</Text>
+            <View style={[s.valueSection, s.bottomBorder]}>
+              <Text style={s.label}>Intervall:</Text>
+              <Text style={s.label}>{task.data?.frequency}</Text>
             </View>
 
-            <View style={s.valueSection}>
-              <Text>Poäng:</Text>
-              <Text>{task.data?.points}</Text>
+            <View style={[s.valueSection, s.bottomBorder]}>
+              <Text style={s.label}>Poäng:</Text>
+              <Text style={s.label}>{task.data?.points}</Text>
             </View>
 
-            <View style={[s.textSection]}>
-              <Text>Har gjort idag:</Text>
-              <View style={{flexDirection: 'row', gap: 8}}>
-                {completions?.map(c => (
-                  <AvatarBubble
-                    key={c.emoji.toString()}
-                    config={getAvatarConfig(c.emoji)}
-                    number={c.times}
-                    size={48}
-                  />
-                ))}
+            <View style={[s.textSection, s.bottomBorder]}>
+              <Text style={[s.label, s.bottomPadding]}>Har gjort idag:</Text>
+              <View style={{ flexDirection: 'row', gap: 8 }}>
+                {completions.length > 0 ? (
+                  completions?.map(c => (
+                    <AvatarBubble
+                      key={c.emoji.toString()}
+                      config={getAvatarConfig(c.emoji)}
+                      number={c.times}
+                      size={48}
+                    />
+                  ))
+                ) : (
+                  <Text>Ingen</Text>
+                )}
               </View>
+            </View>
+            <View style={[s.row, s.spaceBetween]}>
+              <RoundButton
+                symbol={'-'}
+                color={'#982323'}
+                callback={() => console.log('MINUS')}
+              />
+              <RoundButton
+                symbol={'+'}
+                color={'#2f8d2f'}
+                callback={() => console.log('PLUS')}
+              />
             </View>
           </ScrollView>
 
@@ -142,6 +180,14 @@ const createStyles = (theme: MD3Theme) =>
       marginHorizontal: 16,
       marginVertical: 'auto',
     },
+    bottomBorder: {
+      borderBottomWidth: 1,
+      borderColor: theme.colors.outlineVariant,
+      paddingBottom: 8,
+    },
+    bottomPadding: {
+      paddingBottom: 8,
+    },
     card: {
       borderWidth: 1,
       borderColor: theme.colors.outlineVariant,
@@ -163,6 +209,7 @@ const createStyles = (theme: MD3Theme) =>
     header: {
       fontSize: 20,
       padding: 16,
+      textAlign: 'center',
     },
     label: {
       fontSize: 18,
@@ -183,12 +230,20 @@ const createStyles = (theme: MD3Theme) =>
       justifyContent: 'center',
       alignItems: 'center',
       fontSize: 20,
+      lineHeight: 22,
       paddingVertical: 6,
     },
     separator: {
       borderLeftWidth: 1,
       borderLeftColor: theme.colors.outlineVariant,
       height: '100%',
+    },
+    row: {
+      flex: 1,
+      flexDirection: 'row',
+    },
+    spaceBetween: {
+      justifyContent: 'space-between',
     },
     buttonLabel: {
       color: theme.colors.onSurface,
