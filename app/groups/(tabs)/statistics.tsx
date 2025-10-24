@@ -8,7 +8,11 @@ import { householdGet } from '../../../infra/household_functions';
 import { useSelectedHouseholdId } from '../../../providers/household_provider';
 import { useEffect, useState } from 'react';
 import { getAvatarConfig } from '../../../components/get-avatar';
-import { getTimePeriods, isWithinPeriod, TimePeriod } from '../../../infra/helpers/statistics';
+import {
+  getTimePeriods,
+  isWithinPeriod,
+  TimePeriod,
+} from '../../../infra/helpers/statistics';
 
 interface ChartData {
   value: number;
