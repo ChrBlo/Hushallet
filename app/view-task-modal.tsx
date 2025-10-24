@@ -1,12 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Task } from '../types/task';
-import {
-  Button,
-  MD3Theme,
-  Surface,
-  Text,
-  useTheme,
-} from 'react-native-paper';
+import { Button, MD3Theme, Surface, Text, useTheme } from 'react-native-paper';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { BlurView } from 'expo-blur';
@@ -22,6 +16,7 @@ import RoundButton from '../components/round-button';
 import { auth } from '../firebase_client';
 import { useTaskCompletionCreate } from '../infra/hooks/use_task_completion_create';
 import { useTaskCompletionDelete } from '../infra/hooks/use_task_completion_delete';
+import { getFrequencyLabel } from './task-modal';
 
 interface CompletionIcon {
   emoji: Icon;
@@ -143,7 +138,11 @@ export const ViewTaskModal = () => {
 
             <View style={[s.valueSection, s.bottomBorder]}>
               <Text style={s.label}>Intervall:</Text>
-              <Text style={s.label}>{task?.frequency}</Text>
+              {task?.frequency && (
+                <Text style={s.label}>
+                  {getFrequencyLabel(task?.frequency)}
+                </Text>
+              )}
             </View>
 
             <View style={[s.valueSection, s.bottomBorder]}>

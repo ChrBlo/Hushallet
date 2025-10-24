@@ -26,7 +26,7 @@ const GroupsScreen = () => {
             key={h.household.id}
             title={h.household.name}
             onPress={() => handleButtonPress(h.household.id!)}
-          ></TaskButton>
+          />
         ))}
       </ScrollView>
 
