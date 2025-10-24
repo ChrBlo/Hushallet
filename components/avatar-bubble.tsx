@@ -61,8 +61,8 @@ const createStyles = (size: number, config: AvatarConfig) =>
       textAlign: 'center',
       color: 'white',
       fontWeight: 'bold',
-      marginVertical: "auto",
-      fontSize: size * 0.4
+      marginVertical: 'auto',
+      fontSize: size * 0.4,
     },
   });
 

@@ -88,5 +88,5 @@ export const getToday = () => {
     start: start,
     end: end,
     title: 'Idag',
-  }
-}
+  };
+};
