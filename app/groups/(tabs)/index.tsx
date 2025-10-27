@@ -1,4 +1,5 @@
 import Feather from '@expo/vector-icons/Feather';
+import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
@@ -13,10 +14,10 @@ import { getDaysSinceCompletion } from '../../../infra/helpers/get_days_since_co
 import { useHouseholdGet } from '../../../infra/hooks/use_household';
 import { useTaskCompletionCreate } from '../../../infra/hooks/use_task_completion_create';
 import { useTaskDelete } from '../../../infra/hooks/use_task_delete';
+import { useTaskUpdate } from '../../../infra/hooks/use_task_update';
 import { useSelectedHouseholdId } from '../../../providers/household_provider';
 import type { Task } from '../../../types/task';
 import { TaskCompletion } from '../../../types/task_completion';
-import * as Haptics from 'expo-haptics';
 
 const handleCreateNewTask = () => {
   router.push('/task-modal');
@@ -47,38 +48,71 @@ export const TaskScreen = () => {
   const { selectedHouseholdId } = useSelectedHouseholdId();
   const [isEditMode, setIsEditMode] = useState(false);
   const deleteMutation = useTaskDelete();
+  const updateMutation = useTaskUpdate();
   const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null);
 
   const completionCreateMutation = useTaskCompletionCreate();
   const currentUserId = auth.currentUser?.uid;
-  const [processingTaskId, setProcessingTaskId] = useState<string | null>(null);
 
   const selectedHousehold = households.data?.find(
     h => h.household.id === selectedHouseholdId
   );
-  const tasks = selectedHousehold?.tasks || [];
+  const tasks = selectedHousehold?.tasks.filter(t => t.status === 'active') || [];
+
+  const handleArchiveTask = async (task: Task) => {
+    if (!task.id) return;
+
+    const archivedTask: Task = {
+      ...task,
+      status: 'archived',
+    };
+
+    await updateMutation.mutateAsync(archivedTask);
+  };
 
   const handleDeleteTask = async (task: Task) => {
     if (!task.id) return;
 
     Alert.alert(
       'Ta bort syssla',
-      `Är du säker på att du vill ta bort "${task.title}"?`,
+      `Vill du TA BORT bort eller ARKIVERA "${task.title}"?\n\nOm du tar bort en syssla så raderas även all dess statistik.`,
       [
         {
-          text: 'Nej',
+          text: 'Avbryt',
           style: 'cancel',
         },
         {
-          text: 'Ja',
-          style: 'destructive',
+          text: 'Arkivera',
           onPress: async () => {
             setDeletingTaskId(task.id!);
             await Promise.all([
-              deleteMutation.mutateAsync(task.id!),
-              new Promise(resolve => setTimeout(resolve, 400)),
+              handleArchiveTask(task),
             ]);
             setDeletingTaskId(null);
+          },
+        },
+        {
+          text: 'Ta bort permanent',
+          style: 'destructive',
+          onPress: () => {
+            Alert.alert(
+              'Bekräfta borttagning',
+              'Även sysslans statistik kommer att raderas permanent om du väljr att ta bort sysslan.',
+              [
+                { text: 'Avbryt', style: 'cancel' },
+                {
+                  text: 'Ta bort',
+                  style: 'destructive',
+                  onPress: async () => {
+                    setDeletingTaskId(task.id!);
+                    await Promise.all([
+                      deleteMutation.mutateAsync(task.id!),
+                    ]);
+                    setDeletingTaskId(null);
+                  },
+                },
+              ]
+            );
           },
         },
       ]
