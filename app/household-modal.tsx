@@ -85,7 +85,7 @@ export default function HouseholdModal() {
       nickname: displayName.trim(),
       role: 'member',
       icon: selectedIcon,
-      status: 'active',
+      status: 'requested',
     };
     await householdUpdate({
       id: joinHousehold.id,
