@@ -1,6 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MD3Theme, useTheme } from 'react-native-paper';
-import { AvatarName, avatarMap } from '../../components/get-avatar';
+import { AvatarName, avatarMap } from './get-avatar';
 
 type SimpleAvatarSelectorProps = {
   selectedIcon: AvatarName;
