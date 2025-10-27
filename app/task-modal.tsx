@@ -13,12 +13,26 @@ import {
 } from 'react-native-paper';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { CustomDropdown } from '../components/custom-drop-down';
-import { auth } from '../firebase_client';
 import { useTaskCreate } from '../infra/hooks/use_task_create';
 import { useTaskUpdate } from '../infra/hooks/use_task_update';
 import { useSelectedHouseholdId } from '../providers/household_provider';
 import type { Status, Task } from '../types/task';
 import type { TaskCompletion } from '../types/task_completion';
+
+export const getFrequencyLabel = (days: number) => {
+  let label;
+
+  const temp = days % 10;
+  const isOneOrTwo = temp < 3 && temp > 0;
+
+  if (days === 1) label = 'Varje dag';
+  else if (days === 2) label = 'Varannan dag';
+  else if (days % 10 === 3) label = `Var ${days}:e dag`;
+  else if (isOneOrTwo && days > 20) label = `Var ${days}:a dag`;
+  else label = `Var ${days}:e dag`;
+
+  return label;
+};
 
 export default function TaskModal() {
   const theme = useTheme();
@@ -46,16 +60,8 @@ export default function TaskModal() {
 
   const frequencyOptions = Array.from({ length: 31 }, (_, i) => {
     const days = i + 1;
-    let label: string;
 
-    if (days === 1) label = 'Varje dag';
-    else if (days === 2) label = 'Varannan dag';
-    else if ([3, 13, 23].includes(days)) label = `Var ${days}:e dag`;
-    else if ([1, 2].includes(days % 10) && days > 20)
-      label = `Var ${days}:a dag`;
-    else label = `Var ${days}:e dag`;
-
-    return { label, value: days };
+    return { label: getFrequencyLabel(days), value: days };
   });
 
   const pointsOptions = Array.from({ length: 12 }, (_, i) => ({

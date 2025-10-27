@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { Button, ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { MD3Theme, useTheme } from 'react-native-paper';
 import StyledButton from '../../components/styled-button';
 import TaskButton from '../../components/task-button';
@@ -26,11 +26,8 @@ const GroupsScreen = () => {
             key={h.household.id}
             title={h.household.name}
             onPress={() => handleButtonPress(h.household.id!)}
-          ></TaskButton>
+          />
         ))}
-        <View>
-          <Button title="tasks" onPress={() => router.push('/groups/(tabs)')} />
-        </View>
       </ScrollView>
 
       <StyledButton

@@ -52,6 +52,14 @@ export default function RootLayout() {
                 }}
               />
               <Stack.Screen
+                name="view-task-modal"
+                options={{
+                  presentation: 'transparentModal',
+                  animation: 'fade',
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
                 name="household-modal"
                 options={{
                   presentation: 'transparentModal',
