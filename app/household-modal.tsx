@@ -13,17 +13,17 @@ import {
   useTheme,
 } from 'react-native-paper';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
-import GenerateAccessCode from '../../components/generate-access-code';
-import { AvatarName } from '../../components/get-avatar';
-import { auth } from '../../firebase_client';
-import { householdKeys } from '../../infra/hooks/use_household';
-import { useHouseholdCreate } from '../../infra/hooks/use_household_create';
+import GenerateAccessCode from '../components/generate-access-code';
+import { AvatarName } from '../components/get-avatar';
+import HouseholdAvatarSelector from '../components/householdModal-avatar-selector';
+import { auth } from '../firebase_client';
+import { householdKeys } from '../infra/hooks/use_household';
+import { useHouseholdCreate } from '../infra/hooks/use_household_create';
 import {
   householdGetByInvitationCode,
   householdUpdate,
-} from '../../infra/household_functions';
-import { HouseholdUser } from '../../types/household_user';
-import SimpleAvatarSelector from './avatar-selector';
+} from '../infra/household_functions';
+import { HouseholdUser } from '../types/household_user';
 
 export default function HouseholdModal() {
   const queryClient = useQueryClient();
@@ -207,7 +207,7 @@ export default function HouseholdModal() {
                 {joinHousehold && (
                   <>
                     <Text style={s.sectionHeader}>Välj din avatar</Text>
-                    <SimpleAvatarSelector
+                    <HouseholdAvatarSelector
                       selectedIcon={selectedIcon}
                       unavailableIcons={
                         new Set(
