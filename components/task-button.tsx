@@ -53,7 +53,7 @@ export const TaskButton = ({
             {title}
           </Text>
           <View style={s.rightContent}>
-            {showBadge && badgeStyles &&(
+            {showBadge && badgeStyles && (
               <View
                 style={[
                   s.badge,

@@ -133,7 +133,7 @@ export default function TaskModal() {
               maxLength={42}
               outlineColor={theme.colors.outlineVariant}
               activeOutlineColor={theme.colors.outline}
-              textColor={theme.colors.onSurface} 
+              textColor={theme.colors.onSurface}
               theme={{ colors: { onSurfaceVariant: theme.colors.onSurface } }}
             />
 

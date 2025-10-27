@@ -57,7 +57,8 @@ export const TaskScreen = () => {
   const selectedHousehold = households.data?.find(
     h => h.household.id === selectedHouseholdId
   );
-  const tasks = selectedHousehold?.tasks.filter(t => t.status === 'active') || [];
+  const tasks =
+    selectedHousehold?.tasks.filter(t => t.status === 'active') || [];
 
   const handleArchiveTask = async (task: Task) => {
     if (!task.id) return;
@@ -85,9 +86,7 @@ export const TaskScreen = () => {
           text: 'Arkivera',
           onPress: async () => {
             setDeletingTaskId(task.id!);
-            await Promise.all([
-              handleArchiveTask(task),
-            ]);
+            await Promise.all([handleArchiveTask(task)]);
             setDeletingTaskId(null);
           },
         },
@@ -105,9 +104,7 @@ export const TaskScreen = () => {
                   style: 'destructive',
                   onPress: async () => {
                     setDeletingTaskId(task.id!);
-                    await Promise.all([
-                      deleteMutation.mutateAsync(task.id!),
-                    ]);
+                    await Promise.all([deleteMutation.mutateAsync(task.id!)]);
                     setDeletingTaskId(null);
                   },
                 },

@@ -133,15 +133,17 @@ export const StatisticsScreen = () => {
   }, []);
 
   const filteredTasks: Task[] = [];
-  data?.tasks?.filter(t => t.status === 'active').forEach(t => {
-    const task: Task = {
-      ...t,
-      completions: t.completions.filter(c =>
-        isWithinPeriod(c.execution_date, timePeriods[periodIndex])
-      ),
-    };
-    filteredTasks.push(task);
-  });
+  data?.tasks
+    ?.filter(t => t.status === 'active')
+    .forEach(t => {
+      const task: Task = {
+        ...t,
+        completions: t.completions.filter(c =>
+          isWithinPeriod(c.execution_date, timePeriods[periodIndex])
+        ),
+      };
+      filteredTasks.push(task);
+    });
 
   return (
     <View style={[s.flex, s.container]}>
