@@ -4,6 +4,9 @@ export interface TimePeriod {
   title: string;
 }
 
+export const isWithinPeriod = (date: Date, period: TimePeriod): boolean =>
+  date >= period.start && date <= period.end;
+
 export const getTimePeriods = () => {
   const array: TimePeriod[] = [];
   array.push(getThisWeek());
@@ -74,4 +77,16 @@ const getLastWeek = (): TimePeriod => {
   period.end.setDate(period.end.getDate() - 7);
   period.title = 'Förra Veckan';
   return period;
+};
+
+export const getToday = () => {
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  const end = new Date();
+  end.setHours(23, 59, 59);
+  return {
+    start: start,
+    end: end,
+    title: 'Idag',
+  };
 };
