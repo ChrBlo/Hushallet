@@ -133,7 +133,7 @@ export const StatisticsScreen = () => {
   }, []);
 
   const filteredTasks: Task[] = [];
-  data?.tasks?.forEach(t => {
+  data?.tasks?.filter(t => t.status === 'active').forEach(t => {
     const task: Task = {
       ...t,
       completions: t.completions.filter(c =>
