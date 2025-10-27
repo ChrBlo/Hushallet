@@ -19,13 +19,17 @@ export default function StatisticsScreen() {
   const isAdmin =
     selectedHousehold?.household.created_by === auth.currentUser?.uid;
 
+  if (!selectedHousehold) {
+    return null;
+  }
+
   return (
     <ScrollView style={s.scrollView} contentContainerStyle={s.container}>
       {isAdmin && (
-        <HouseholdSettingsAdmin houseHold={selectedHousehold!.household} />
+        <HouseholdSettingsAdmin houseHold={selectedHousehold.household} />
       )}
       {!isAdmin && (
-        <HouseholdSettingsMember houseHold={selectedHousehold!.household} />
+        <HouseholdSettingsMember houseHold={selectedHousehold.household} />
       )}
     </ScrollView>
   );
@@ -34,6 +38,7 @@ export default function StatisticsScreen() {
 const createStyles = (theme: MD3Theme) =>
   StyleSheet.create({
     container: {
+      flexGrow: 1,
       paddingTop: 10,
       gap: 10,
     },
