@@ -1,11 +1,19 @@
 import { memo, useMemo, useCallback } from 'react';
-import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  Dimensions,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { MD3Theme, Text, useTheme } from 'react-native-paper';
 import AvatarBubble from './avatar-bubble';
 import { avatarMap, type AvatarName } from './get-avatar';
 import { useSelectedHouseholdId } from '../providers/household_provider';
 import { useHouseholdGet } from '../infra/hooks/use_household';
 import { useHouseholdUpdate } from '../infra/hooks/use_household_update';
+
+const AVATARS_PER_ROW = 4;
 
 type HouseholdAvatarSelectorProps = {
   memberId: string;
@@ -15,10 +23,20 @@ const HouseholdAvatarSelector = ({
   memberId,
 }: HouseholdAvatarSelectorProps) => {
   const theme = useTheme();
-  const styles = createStyles(theme);
   const { selectedHouseholdId } = useSelectedHouseholdId();
   const households = useHouseholdGet();
   const updateHousehold = useHouseholdUpdate();
+
+  const screenWidth = Dimensions.get('window').width;
+  const modalPadding = 40;
+  const horizontalMargins = 16;
+  const availableWidth = screenWidth * 0.9 - modalPadding;
+  const totalMarginWidth = horizontalMargins * AVATARS_PER_ROW;
+  const itemWidth = Math.floor(
+    (availableWidth - totalMarginWidth) / AVATARS_PER_ROW
+  );
+
+  const styles = createStyles(theme, itemWidth);
 
   const selectedHousehold = households.data?.find(
     householdWithTasks =>
@@ -116,7 +134,7 @@ const HouseholdAvatarSelector = ({
   );
 };
 
-const createStyles = (theme: MD3Theme) =>
+const createStyles = (theme: MD3Theme, itemWidth: number) =>
   StyleSheet.create({
     container: {
       flexDirection: 'row',
@@ -132,7 +150,7 @@ const createStyles = (theme: MD3Theme) =>
       borderWidth: 2,
       borderColor: 'transparent',
       margin: 8,
-      minWidth: 96,
+      width: itemWidth,
     },
     optionSelected: {
       borderColor: theme.colors.primary,
