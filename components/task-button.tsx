@@ -13,14 +13,13 @@ interface Props {
   isEditMode?: boolean;
 }
 
-const getBadgeColor = (daysSince: number, frequency: number): string => {
-  if (daysSince < frequency) {
-    return '#67c06aff';
-  } else if (daysSince === frequency) {
-    return '#e6a646ff';
-  } else {
-    return '#e75050ff';
-  }
+const getBadgeStyles = (daysSince: number, frequency: number) => {
+  const isLate = daysSince > frequency;
+
+  return {
+    backgroundColor: isLate ? '#b33131ff' : '#dadadaff',
+    textColor: isLate ? '#FFFFFF' : '#000000',
+  };
 };
 
 export const TaskButton = ({
@@ -40,6 +39,7 @@ export const TaskButton = ({
     daysSince !== null &&
     daysSince > 0 &&
     frequency !== undefined;
+  const badgeStyles = showBadge ? getBadgeStyles(daysSince, frequency) : null;
 
   return (
     <>
@@ -53,14 +53,16 @@ export const TaskButton = ({
             {title}
           </Text>
           <View style={s.rightContent}>
-            {showBadge && (
+            {showBadge && badgeStyles && (
               <View
                 style={[
                   s.badge,
-                  { backgroundColor: getBadgeColor(daysSince, frequency) },
+                  { backgroundColor: badgeStyles.backgroundColor },
                 ]}
               >
-                <Text style={s.badgeText}>{daysSince}</Text>
+                <Text style={[s.badgeText, { color: badgeStyles.textColor }]}>
+                  {daysSince}
+                </Text>
               </View>
             )}
             {children}
