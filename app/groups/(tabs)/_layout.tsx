@@ -1,5 +1,6 @@
 import { Tabs } from 'expo-router';
 import { useTheme } from 'react-native-paper';
+import Feather from '@expo/vector-icons/Feather';
 
 function GroupTabsLayout() {
   const theme = useTheme();
@@ -18,9 +19,33 @@ function GroupTabsLayout() {
         tabBarInactiveTintColor: theme.colors.outlineVariant,
       }}
     >
-      <Tabs.Screen name="settings" options={{ title: 'Inställningar' }} />
-      <Tabs.Screen name="index" options={{ title: 'Uppgifter' }} />
-      <Tabs.Screen name="statistics" options={{ title: 'Statistik' }} />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: 'Inställningar',
+          tabBarIcon: ({ color }) => (
+            <Feather name="settings" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Uppgifter',
+          tabBarIcon: ({ color }) => (
+            <Feather name="check-square" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="statistics"
+        options={{
+          title: 'Statistik',
+          tabBarIcon: ({ color }) => (
+            <Feather name="pie-chart" size={24} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
