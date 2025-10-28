@@ -1,4 +1,4 @@
-import { Stack, Tabs } from 'expo-router';
+import { Tabs } from 'expo-router';
 import { useTheme } from 'react-native-paper';
 
 function GroupTabsLayout() {
@@ -8,13 +8,14 @@ function GroupTabsLayout() {
       screenOptions={{
         headerShown: false,
         headerStyle: {
-          backgroundColor: theme.colors.primary,
+          backgroundColor: theme.colors.surface,
         },
         tabBarStyle: {
-          backgroundColor: theme.colors.primary,
+          backgroundColor: theme.colors.surface,
+          borderColor: theme.colors.surface,
         },
-        tabBarActiveTintColor: theme.colors.onPrimary,
-        tabBarInactiveTintColor: theme.colors.onPrimaryContainer,
+        tabBarActiveTintColor: theme.colors.onSurface,
+        tabBarInactiveTintColor: theme.colors.outlineVariant,
       }}
     >
       <Tabs.Screen name="settings" options={{ title: 'Inställningar' }} />
