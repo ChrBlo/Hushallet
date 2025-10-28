@@ -156,6 +156,51 @@ function HouseholdSettingsAdmin({ houseHold }: HouseholdSettingsAdminProps) {
     }
   };
 
+  const handleDeclineRequest = async (userId: string) => {
+    if (!selectedHousehold?.household) return;
+
+    const requestUser = selectedHousehold.household.users.find(
+      u => u.id === userId
+    );
+
+    if (!requestUser) return;
+
+    Alert.alert(
+      'Avböj förfrågan',
+      `Är du säker på att du vill avböja ${requestUser.nickname}s förfrågan? Användaren kommer att tas bort från hushållet.`,
+      [
+        {
+          text: 'Avbryt',
+          style: 'cancel',
+        },
+        {
+          text: 'Avböj',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const updatedUsers = selectedHousehold.household.users.filter(
+                user => user.id !== userId
+              );
+
+              await updateHousehold.mutateAsync({
+                ...selectedHousehold.household,
+                users: updatedUsers,
+              });
+
+              Alert.alert('Avböjd', 'Förfrågan har avböjts.');
+            } catch (error) {
+              console.error('Failed to decline request', error);
+              Alert.alert(
+                'Kunde inte avböja',
+                'Ett fel uppstod när förfrågan skulle avböjas. Försök igen.'
+              );
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const handleLeaveHousehold = () => {
     const currentUserId = auth.currentUser?.uid;
     if (!currentUserId || !houseHold.id) return;
@@ -265,6 +310,7 @@ function HouseholdSettingsAdmin({ houseHold }: HouseholdSettingsAdminProps) {
         requests={pendingRequests}
         onClose={() => setShowRequestsModal(false)}
         onAcceptRequest={handleAcceptRequest}
+        onDeclineRequest={handleDeclineRequest}
         isProcessing={updateHousehold.isPending}
       />
     </View>
