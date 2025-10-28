@@ -18,6 +18,7 @@ import { useTaskUpdate } from '../../../infra/hooks/use_task_update';
 import { useSelectedHouseholdId } from '../../../providers/household_provider';
 import type { Task } from '../../../types/task';
 import { TaskCompletion } from '../../../types/task_completion';
+import { AppDarkTheme } from '../../../theme';
 
 const handleCreateNewTask = () => {
   router.push('/task-modal');
@@ -145,7 +146,7 @@ export const TaskScreen = () => {
 
   return (
     <>
-      <StatusBar style="auto" />
+      <StatusBar style={theme === AppDarkTheme ? 'light' : 'dark'} />
       <ScrollView style={s.scrollView} contentContainerStyle={s.container}>
         {tasks.map(t => (
           <TaskButton
