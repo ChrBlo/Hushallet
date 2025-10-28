@@ -133,8 +133,8 @@ export default function TaskModal() {
               maxLength={42}
               outlineColor={theme.colors.outlineVariant}
               activeOutlineColor={theme.colors.outline}
-              textColor={theme.colors.onSurface} // When typing
-              theme={{ colors: { onSurfaceVariant: theme.colors.onSurface } }} // LAbel color
+              textColor={theme.colors.onSurface}
+              theme={{ colors: { onSurfaceVariant: theme.colors.onSurface } }}
             />
 
             <TextInput
@@ -149,8 +149,8 @@ export default function TaskModal() {
               textAlignVertical="top"
               outlineColor={theme.colors.outlineVariant}
               activeOutlineColor={theme.colors.outline}
-              textColor={theme.colors.onSurface} // When typing
-              theme={{ colors: { onSurfaceVariant: theme.colors.onSurface } }} // LAbel color
+              textColor={theme.colors.onSurface}
+              theme={{ colors: { onSurfaceVariant: theme.colors.onSurface } }}
             />
 
             <CustomDropdown
@@ -212,7 +212,7 @@ const createStyles = (theme: MD3Theme) =>
     modalContainer: {
       maxHeight: '85%',
       marginHorizontal: 16,
-      marginBottom: 130,
+      marginBottom: 230,
     },
     card: {
       borderWidth: 1,
