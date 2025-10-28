@@ -112,7 +112,10 @@ const ProfileScreen = () => {
     nameInput.trim() !== currentUser.nickname;
 
   return (
-    <ScrollView>
+    <ScrollView
+      style={styles.scrollView}
+      contentContainerStyle={styles.scrollContent}
+    >
       <View style={styles.container}>
         <View style={styles.profileContent}>
           {isEditingName ? (
@@ -197,10 +200,16 @@ const ProfileScreen = () => {
 
 const createStyles = (theme: MD3Theme) =>
   StyleSheet.create({
+    scrollView: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    scrollContent: {
+      flexGrow: 1,
+    },
     container: {
       flex: 1,
       justifyContent: 'space-between',
-      backgroundColor: theme.colors.background,
       padding: 24,
     },
     profileContent: {
