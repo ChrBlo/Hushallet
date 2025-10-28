@@ -1,76 +1,74 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from 'expo-router';
-import { useColorScheme } from 'react-native';
-import { PaperProvider, ThemeProvider } from 'react-native-paper';
+import { useTheme } from 'react-native-paper';
 import HouseholdProvider from '../providers/household_provider';
-import { AppDarkTheme, AppDefaultTheme } from '../theme';
+import CustomThemeProvider from '../providers/custom-theme-provider';
 
 const queryClient = new QueryClient();
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-
-  console.log(colorScheme === 'dark' ? 'Dark' : 'Light');
-
-  const theme = colorScheme === 'dark' ? AppDarkTheme : AppDefaultTheme;
-
+const App = () => {
+  const theme = useTheme();
   return (
-    <PaperProvider theme={theme} key={colorScheme}>
-      <ThemeProvider theme={theme}>
-        <QueryClientProvider client={queryClient}>
-          <HouseholdProvider>
-            <Stack
-              screenOptions={{
-                headerStyle: {
-                  backgroundColor: theme.colors.primary,
-                },
-                headerTintColor: theme.colors.onPrimary,
-                headerTitleStyle: {
-                  fontWeight: 'bold',
-                },
-              }}
-            >
-              <Stack.Screen
-                name="index"
-                options={{ headerShown: true, title: 'Login' }}
-              />
-              <Stack.Screen
-                name="sign-up"
-                options={{ headerShown: true, title: 'Register' }}
-              />
-              <Stack.Screen name="groups" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="statistics"
-                options={{ headerShown: true, title: 'Statistics' }}
-              />
-              <Stack.Screen
-                name="task-modal"
-                options={{
-                  presentation: 'transparentModal',
-                  animation: 'fade',
-                  headerShown: false,
-                }}
-              />
-              <Stack.Screen
-                name="view-task-modal"
-                options={{
-                  presentation: 'transparentModal',
-                  animation: 'fade',
-                  headerShown: false,
-                }}
-              />
-              <Stack.Screen
-                name="household-modal"
-                options={{
-                  presentation: 'transparentModal',
-                  animation: 'slide_from_bottom',
-                  headerShown: false,
-                }}
-              />
-            </Stack>
-          </HouseholdProvider>
-        </QueryClientProvider>
-      </ThemeProvider>
-    </PaperProvider>
+    <QueryClientProvider client={queryClient}>
+      <HouseholdProvider>
+        <Stack
+          screenOptions={{
+            headerStyle: {
+              backgroundColor: theme.colors.primary,
+            },
+            headerTintColor: theme.colors.onSurface,
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+          }}
+        >
+          <Stack.Screen
+            name="index"
+            options={{ headerShown: true, title: 'Login' }}
+          />
+          <Stack.Screen
+            name="sign-up"
+            options={{ headerShown: true, title: 'Register' }}
+          />
+          <Stack.Screen name="groups" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="statistics"
+            options={{ headerShown: true, title: 'Statistics' }}
+          />
+          <Stack.Screen
+            name="task-modal"
+            options={{
+              presentation: 'transparentModal',
+              animation: 'fade',
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="view-task-modal"
+            options={{
+              presentation: 'transparentModal',
+              animation: 'fade',
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="household-modal"
+            options={{
+              presentation: 'transparentModal',
+              animation: 'slide_from_bottom',
+              headerShown: false,
+            }}
+          />
+        </Stack>
+      </HouseholdProvider>
+    </QueryClientProvider>
+  );
+};
+
+export default function RootLayout() {
+  return (
+    <CustomThemeProvider>
+      <App />
+    </CustomThemeProvider>
   );
 }
