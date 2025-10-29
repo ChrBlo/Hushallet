@@ -10,7 +10,7 @@ const avatarMap: Record<AvatarName, AvatarConfig> = {
   frog: { emoji: '🐸', color: '#4DBE31' },
   pig: { emoji: '🐷', color: '#FF87CF' },
   unicorn: { emoji: '🦄', color: '#BD3BF0' },
-  chicken: { emoji: '🐔', color: '#FCD933' },
+  chicken: { emoji: '🐥', color: '#FCD933' },
   dolphin: { emoji: '🐬', color: '#00AFC3' },
   owl: { emoji: '🦉', color: '#D08100' },
   fox: { emoji: '🦊', color: '#FF7E46' },
