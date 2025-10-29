@@ -67,7 +67,7 @@ export default function LoginScreen() {
       </Text>
 
       <TextInput
-        label="Användarnamn"
+        label="Email"
         value={email}
         onChangeText={setEmail}
         mode="outlined"
