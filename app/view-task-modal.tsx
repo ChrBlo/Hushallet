@@ -278,7 +278,7 @@ const createStyles = (theme: MD3Theme) =>
     buttonLabel: {
       color: theme.colors.onSurface,
       fontSize: 20,
-      lineHeight: 22
+      lineHeight: 22,
     },
   });
 
