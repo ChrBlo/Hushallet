@@ -141,17 +141,15 @@ const createStyles = (theme: MD3Theme, itemWidth: number) =>
     },
     option: {
       alignItems: 'center',
-      paddingVertical: 12,
-      paddingHorizontal: 8,
       borderRadius: theme.roundness,
       borderWidth: 2,
       borderColor: 'transparent',
       margin: 8,
-      width: itemWidth,
     },
     optionSelected: {
-      borderColor: theme.colors.primary,
-      backgroundColor: theme.colors.primaryContainer,
+      backgroundColor: theme.colors.onSurfaceVariant,
+      padding: 2,
+      borderRadius: 9999999,
     },
     optionDisabled: {
       opacity: 0.4,
