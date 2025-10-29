@@ -117,11 +117,11 @@ För att bli godkänd på den här uppgiften MÅSTE ni använda GIT och GitHub.
 Inlämningen sker som vanligt via läroplattformen.
 I din projektmapp ska det finnas en README.md fil. Den ska innehålla:
 
-- [ ] en titel,
-- [ ] beskrivning av projektet,
-- [ ] info om hur projektet byggs och körs ,
-- [ ] samt vilka krav som är uppfyllda.
-- [ ] Samt en .git mapp så jag kan hitta till erat publika repo.
+- [x] en titel,
+- [x] beskrivning av projektet,
+- [x] info om hur projektet byggs och körs ,
+- [x] samt vilka krav som är uppfyllda.
+- [x] Samt en .git mapp så jag kan hitta till erat publika repo.
 
 ## Presentation
 
@@ -134,14 +134,14 @@ Presentationen är uppdelad i tre moment:
 
 ### Krav för godkänt:
 
-- [ ] De nödvändiga kraven ifrån kravlistan ovan är uppfyllda
-- [ ] Applikationen kommunicerar data till och från en backend tjänst (ni väljer).
-- [ ] Git & GitHub har använts.
-- [ ] Projektmappen innehåller en README.md fil - (läs ovan för mer info)
-- [ ] Uppgiften lämnas in i tid!
-- [ ] Muntlig presentation är genomförd
+- [x] De nödvändiga kraven ifrån kravlistan ovan är uppfyllda
+- [x] Applikationen kommunicerar data till och från en backend tjänst (ni väljer).
+- [x] Git & GitHub har använts.
+- [x] Projektmappen innehåller en README.md fil - (läs ovan för mer info)
+- [x] Uppgiften lämnas in i tid!
+- [x] Muntlig presentation är genomförd
 
 ### Krav för väl godkänt:
 
-- [ ] Alla punkter för godkänt är uppfyllda
-- [ ] Ni har använt CI under projektet.
+- [x] Alla punkter för godkänt är uppfyllda
+- [x] Ni har använt CI under projektet.
