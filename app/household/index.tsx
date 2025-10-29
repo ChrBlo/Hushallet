@@ -1,11 +1,12 @@
 import { router } from 'expo-router';
-import { ScrollView, StyleSheet } from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import { MD3Theme, useTheme } from 'react-native-paper';
 import StyledButton from '../../components/styled-button';
 import TaskButton from '../../components/task-button';
 import { requireCurrentUser } from '../../infra/auth_functions';
 import { useHouseholdGet } from '../../infra/hooks/use_household';
 import { useSelectedHouseholdId } from '../../providers/household_provider';
+import { useRefreshControl } from '../../providers/refresh-control-providor';
 
 const GroupsScreen = () => {
   const theme = useTheme();
@@ -13,6 +14,8 @@ const GroupsScreen = () => {
 
   const houseHolds = useHouseholdGet();
   const { setSelectedHouseholdId } = useSelectedHouseholdId();
+  const { refreshing, onRefresh } = useRefreshControl();
+
   const currentUser = requireCurrentUser();
 
   const handleButtonPress = (householdId: string) => {
@@ -30,7 +33,13 @@ const GroupsScreen = () => {
 
   return (
     <>
-      <ScrollView style={s.scrollView} contentContainerStyle={s.container}>
+      <ScrollView
+        style={s.scrollView}
+        contentContainerStyle={s.container}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         {houseHolds.data?.map(h => {
           const userStatus = getUserStatus(h.household.id!);
           const isDisabled = userStatus === 'requested';
