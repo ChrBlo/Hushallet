@@ -205,7 +205,10 @@ const seedDatabase = async () => {
     const { id, ...householdData } = household;
     const householdRef = doc(collection(db, 'households'), id);
 
-    await setDoc(householdRef, householdData);
+    await setDoc(householdRef, {
+      ...householdData,
+      user_ids: householdData.users.map(u => u.id),
+    });
     householdsSeeded += 1;
 
     for (const task of tasks) {
