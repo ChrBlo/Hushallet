@@ -31,6 +31,24 @@ const processChartTitle = (str: string) => {
   return str.trim();
 };
 
+const filterTimePeriods = (tasks: Task[] | undefined): TimePeriod[] => {
+  const periods = getTimePeriods();
+  if (tasks === undefined) {
+    return periods;
+  }
+  const filtered: TimePeriod[] = [periods[0]];
+
+  for (let i = 1; i < periods.length; i++) {
+    const hasCompletions = tasks.some(t =>
+      t.completions.some(c => isWithinPeriod(c.execution_date, periods[i]))
+    );
+    if (!hasCompletions) continue;
+
+    filtered.push(periods[i]);
+  }
+  return filtered;
+};
+
 // Takes all of the tasks in the data set and sums them, dividing them into avatar and points + adds font styling
 const getTotalChartData = (tasks: Task[], household: Household) => {
   const map = new Map<string, number>();
@@ -104,24 +122,13 @@ export const StatisticsScreen = () => {
   const dimensions = Dimensions.get('window');
   const households = useHouseholdGet();
   const { selectedHouseholdId } = useSelectedHouseholdId();
-  const timePeriods: TimePeriod[] = [...getTimePeriods()];
   const [periodIndex, setPeriodIndex] = useState<number>(0);
 
   const data = households.data?.find(
     h => h.household.id === selectedHouseholdId
   );
 
-  const increasePeriodIndex = () => {
-    const newIndex =
-      periodIndex === timePeriods.length - 1 ? 0 : periodIndex + 1;
-    setPeriodIndex(newIndex);
-  };
-
-  const decreasePeriodIndex = () => {
-    const newIndex =
-      periodIndex === 0 ? timePeriods.length - 1 : periodIndex - 1;
-    setPeriodIndex(newIndex);
-  };
+  const timePeriods: TimePeriod[] = filterTimePeriods(data?.tasks);
 
   const filteredTasks: Task[] = [];
   data?.tasks
@@ -135,6 +142,18 @@ export const StatisticsScreen = () => {
       };
       filteredTasks.push(task);
     });
+
+  const increasePeriodIndex = () => {
+    const newIndex =
+      periodIndex === timePeriods.length - 1 ? 0 : periodIndex + 1;
+    setPeriodIndex(newIndex);
+  };
+
+  const decreasePeriodIndex = () => {
+    const newIndex =
+      periodIndex === 0 ? timePeriods.length - 1 : periodIndex - 1;
+    setPeriodIndex(newIndex);
+  };
 
   return (
     <View style={[s.flex, s.container]}>
