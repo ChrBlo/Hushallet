@@ -16,8 +16,11 @@ export default function StatisticsScreen() {
     h => h.household.id === selectedHouseholdId
   );
 
-  const isAdmin =
-    selectedHousehold?.household.created_by === auth.currentUser?.uid;
+  const currentUser = selectedHousehold?.household.users?.find(
+    u => u.id == auth.currentUser?.uid
+  );
+
+  const isAdmin = currentUser?.role === 'admin';
 
   if (!selectedHousehold) {
     return null;
