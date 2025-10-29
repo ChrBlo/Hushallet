@@ -270,17 +270,19 @@ export const TaskScreen = () => {
           </TaskButton>
         ))}
       </ScrollView>
-      <StyledButton
-        title={'Lägg till'}
-        onPress={handleCreateNewTask}
-        style={[isAdmin ? s.button : s.buttonFullWidth, s.bottomLeft]}
-      />
       {isAdmin && (
-        <StyledButton
-          title={isEditMode ? 'Klar' : 'Ändra'}
-          onPress={() => setIsEditMode(!isEditMode)}
-          style={[s.button, s.bottomRight]}
-        />
+        <>
+          <StyledButton
+            title={'Lägg till'}
+            onPress={handleCreateNewTask}
+            style={[s.button, s.bottomLeft]}
+          />
+          <StyledButton
+            title={isEditMode ? 'Klar' : 'Ändra'}
+            onPress={() => setIsEditMode(!isEditMode)}
+            style={[s.button, s.bottomRight]}
+          />
+        </>
       )}
     </>
   );
@@ -312,9 +314,6 @@ const createStyles = (theme: MD3Theme) =>
     },
     button: {
       width: '50%',
-    },
-    buttonFullWidth: {
-      width: '100%',
     },
     row: {
       flexDirection: 'row',
