@@ -155,7 +155,6 @@ const householdUpdate = async (household: Household): Promise<void> => {
     Object.entries(fieldsToPersist).filter(([, value]) => value !== undefined)
   ) as Partial<Omit<Household, 'id' | 'created_by'>>;
 
-  // If users array is being updated, sync user_ids
   if (updates.users) {
     updates.user_ids = updates.users.map(u => u.id);
   }
