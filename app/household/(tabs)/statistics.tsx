@@ -128,7 +128,9 @@ export const StatisticsScreen = () => {
     h => h.household.id === selectedHouseholdId
   );
 
-  const timePeriods: TimePeriod[] = filterTimePeriods(data?.tasks.filter(t => t.status === 'active'));
+  const timePeriods: TimePeriod[] = filterTimePeriods(
+    data?.tasks.filter(t => t.status === 'active')
+  );
 
   const filteredTasks: Task[] = [];
   data?.tasks
