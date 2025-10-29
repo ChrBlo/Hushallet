@@ -5,7 +5,6 @@ import StyledButton from '../../components/styled-button';
 import TaskButton from '../../components/task-button';
 import { useHouseholdGet } from '../../infra/hooks/use_household';
 import { useSelectedHouseholdId } from '../../providers/household_provider';
-import ThemeButton from '../../components/theme-button';
 
 const GroupsScreen = () => {
   const theme = useTheme();
@@ -16,7 +15,7 @@ const GroupsScreen = () => {
 
   const handleButtonPress = (householdId: string) => {
     setSelectedHouseholdId(householdId);
-    router.push('/groups/(tabs)');
+    router.push('/household/(tabs)');
   };
 
   return (
@@ -36,13 +35,7 @@ const GroupsScreen = () => {
         onPress={() => {
           router.push('household-modal');
         }}
-        style={[s.button, s.bottomLeft]}
-      />
-
-      <StyledButton
-        title={'Ändra'}
-        onPress={() => {}}
-        style={[s.button, s.bottomRight]}
+        style={s.button}
       />
     </>
   );
@@ -65,17 +58,9 @@ const createStyles = (theme: MD3Theme) =>
       fontWeight: '600',
       color: theme.colors.onPrimaryContainer,
     },
-    bottomRight: {
-      position: 'absolute',
-      bottom: 30,
-      right: 0,
-    },
-    bottomLeft: {
-      position: 'absolute',
-      bottom: 30,
-      left: 0,
-    },
     button: {
-      width: '42%',
+      width: '100%',
+      position: 'absolute',
+      bottom: 30,
     },
   });

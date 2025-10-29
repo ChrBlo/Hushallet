@@ -30,7 +30,7 @@ const HouseholdHeaderAvatarButton = () => {
     <TouchableOpacity
       accessibilityLabel="Visa profil"
       style={styles.button}
-      onPress={() => router.push('/groups/profile')}
+      onPress={() => router.push('/household/profile')}
       hitSlop={8}
     >
       <AvatarBubble

@@ -230,7 +230,7 @@ const createStyles = (theme: MD3Theme) =>
       fontWeight: '600',
     },
     declineButton: {
-      backgroundColor: theme.colors.error,
+      backgroundColor: '#9f0700',
     },
     declineButtonText: {
       color: '#fff',

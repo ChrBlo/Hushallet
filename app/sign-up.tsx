@@ -42,7 +42,7 @@ export default function LoginScreen() {
 
     try {
       await registerWithEmail(email.trim(), password.trim());
-      router.push('/groups');
+      router.push('/household');
     } catch (error: any) {
       console.error('Login error:', error);
       Alert.alert(
