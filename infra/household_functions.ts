@@ -18,23 +18,25 @@ const collectionName = 'households';
 const householdGet = async (): Promise<HouseholdWithTasks[]> => {
   const user = requireCurrentUser();
 
-  const householdSnapshot = await getDocs(collection(db, collectionName));
+  const householdSnapshot = await getDocs(
+    query(
+      collection(db, collectionName),
+      where('user_ids', 'array-contains', user.uid)
+    )
+  );
 
-  const memberHouseholds = householdSnapshot.docs
-    .map(householdDoc => {
-      const data = householdDoc.data();
+  const memberHouseholds = householdSnapshot.docs.map(householdDoc => {
+    const data = householdDoc.data();
 
-      return {
-        id: householdDoc.id,
-        created_by: data.created_by ?? '',
-        name: data.name,
-        invitation_code: data.invitation_code,
-        users: (data.users ?? []) as Household['users'],
-      };
-    })
-    .filter(household =>
-      household.users.some(householdUser => householdUser.id === user.uid)
-    );
+    return {
+      id: householdDoc.id,
+      created_by: data.created_by ?? '',
+      name: data.name,
+      invitation_code: data.invitation_code,
+      users: (data.users ?? []) as Household['users'],
+      user_ids: (data.user_ids ?? []) as string[],
+    };
+  });
 
   const householdsWithTasks = await Promise.all(
     memberHouseholds.map(async household => {
@@ -121,17 +123,22 @@ const householdCreate = async (
 ): Promise<Household> => {
   const user = requireCurrentUser();
 
+  const users = household.users ?? [];
+  const user_ids = users.map(u => u.id);
+
   const docRef = await addDoc(collection(db, collectionName), {
     created_by: user.uid,
     name: household.name,
     invitation_code: household.invitation_code,
-    users: household.users ?? [],
+    users,
+    user_ids,
   });
 
   return {
     ...household,
     created_by: user.uid,
     id: docRef.id,
+    user_ids,
   };
 };
 
@@ -147,6 +154,10 @@ const householdUpdate = async (household: Household): Promise<void> => {
   const updates = Object.fromEntries(
     Object.entries(fieldsToPersist).filter(([, value]) => value !== undefined)
   ) as Partial<Omit<Household, 'id' | 'created_by'>>;
+
+  if (updates.users) {
+    updates.user_ids = updates.users.map(u => u.id);
+  }
 
   if (!Object.keys(updates).length) {
     return;

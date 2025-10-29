@@ -11,6 +11,7 @@ interface Props {
   taskCreatedDate?: Date;
   frequency?: number;
   isEditMode?: boolean;
+  disabled?: boolean;
 }
 
 const getBadgeStyles = (daysSince: number, frequency: number) => {
@@ -31,8 +32,10 @@ export const TaskButton = ({
   taskCreatedDate,
   frequency,
   isEditMode = false,
+  disabled = false,
 }: Props) => {
-  const s = createStyles(useTheme());
+  const theme = useTheme();
+  const s = createStyles(theme);
   const daysSince = getDaysSinceCompletion(lastCompletionDate, taskCreatedDate);
   const showBadge =
     !isEditMode &&
@@ -45,11 +48,16 @@ export const TaskButton = ({
     <>
       <TouchableOpacity
         style={s.outerContainer}
-        onPress={onPress}
-        onLongPress={onLongPress}
+        onPress={disabled ? undefined : onPress}
+        onLongPress={disabled ? undefined : onLongPress}
+        disabled={disabled}
       >
-        <Surface style={s.container}>
-          <Text style={s.textStyle} numberOfLines={1} ellipsizeMode="tail">
+        <Surface style={[s.container, disabled && s.disabledContainer]}>
+          <Text
+            style={[s.textStyle, disabled && s.disabledText]}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
             {title}
           </Text>
           <View style={s.rightContent}>
@@ -87,6 +95,10 @@ const createStyles = (theme: MD3Theme) =>
       paddingHorizontal: 8,
       borderRadius: theme.roundness,
     },
+    disabledContainer: {
+      opacity: 0.5,
+      backgroundColor: theme.colors.surfaceDisabled,
+    },
     outerContainer: {
       marginHorizontal: 8,
       alignSelf: 'stretch',
@@ -100,6 +112,9 @@ const createStyles = (theme: MD3Theme) =>
       fontWeight: '600',
       color: theme.colors.onSurface,
       marginRight: -4,
+    },
+    disabledText: {
+      color: theme.colors.onSurfaceDisabled,
     },
     rightContent: {
       flexDirection: 'row',

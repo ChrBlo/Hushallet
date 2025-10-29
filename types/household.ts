@@ -7,6 +7,7 @@ type Household = {
   name: string;
   invitation_code: string;
   users: HouseholdUser[];
+  user_ids?: string[];
 };
 
 type HouseholdWithTasks = {
