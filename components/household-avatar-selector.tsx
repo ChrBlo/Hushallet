@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { MD3Theme, Text, useTheme } from 'react-native-paper';
+import { MD3Theme, useTheme } from 'react-native-paper';
 import AvatarBubble from './avatar-bubble';
 import { avatarMap, type AvatarName } from './get-avatar';
 import { useSelectedHouseholdId } from '../providers/household_provider';
