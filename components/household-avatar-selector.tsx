@@ -124,9 +124,6 @@ const HouseholdAvatarSelector = ({
             accessibilityState={{ disabled: isDisabled, selected: isSelected }}
           >
             <AvatarBubble config={config} size={64} />
-            <Text style={styles.label}>
-              {icon.charAt(0).toUpperCase() + icon.slice(1)}
-            </Text>
           </TouchableOpacity>
         );
       })}
