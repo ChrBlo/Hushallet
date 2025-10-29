@@ -62,15 +62,25 @@ const householdGet = async (): Promise<HouseholdWithTasks[]> => {
           status: data.status,
           created_by: data.created_by ?? '',
           household_id: data.household_id ?? household.id,
-          completions: (data.users ?? []).map(
-            (completion: {
-              household_member_id: string;
-              execution_date?: unknown;
-            }) => ({
-              household_member_id: completion.household_member_id,
-              execution_date: normalizeDate(completion.execution_date),
-            })
-          ),
+          completions: (data.users ?? [])
+            .filter(
+              (completion: {
+                household_member_id: string;
+                execution_date?: unknown;
+              }) =>
+                household.users.some(
+                  u => u.id === completion.household_member_id
+                )
+            )
+            .map(
+              (completion: {
+                household_member_id: string;
+                execution_date?: unknown;
+              }) => ({
+                household_member_id: completion.household_member_id,
+                execution_date: normalizeDate(completion.execution_date),
+              })
+            ),
         };
       });
 

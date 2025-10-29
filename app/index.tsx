@@ -31,7 +31,7 @@ export default function LoginScreen() {
   useEffect(() => {
     const unsubscribe = observeAuthChanges(user => {
       if (user) {
-        router.replace('/groups');
+        router.replace('/household');
         return;
       }
 
@@ -57,26 +57,12 @@ export default function LoginScreen() {
 
     try {
       await signInWithEmail(email.trim(), password.trim());
-      router.push('/groups');
+      router.push('/household');
     } catch (error: any) {
       console.error('Login error:', error);
       Alert.alert(
         'Inloggning misslyckades',
         'Har du verkligen fyllt i ett korrekt användarnamn och lösenord?',
-        [{ text: 'OK' }]
-      );
-    }
-  };
-
-  const handleDevLogin = async () => {
-    try {
-      await signInWithEmail('test7@test.com', 'testing');
-      router.push('/groups');
-    } catch (error: any) {
-      console.error('Dev login error:', error);
-      Alert.alert(
-        'Snabbinloggning misslyckades',
-        'Den förifyllda testanvändaren kunde inte loggas in automatiskt.',
         [{ text: 'OK' }]
       );
     }
@@ -95,16 +81,6 @@ export default function LoginScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={s.container}
     >
-      <Button
-        mode="text"
-        onPress={handleDevLogin}
-        compact
-        style={s.devLoginButton}
-        textColor={theme.colors.onSurface}
-      >
-        Logga in som test
-      </Button>
-
       <View style={s.logoContainer}>
         <Image source={logoSource} style={s.logo} resizeMode="contain" />
       </View>

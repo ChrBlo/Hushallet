@@ -22,7 +22,7 @@ export default function GroupsLayout() {
         name="index"
         options={{
           headerShown: true,
-          title: 'Grupper',
+          title: 'Dina Hushåll',
           headerRight: () => <ThemeButton />,
         }}
       />

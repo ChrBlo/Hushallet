@@ -30,7 +30,7 @@ const App = () => {
             name="sign-up"
             options={{ headerShown: true, title: 'Register' }}
           />
-          <Stack.Screen name="groups" options={{ headerShown: false }} />
+          <Stack.Screen name="household" options={{ headerShown: false }} />
           <Stack.Screen
             name="statistics"
             options={{ headerShown: true, title: 'Statistics' }}
