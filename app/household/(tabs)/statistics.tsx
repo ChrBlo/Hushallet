@@ -2,17 +2,17 @@ import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
 import { MD3Theme, Text, useTheme } from 'react-native-paper';
 import PieChart from 'react-native-pie-chart';
 import SmallArrowSelectorBar from '../../../components/small-arrow-selector-bar';
-import { Household, HouseholdWithTasks } from '../../../types/household';
+import { Household } from '../../../types/household';
 import { Task } from '../../../types/task';
-import { householdGet } from '../../../infra/household_functions';
 import { useSelectedHouseholdId } from '../../../providers/household_provider';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { getAvatarConfig } from '../../../components/get-avatar';
 import {
   getTimePeriods,
   isWithinPeriod,
   TimePeriod,
 } from '../../../infra/helpers/statistics';
+import { useHouseholdGet } from '../../../infra/hooks/use_household';
 
 interface ChartData {
   value: number;
@@ -102,11 +102,14 @@ const getChartData = (task: Task, household: Household) => {
 export const StatisticsScreen = () => {
   const s = createStyles(useTheme());
   const dimensions = Dimensions.get('window');
+  const households = useHouseholdGet();
   const { selectedHouseholdId } = useSelectedHouseholdId();
-  const [data, setData] = useState<HouseholdWithTasks>();
-  const [isLoading, setIsLoading] = useState(true);
   const timePeriods: TimePeriod[] = [...getTimePeriods()];
   const [periodIndex, setPeriodIndex] = useState<number>(0);
+
+  const data = households.data?.find(
+    h => h.household.id === selectedHouseholdId
+  );
 
   const increasePeriodIndex = () => {
     const newIndex =
@@ -119,18 +122,6 @@ export const StatisticsScreen = () => {
       periodIndex === 0 ? timePeriods.length - 1 : periodIndex - 1;
     setPeriodIndex(newIndex);
   };
-
-  useEffect(() => {
-    const getData = async () => {
-      const fetchedData = await householdGet();
-      const household = fetchedData.find(
-        h => h.household.id === selectedHouseholdId
-      );
-      setData(household);
-      setIsLoading(false);
-    };
-    getData();
-  }, []);
 
   const filteredTasks: Task[] = [];
   data?.tasks
@@ -176,7 +167,9 @@ export const StatisticsScreen = () => {
       ) : (
         <View style={[s.flex, s.container, s.center]}>
           <Text>
-            {isLoading ? 'Hämtar data...' : 'Det finns ingen data att visa.'}
+            {households.isLoading
+              ? 'Hämtar data...'
+              : 'Det finns ingen data att visa.'}
           </Text>
         </View>
       )}
