@@ -2,9 +2,17 @@ import { Stack } from 'expo-router';
 import { useTheme } from 'react-native-paper';
 import HouseholdHeaderAvatarButton from '../../components/household-header-avatar-button';
 import ThemeButton from '../../components/theme-button';
+import { useHouseholdGet } from '../../infra/hooks/use_household';
+import { useSelectedHouseholdId } from '../../providers/household_provider';
 
 export default function GroupsLayout() {
+  const households = useHouseholdGet();
+  const { selectedHouseholdId } = useSelectedHouseholdId();
   const theme = useTheme();
+
+  const selectedHousehold = households.data?.find(
+    h => h.household.id === selectedHouseholdId
+  );
 
   return (
     <Stack
@@ -30,7 +38,7 @@ export default function GroupsLayout() {
         name="(tabs)"
         options={{
           headerShown: true,
-          title: 'Hushåll',
+          title: `${selectedHousehold?.household.name || 'Hushåll'}`,
           headerRight: () => <HouseholdHeaderAvatarButton />,
         }}
       />
