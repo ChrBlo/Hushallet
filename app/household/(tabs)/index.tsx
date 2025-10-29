@@ -226,6 +226,23 @@ export const TaskScreen = () => {
                     return completionDate.getTime() === today.getTime();
                   });
 
+                  if (todaysCompletions.length > 3) {
+                    const user = selectedHousehold?.household.users.find(
+                      u => u.id === todaysCompletions[0].household_member_id
+                    );
+                    if (!user) return;
+
+                    const config = { emoji: '👨‍👩‍👧‍👦', color: '#a6a6a6' };
+                    return (
+                      <AvatarBubble
+                        config={config}
+                        size={32}
+                        number={todaysCompletions.length}
+                        style={s.avatarBubble}
+                      />
+                    );
+                  }
+
                   // show avatars only for todays completions
                   return todaysCompletions.map((completion, index) => {
                     const user = selectedHousehold?.household.users.find(
@@ -237,7 +254,7 @@ export const TaskScreen = () => {
                       <AvatarBubble
                         key={`${completion.household_member_id}-${index}`}
                         config={getAvatarConfig(user.icon)}
-                        size={28}
+                        size={32}
                         style={s.avatarBubble}
                       />
                     );
