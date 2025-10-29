@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react';
 import { getToday, isWithinPeriod } from '../infra/helpers/statistics';
 import AvatarBubble from '../components/avatar-bubble';
 import { getAvatarConfig } from '../components/get-avatar';
-import { householdGet } from '../infra/household_functions';
+import { useHouseholdGet } from '../infra/hooks/use_household';
 import { useSelectedHouseholdId } from '../providers/household_provider';
 import { HouseholdWithTasks } from '../types/household';
 import { Icon } from '../types/household_user';
@@ -50,17 +50,14 @@ export const ViewTaskModal = () => {
   const taskId = params.taskId.toString();
   const { selectedHouseholdId } = useSelectedHouseholdId();
   const [task, setTask] = useState<Task | null>(null);
-  const [household, setHousehold] = useState<HouseholdWithTasks>();
   const [completions, setCompletions] = useState<CompletionIcon[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const createCompletionCallback = useTaskCompletionCreate();
   const deleteCompletionCallback = useTaskCompletionDelete();
-
-  const getDbData = async () => {
-    const data = await householdGet();
-    const household = data.find(h => h.household.id === selectedHouseholdId);
-    setHousehold(() => household);
-  };
+  const { data: households } = useHouseholdGet();
+  const household = households?.find(
+    h => h.household.id === selectedHouseholdId
+  );
 
   const addCompletion = () => {
     if (!currentUserId || !task) return;
@@ -75,7 +72,6 @@ export const ViewTaskModal = () => {
       taskId: taskId,
       completion: c,
     });
-    getDbData();
   };
 
   const deleteCompletion = () => {
@@ -93,19 +89,14 @@ export const ViewTaskModal = () => {
       taskId: taskId,
       completion: c,
     });
-    getDbData();
   };
-
-  useEffect(() => {
-    getDbData();
-  }, []);
 
   useEffect(() => {
     if (!household) return;
     const t = household?.tasks.find(x => x.id === taskId);
     if (!t) return;
     setTask(() => t);
-  }, [household]);
+  }, [household, taskId]);
 
   useEffect(() => {
     if (!task) return;

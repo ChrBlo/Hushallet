@@ -61,6 +61,11 @@ export const TaskScreen = () => {
   const tasks =
     selectedHousehold?.tasks.filter(t => t.status === 'active') || [];
 
+  const currentUser = selectedHousehold?.household.users.find(
+    u => u.id === currentUserId
+  );
+  const isAdmin = currentUser?.role === 'admin';
+
   const handleArchiveTask = async (task: Task) => {
     if (!task.id) return;
 
@@ -265,16 +270,20 @@ export const TaskScreen = () => {
           </TaskButton>
         ))}
       </ScrollView>
-      <StyledButton
-        title={'Lägg till'}
-        onPress={handleCreateNewTask}
-        style={[s.button, s.bottomLeft]}
-      />
-      <StyledButton
-        title={isEditMode ? 'Klar' : 'Ändra'}
-        onPress={() => setIsEditMode(!isEditMode)}
-        style={[s.button, s.bottomRight]}
-      />
+      {isAdmin && (
+        <>
+          <StyledButton
+            title={'Lägg till'}
+            onPress={handleCreateNewTask}
+            style={[s.button, s.bottomLeft]}
+          />
+          <StyledButton
+            title={isEditMode ? 'Klar' : 'Ändra'}
+            onPress={() => setIsEditMode(!isEditMode)}
+            style={[s.button, s.bottomRight]}
+          />
+        </>
+      )}
     </>
   );
 };
@@ -304,7 +313,7 @@ const createStyles = (theme: MD3Theme) =>
       left: 0,
     },
     button: {
-      width: '42%',
+      width: '50%',
     },
     row: {
       flexDirection: 'row',
