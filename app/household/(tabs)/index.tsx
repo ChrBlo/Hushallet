@@ -3,7 +3,13 @@ import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { Alert, ScrollView, StyleSheet, View } from 'react-native';
+import {
+  Alert,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import { Button, MD3Theme, useTheme } from 'react-native-paper';
 import AvatarBubble from '../../../components/avatar-bubble';
 import { getAvatarConfig } from '../../../components/get-avatar';
@@ -16,9 +22,9 @@ import { useTaskCompletionCreate } from '../../../infra/hooks/use_task_completio
 import { useTaskDelete } from '../../../infra/hooks/use_task_delete';
 import { useTaskUpdate } from '../../../infra/hooks/use_task_update';
 import { useSelectedHouseholdId } from '../../../providers/household_provider';
+import { AppDarkTheme } from '../../../theme';
 import type { Task } from '../../../types/task';
 import { TaskCompletion } from '../../../types/task_completion';
-import { AppDarkTheme } from '../../../theme';
 
 const handleCreateNewTask = () => {
   router.push('/task-modal');
@@ -45,17 +51,26 @@ const handleEditTask = (task: Task) => {
 export const TaskScreen = () => {
   const theme = useTheme();
   const s = createStyles(theme);
-  const households = useHouseholdGet();
+  const { data, refetch } = useHouseholdGet();
   const { selectedHouseholdId } = useSelectedHouseholdId();
   const [isEditMode, setIsEditMode] = useState(false);
   const deleteMutation = useTaskDelete();
   const updateMutation = useTaskUpdate();
   const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await refetch();
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  };
 
   const completionCreateMutation = useTaskCompletionCreate();
   const currentUserId = auth.currentUser?.uid;
 
-  const selectedHousehold = households.data?.find(
+  const selectedHousehold = data?.find(
     h => h.household.id === selectedHouseholdId
   );
   const tasks =
@@ -152,7 +167,13 @@ export const TaskScreen = () => {
   return (
     <>
       <StatusBar style={theme === AppDarkTheme ? 'light' : 'dark'} />
-      <ScrollView style={s.scrollView} contentContainerStyle={s.container}>
+      <ScrollView
+        style={s.scrollView}
+        contentContainerStyle={s.container}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         {tasks.map(t => (
           <TaskButton
             key={t.id}
