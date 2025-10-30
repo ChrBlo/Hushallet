@@ -28,7 +28,6 @@ import { TaskCompletion } from '../../../types/task_completion';
 
 import MultipleCompletionsSymbol from '../../../components/multiple-completions-symbol';
 
-
 const handleCreateNewTask = () => {
   router.push('/task-modal');
 };
