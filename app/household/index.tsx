@@ -7,6 +7,7 @@ import TaskButton from '../../components/task-button';
 import { requireCurrentUser } from '../../infra/auth_functions';
 import { useHouseholdGet } from '../../infra/hooks/use_household';
 import { useSelectedHouseholdId } from '../../providers/household_provider';
+import MultipleCompletionsSymbol from '../../components/multiple-completions-symbol';
 
 const GroupsScreen = () => {
   const theme = useTheme();

@@ -26,6 +26,9 @@ import { AppDarkTheme } from '../../../theme';
 import type { Task } from '../../../types/task';
 import { TaskCompletion } from '../../../types/task_completion';
 
+import MultipleCompletionsSymbol from '../../../components/multiple-completions-symbol';
+
+
 const handleCreateNewTask = () => {
   router.push('/task-modal');
 };
@@ -253,18 +256,22 @@ export const TaskScreen = () => {
                   });
 
                   if (todaysCompletions.length > 3) {
-                    const user = selectedHousehold?.household.users.find(
+                    const firstIcon = selectedHousehold?.household.users.find(
                       u => u.id === todaysCompletions[0].household_member_id
-                    );
-                    if (!user) return;
+                    )?.icon;
+                    const secondIcon = selectedHousehold?.household.users.find(
+                      u => u.id === todaysCompletions[1].household_member_id
+                    )?.icon;
+                    const thirdIcon = selectedHousehold?.household.users.find(
+                      u => u.id === todaysCompletions[2].household_member_id
+                    )?.icon;
 
-                    const config = { emoji: '👨‍👩‍👧‍👦', color: '#a6a6a6' };
                     return (
-                      <AvatarBubble
-                        config={config}
-                        size={32}
-                        number={todaysCompletions.length}
-                        style={s.avatarBubble}
+                      <MultipleCompletionsSymbol
+                        firstIcon={firstIcon}
+                        secondIcon={secondIcon}
+                        thirdIcon={thirdIcon}
+                        totalCompletions={todaysCompletions.length}
                       />
                     );
                   }
