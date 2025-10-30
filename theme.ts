@@ -22,7 +22,7 @@ export const AppDefaultTheme = merge(CombinedDefaultTheme, {
   colors: {
     primary: 'rgba(204, 204, 204, 1)',
     onPrimary: 'rgb(255, 255, 255)',
-    primaryContainer: 'rgb(212, 227, 255)',
+    primaryContainer: 'rgba(179, 183, 190, 1)',
     onPrimaryContainer: 'rgb(0, 28, 58)',
     secondary: 'rgb(84, 95, 113)',
     onSecondary: 'rgb(255, 255, 255)',
@@ -68,7 +68,7 @@ export const AppDarkTheme = merge(CombinedDarkTheme, {
   colors: {
     primary: 'rgba(9, 11, 14, 1)',
     onPrimary: 'rgba(161, 161, 161, 1)',
-    primaryContainer: 'rgba(0, 52, 97, 1)',
+    primaryContainer: 'rgba(40, 44, 46, 1)',
     onPrimaryContainer: 'rgb(212, 227, 255)',
     secondary: 'rgb(188, 199, 220)',
     onSecondary: 'rgb(39, 49, 65)',

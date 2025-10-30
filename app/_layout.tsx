@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from 'expo-router';
 import { useTheme } from 'react-native-paper';
-import HouseholdProvider from '../providers/household_provider';
 import CustomThemeProvider from '../providers/custom-theme-provider';
+import HouseholdProvider from '../providers/household_provider';
 
 const queryClient = new QueryClient();
 
