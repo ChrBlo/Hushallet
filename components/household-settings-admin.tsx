@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, TextInput, View } from 'react-native';
+import { MD3Theme, useTheme } from 'react-native-paper';
 import { router } from 'expo-router';
 import InvitationCodeDisplay from './invitation-code-display';
 import MemberGrid from './member-grid';
@@ -20,6 +21,8 @@ interface HouseholdSettingsAdminProps {
 function HouseholdSettingsAdmin({ houseHold }: HouseholdSettingsAdminProps) {
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
   const [showRequestsModal, setShowRequestsModal] = useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editedName, setEditedName] = useState(houseHold.name);
 
   const updateHousehold = useHouseholdUpdate();
   const deleteHousehold = useHouseholdDelete();
@@ -65,6 +68,44 @@ function HouseholdSettingsAdmin({ houseHold }: HouseholdSettingsAdminProps) {
         'Ett fel uppstod när namnet skulle sparas. Försök igen.'
       );
     }
+  };
+
+  const handleRenameHousehold = async () => {
+    const trimmedName = editedName.trim();
+
+    if (!trimmedName) {
+      Alert.alert('Ogiltigt namn', 'Hushållets namn kan inte vara tomt.');
+      return;
+    }
+
+    if (trimmedName === houseHold.name) {
+      setIsEditingName(false);
+      return;
+    }
+
+    try {
+      await updateHousehold.mutateAsync({
+        ...houseHold,
+        name: trimmedName,
+      });
+      setIsEditingName(false);
+      Alert.alert(
+        'Namnbyte lyckades',
+        `Hushållet har döpts om till "${trimmedName}".`
+      );
+    } catch (error) {
+      console.error('Failed to rename household', error);
+      Alert.alert(
+        'Kunde inte byta namn',
+        'Ett fel uppstod när hushållet skulle döpas om. Försök igen.'
+      );
+      setEditedName(houseHold.name);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditedName(houseHold.name);
+    setIsEditingName(false);
   };
 
   const handleToggleAdmin = () => {
@@ -263,11 +304,46 @@ function HouseholdSettingsAdmin({ houseHold }: HouseholdSettingsAdminProps) {
     user => user.status === 'requested'
   );
 
-  const s = createStyles();
+  const theme = useTheme();
+  const s = createStyles(theme);
 
   return (
     <View style={s.container}>
       <View>
+        {/* Household Name Editor */}
+        <View style={s.nameSection}>
+          {isEditingName ? (
+            <View style={s.nameEditContainer}>
+              <TextInput
+                style={s.nameInput}
+                value={editedName}
+                onChangeText={setEditedName}
+                placeholder="Hushållets namn"
+                maxLength={50}
+                autoFocus
+              />
+              <View style={s.nameButtonsRow}>
+                <StyledButton
+                  title="Avbryt"
+                  onPress={handleCancelEdit}
+                  style={s.nameButton}
+                />
+                <StyledButton
+                  title="Spara"
+                  onPress={handleRenameHousehold}
+                  style={s.nameButton}
+                />
+              </View>
+            </View>
+          ) : (
+            <StyledButton
+              title={`Byt namn: ${houseHold.name}`}
+              onPress={() => setIsEditingName(true)}
+              style={s.renameButton}
+            />
+          )}
+        </View>
+
         {pendingRequests.length > 0 && (
           <StyledButton
             title={`Förfrågningar (${pendingRequests.length})`}
@@ -317,7 +393,7 @@ function HouseholdSettingsAdmin({ houseHold }: HouseholdSettingsAdminProps) {
   );
 }
 
-const createStyles = () =>
+const createStyles = (theme: MD3Theme) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -330,6 +406,31 @@ const createStyles = () =>
     },
     requestsButton: {
       marginBottom: 16,
+    },
+    nameSection: {
+      marginBottom: 16,
+    },
+    renameButton: {
+      marginBottom: 0,
+    },
+    nameEditContainer: {
+      gap: 12,
+    },
+    nameInput: {
+      borderWidth: 1,
+      borderColor: theme.colors.outline,
+      borderRadius: 8,
+      padding: 12,
+      fontSize: 16,
+      backgroundColor: theme.colors.surface,
+      color: theme.colors.onSurface,
+    },
+    nameButtonsRow: {
+      flexDirection: 'row',
+      gap: 12,
+    },
+    nameButton: {
+      flex: 1,
     },
   });
 
